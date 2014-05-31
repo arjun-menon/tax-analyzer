@@ -32,7 +32,7 @@ New York State & City tax rates (2014) are based on http://www.tax.ny.gov/pit/fi
 
 ### Sample Output
 Sample output rendered by the program for a person with a gross annual 
-income of $93,500 and no additional itemized deducation claiming a 
+income of $93,500, no additional itemized deducations, and claiming a 
 single personal exemption:
 
     Annual Gross Income = $93,500.00
