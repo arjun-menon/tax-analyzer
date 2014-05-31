@@ -1,9 +1,10 @@
 NYC Tax Calculator
 ==================
-
 This Python program calculates the total U.S. taxes owed by a single (unmarried) 
-resident of New York City. It is limited in its scope and functionality. It is 
-not perfect, so the calculations should only be considered  as approximations. 
+resident of New York City. It is limited in its scope and functionality, and 
+was written primarily for personal use. It is also far from perfect, and the 
+numbers calculated should only be considered as a guide. However, generally 
+speaking, your tax should not _exceed_ the amounts calculated by this program.
 
 Federal rates (2014) are based on http://www.forbes.com/sites/kellyphillipserb/2013/10/31/irs-announces-2014-tax-brackets-standard-deduction-amounts-and-more/ and other sources.
 
