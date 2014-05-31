@@ -173,9 +173,17 @@ def calc_taxes(income, itemized_deductions=0, exemptions = 1):
     print("Monthly Income = $%s" % ns(monthly_income_after_tax))
 
 def main():
-    if len(sys.argv) != 2:
-        print("Please specify in exactly one argument, your annual gross income.")
-    annual_gross_income = int(sys.argv[1])
+    import argparse
+    parser = argparse.ArgumentParser(description="Calculates total U.S. taxes owed by a single (unmarried) resident of NYC.")
+    parser.add_argument('income', type=str, help="Annual Gross Income")
+    parser.add_argument('-e', '--exemptions', nargs=1, type=str, default=None, help='Number of personal exemptions. The default is 1.')
+    parser.add_argument('-d', '--deductions', nargs=1, type=str, default=None, help='Itemized deduction other than the standard deduction, personal exemptions, and state/local/foreign tax deductions.')
+    args = parser.parse_args()
+
+    annual_gross_income = int(args.income)
+    if annual_gross_income < 0:
+        print("Your income cannot be negative.")
+        return
 
     calc_taxes(annual_gross_income)
 
