@@ -12,8 +12,8 @@ New York State & City tax rates (2014) are based on http://www.tax.ny.gov/pit/fi
 
 *Note*: for more on state & local tax federal income tax deductions, see: http://taxes.about.com/od/Deductions/a/State-Income-Tax-Deduction.htm
 
-Usage
------
+###Usage
+
     usage: nyc_tax_calculator.py [-h] [-e EXEMPTIONS] [-d DEDUCTIONS] income
 
     Calculates total U.S. taxes owed by a single (unmarried) resident of NYC.
@@ -29,4 +29,9 @@ Usage
                             Itemized deduction other than the standard deduction,
                             personal exemptions, and state/local/foreign tax
                             deductions.
+
+### Todos
+
+* Fix the [AMT](https://en.wikipedia.org/wiki/Alternative_minimum_tax) 
+  phase-out calculation.
 
