@@ -179,16 +179,18 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Calculates total U.S. taxes owed by a single (unmarried) resident of NYC.")
     parser.add_argument('income', type=str, help="Annual Gross Income")
-    parser.add_argument('-e', '--exemptions', nargs=1, type=str, default=None, help='Number of personal exemptions. The default is 1.')
-    parser.add_argument('-d', '--deductions', nargs=1, type=str, default=None, help='Itemized deduction other than the standard deduction, personal exemptions, and state/local/foreign tax deductions.')
+    parser.add_argument('-e', '--exemptions', nargs=1, type=str, default=[1], help='Number of personal exemptions. The default is 1.')
+    parser.add_argument('-d', '--deductions', nargs=1, type=str, default=[0.0], help='Itemized deduction other than the standard deduction, personal exemptions, and state/local/foreign tax deductions.')
     args = parser.parse_args()
 
     annual_gross_income = int(args.income)
     if annual_gross_income < 0:
         print("Your income cannot be negative.")
         return
+    exemptions = int  (args.exemptions[0])
+    deductions = float(args.deductions[0])
 
-    calc_taxes(annual_gross_income)
+    calc_taxes(annual_gross_income, deductions, exemptions)
 
 if __name__ == "__main__":
     main()
