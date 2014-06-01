@@ -68,24 +68,24 @@ single personal exemption:
        for the slab from $12,000.00 to $25,000.00 = $459.42 (at 3.53% on $13,000.00)
        for the slab from $25,000.00 to $50,000.00 = $897.75 (at 3.59% on $25,000.00)
        for the slab from $50,000.00 to $77,300.00 = $995.90 (at 3.65% on $27,300.00)
-       minus the New York City School Tax Credit of $63
-    New York City Income Tax = $2,638.91
+       minus the New York City School Tax Credit of $62.50
+    New York City Income Tax = $2,639.41
 
-    Total New York State & City Taxes = $7,299.51
+    Total New York State & City Taxes = $7,300.01
 
     Federal Tax Deductions:
-        State, Local & Foreign Tax Deduction = $7,299.51
+        State, Local & Foreign Tax Deduction = $7,300.01
         Additional Itemized Deductions = $0.00
         Personal Exemptions = $3,950.00  (1 x $3,950.00)
-    Federal Tax Deductions = $11,249.51
+    Federal Tax Deductions = $11,250.01
 
-    Federal Taxable Income = $73,750.49
+    Federal Taxable Income = $73,749.99
 
     Federal Income Tax:
        for the slab from $0.00 to $9,075.00 = $907.50 (at 10.00% on $9,075.00)
        for the slab from $9,075.00 to $36,900.00 = $4,173.75 (at 15.00% on $27,825.00)
-       for the slab from $36,900.00 to $73,750.49 = $9,212.62 (at 25.00% on $36,850.49)
-    Federal Income Tax = $14,293.87
+       for the slab from $36,900.00 to $73,749.99 = $9,212.50 (at 25.00% on $36,849.99)
+    Federal Income Tax = $14,293.75
 
     Minimum Federal Income Tax: $8,372.00 (at 26% on $32,200.00)
 
@@ -94,13 +94,13 @@ single personal exemption:
         Medicare's Hospital Insurance (HI) Tax: $1,232.50 (at 1.45% flat on $85,000.00)
     Federal Insurance Contributions Act (FICA) Tax = $6,502.50
 
-    Total Federal Taxes = $20,796.37
+    Total Federal Taxes = $20,796.25
 
-    Total Federal, State & Local Tax: $28,095.89
+    Total Federal, State & Local Tax: $28,096.26
 
-    Income after taxation = $56,904.11
+    Income after taxation = $56,903.74
     Effective Tax Rate = 33.05%
-    Monthly Income = $4,742.01
+    Monthly Income = $4,741.98
 
 ### Todos
 

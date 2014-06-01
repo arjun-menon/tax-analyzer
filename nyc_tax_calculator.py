@@ -58,7 +58,7 @@ new_york_city_tax_schedule_2014_single = [
     (sys.maxint , 3.876)
 ]
 
-nyc_school_tax_credit = 63 # for full-year residents only
+nyc_school_tax_credit_single = 62.50 # for full-year residents only
 
 def p(val, percentage):
     return (float(val) * percentage)/100
@@ -148,8 +148,9 @@ def calc_taxes(income, itemized_deductions=0, exemptions = 1):
     print("\nNew York City Income Tax:")
     nyc_income_tax = calc_slab_tax(nys_taxable_income, 
         new_york_city_tax_schedule_2014_single)
-    print("   minus the New York City School Tax Credit of $%d" % nyc_school_tax_credit)
-    nyc_income_tax -= nyc_school_tax_credit
+    print("   minus the New York City School Tax Credit of $%s" % 
+        ns(nyc_school_tax_credit_single))
+    nyc_income_tax -= nyc_school_tax_credit_single
     print("New York City Income Tax = $%s" % ns(nyc_income_tax))
 
     total_state_and_local_income_tax = nys_income_tax + nyc_income_tax
