@@ -10,6 +10,7 @@ standard_deduction_2014_single_person = 6200
 personal_exemption_2014 = 3950
 
 social_security_tax_rate =  6.2
+social_security_taxable_income_limit = 117000  # as of 2014
 medicare_tax_rate = 1.45
 
 federal_income_tax_schedule_2014_single = [
@@ -151,7 +152,9 @@ def calc_taxes(income, itemized_deductions=0, exemptions = 1):
     actual_federal_income_tax = max(federal_income_tax, alternative_minimum_tax)
 
     print("\nFederal Insurance Contributions Act (FICA) Tax:")
-    social_security_tax = p(federal_taxable_income, social_security_tax_rate)
+    social_security_taxable_income = min(federal_taxable_income, 
+        social_security_taxable_income_limit)
+    social_security_tax = p(social_security_taxable_income, social_security_tax_rate)
     print("    Social Security's Old-Age, Survivors, and Disability Insurance \
 (OASDI) Tax: $%s (at %1.2f%% flat rate)" % 
         (ns(social_security_tax), social_security_tax_rate))
