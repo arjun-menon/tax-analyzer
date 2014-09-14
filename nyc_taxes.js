@@ -77,16 +77,20 @@ nyc_school_tax_credit_single = 62.50 // for full-year residents not claimed as a
 \*******************/
 
 function p(val, percentage) {
-    return (val * percentage)/100.0 //(val * percentage)/100.0
+    return (val * percentage)/100.0
 }
 
 function numberWithCommas(x) { // from http://stackoverflow.com/a/2901298
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function ns(number) {
+function ns(number) { // stringify a number represeting money:
     return "$" + numberWithCommas(number.toFixed(2))
 }
+
+/*********************.
+| Slab Tax Calculator |
+\*********************/
 
 function calc_slab_tax(income, slab_schedule, w) {
     result = 0.0
@@ -118,6 +122,10 @@ function calc_slab_tax(income, slab_schedule, w) {
     return result
 }
 
+/****************.
+| AMT Calculator |
+\****************/
+
 function calc_alternative_minimum_tax(full_income, w) {
     exemption = 0.0
 
@@ -141,6 +149,10 @@ function calc_alternative_minimum_tax(full_income, w) {
 
     return amt
 }
+
+/********************.
+| The Tax Calculator |
+\********************/
 
 function calc_taxes(income, itemized_deductions, exemptions, w) {
     // default itemized_deductions = 0

@@ -1,10 +1,6 @@
 
 nyc_taxes = require('./nyc_taxes.js')
 
-// function w(text) {
-//     console.log(text)
-// }
-
 function w(kind, text, amt) {
     if ( kind == 't' )
         console.log(text + ":")
@@ -12,8 +8,6 @@ function w(kind, text, amt) {
         console.log(text + " = " + amt)
     else if ( kind == 'b' )
         console.log("   " + text)
-    // else
-    //     console.log(text)
 }
 
 function node_console_main() {
