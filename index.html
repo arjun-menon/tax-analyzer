@@ -6,11 +6,88 @@
 
 <body>
 
+<h1>Taxes in NYC</h1>
+
+<form method="get">
+<fieldset>
+    <legend>Calculate Taxes in NYC</legend>
+
+    <label for="agi">Your Adjusted Gross Income:</label>
+    $<input id="agi" name="income" type="text" size="20" value="" /><br />
+
+    <label for="itd">Your Itemized Tax Deductions: </label>
+    $<input id="itd" name="deductions" type="text" size="20" value="0" /><br />
+
+    <label for="npe">Number of Personal Exemptions: </label>
+    $<input id="npe" name="exemptions" type="text" size="20" value="1" /><br />
+
+    <input id="calc_submit" type="submit" value="Calculate" />
+
+</fieldset>
+</form>
+
+<br />
+
 <div id="results"></div>
+
+<style>
+
+body {
+    font-family: Tahoma;
+}
+
+h1 {
+    text-align: center;
+}
+
+form {
+    display: table;
+    margin: 0 auto;
+}
+
+label {
+        display: inline-block;
+        vertical-align: top;
+        width: 320px;
+}
+
+#calc_submit {
+    width: 100px;
+    height: 2em;
+    display: block;
+    margin: 7px auto 3px auto;
+}
+
+#results {
+    visibility: hidden;
+
+    display: table;
+    margin: 0 auto;
+
+    padding: 25px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 25px;
+    box-shadow: 5px 5px 15px #BBBBBB;
+
+    background-color:#F8F8F8;
+    font-family: Geneva, Tahoma;
+}
+
+</style>
 
 <script src="nyc_taxes.js" text="text/javascript"></script>
 
 <script text="text/javascript">
+
+function getParameterByName(name) {
+    // from: http://stackoverflow.com/a/901144/908430
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 
 function createHtmlFragment(htmlStr) {
     // from: http://stackoverflow.com/a/814649/908430
@@ -29,7 +106,9 @@ function setResults(htmlStr) {
     results.innerHTML = ""
 
     var fragment = createHtmlFragment(htmlStr);
-    results.insertBefore(fragment);    
+    results.insertBefore(fragment);
+
+    results.style.visibility = 'visible';
 }
 
 function calculateAndDisplayTaxes(income, deductions, exemptions) {
@@ -50,11 +129,39 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
     setResults(resultsHtml)
 }
 
-income = 100000
-deductions = 0
-exemptions = 1
+var incomeParam = getParameterByName('income');
+var deductionsParam = getParameterByName('deductions');
+var exemptionsParam = getParameterByName('exemptions');
 
-calculateAndDisplayTaxes(income, 18000, exemptions)
+if(deductionsParam == "")
+    deductionsParam = '0'
+
+if(exemptionsParam == "")
+    exemptionsParam = '1'
+
+income = parseInt(incomeParam)
+deductions = parseInt(deductionsParam)
+exemptions = parseInt(exemptionsParam)
+
+document.getElementById('agi').value = incomeParam
+document.getElementById('itd').value = deductionsParam
+document.getElementById('npe').value = exemptionsParam
+
+if(income > 0 && deductions >= 0 && exemptions >= 0) {
+    calculateAndDisplayTaxes(income, deductions, exemptions)
+}
+else {
+    err_output = ""
+    if( (incomeParam != '') && !(income >= 0) || (income < 0) )
+        err_output += "Income: '" + incomeParam + "'" + " is not valid. <br />"
+    if( (deductionsParam != '') && !(deductions >= 0) )
+        err_output += "Deductions: '" + deductionsParam + "'" + " is not valid. <br />"
+    if( (exemptionsParam != '') && !(exemptions >= 0) )
+        err_output += "Exemptions: '" + exemptionsParam + "'" + " is not valid. <br />"
+
+    if (err_output != "")
+        setResults(err_output)
+}
 
 </script>
 
