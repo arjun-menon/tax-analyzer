@@ -11,21 +11,21 @@ Usage
 
 There's a [Node.js](http://nodejs.org/)-based command-line interface available:
 
-  usage: node calc_nyc_taxes.js [-h] income [-d DEDUCTIONS] [-e EXEMPTIONS]
+    usage: node calc_nyc_taxes.js [-h] income [-d DEDUCTIONS] [-e EXEMPTIONS]
 
-  Calculates total U.S. taxes owed by a single (unmarried) resident of NYC.
+    Calculates total U.S. taxes owed by a single (unmarried) resident of NYC.
 
-  positional arguments:
-    income                Annual Gross Income
+    positional arguments:
+      income                Annual Gross Income
 
-  optional arguments:
-    -h, --help            show this help message and exit
-    -d DEDUCTIONS, --deductions DEDUCTIONS
-                          Itemized deduction other than the standard deduction,
-                          personal exemptions, and state/local/foreign tax
-                          deductions.
-    -e EXEMPTIONS, --exemptions EXEMPTIONS
-                          Number of personal exemptions. The default is 1.
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d DEDUCTIONS, --deductions DEDUCTIONS
+                            Itemized deduction other than the standard deduction,
+                            personal exemptions, and state/local/foreign tax
+                            deductions.
+      -e EXEMPTIONS, --exemptions EXEMPTIONS
+                            Number of personal exemptions. The default is 1.
 
 ### Sample Output
 Sample output for a person with a gross annual income of $85,000, no 
