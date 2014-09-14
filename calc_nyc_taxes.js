@@ -1,6 +1,10 @@
 
 nyc_taxes = require('./nyc_taxes.js')
 
+function print(text) {
+    console.log(text)
+}
+
 function node_console_main() {
     console_help_message = "\
 usage: node calc_nyc_taxes.js [-h] income [-d DEDUCTIONS] [-e EXEMPTIONS]\n\
@@ -35,7 +39,7 @@ optional arguments:\n\
                 exemptions = parseInt( process.argv[i+1] )
         }
 
-        nyc_taxes.calc_taxes(income, deductions, exemptions)
+        nyc_taxes.calc_taxes(income, deductions, exemptions, print)
     }
 }
 
