@@ -1,8 +1,6 @@
-
-/***********************************************************
-    Tax rates and other related data for calculateing the 
-    total U.S. taxes owed by an unmarried resident of NYC
-************************************************************/
+/*-------------------------------------------------------------------*
+ *  Calculate total U.S. taxes owed by an unmarried resident of NYC  *
+ *-------------------------------------------------------------------*/
 
 /***************.
 | Federal Taxes |
@@ -301,4 +299,5 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
     w('a', "Monthly Income", ns(monthly_income_after_tax))
 }
 
-exports.calc_taxes = calc_taxes
+if( !( typeof exports == 'undefined' ) )
+    exports.calc_taxes = calc_taxes

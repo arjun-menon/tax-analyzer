@@ -1,8 +1,6 @@
 NYC Tax Calculator
 ==================
-This is a tool I wrote for personal use, to get a rough estimate of the taxes  
-owed by an unmarried individual with no dependants living and working in New 
-York City.
+This is a tool I wrote for personal use, to get a rough estimate of the taxes owed by an unmarried individual with no dependants living and working in New York City.
 
 Usage
 -----
