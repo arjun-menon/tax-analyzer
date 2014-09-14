@@ -1,8 +1,8 @@
 
-/*
+/***********************************************************
     Tax rates and other related data for calculateing the 
     total U.S. taxes owed by an unmarried resident of NYC
-*/
+************************************************************/
 
 /***************.
 | Federal Taxes |
@@ -148,8 +148,10 @@ function calc_alternative_minimum_tax(full_income) {
     return amt
 }
 
-//calc_taxes(income, itemized_deductions=0, exemptions = 1)
 function calc_taxes(income, itemized_deductions, exemptions) {
+    // default itemized_deductions = 0
+    // default exemptions = 1
+
     console.log("Adjusted Gross Income = $%s", ns(income))
 
     // ------------- New York State & City -------------

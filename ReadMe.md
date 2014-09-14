@@ -27,9 +27,8 @@ There's a [Node.js](http://nodejs.org/)-based command-line interface available:
       -e EXEMPTIONS, --exemptions EXEMPTIONS
                             Number of personal exemptions. The default is 1.
 
-### Sample Output
-Sample output for a person with a gross annual income of $85,000, no 
-additional itemized deducations, and claiming a single personal exemption:
+Sample command line output for a person with a gross annual income of $85,000, 
+no additional itemized deducations, and claiming a single personal exemption:
 
     Adjusted Gross Income = $85,000.00
 
