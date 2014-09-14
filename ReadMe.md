@@ -33,56 +33,56 @@ no additional itemized deducations, and claiming a single personal exemption:
     Adjusted Gross Income = $85,000.00
 
     New York State Tax Deductions:
-        New York State Standard Deduction = $7,700.00
+       New York State Standard Deduction = $7,700.00
     New York State Tax Deductions = $7,700.00
 
     New York State Taxable Income = $77,300.00
 
     New York State Income Tax:
-       for the slab from $0.00 to $8,200.00 = $328.00 (at 4% on $8,200.00)
-       for the slab from $8,200.00 to $11,300.00 = $139.50 (at 4.5% on $3,100.00)
-       for the slab from $11,300.00 to $13,350.00 = $107.63 (at 5.25% on $2,050.00)
-       for the slab from $13,350.00 to $20,550.00 = $424.80 (at 5.9% on $7,200.00)
-       for the slab from $20,550.00 to $77,150.00 = $3,650.70 (at 6.45% on $56,600.00)
-       for the slab from $77,150.00 to $77,300.00 = $9.97 (at 6.65% on $150.00)
+       Slab from $0.00 to $8,200.00 = $328.00 (at 4% on $8,200.00)
+       Slab from $8,200.00 to $11,300.00 = $139.50 (at 4.5% on $3,100.00)
+       Slab from $11,300.00 to $13,350.00 = $107.63 (at 5.25% on $2,050.00)
+       Slab from $13,350.00 to $20,550.00 = $424.80 (at 5.9% on $7,200.00)
+       Slab from $20,550.00 to $77,150.00 = $3,650.70 (at 6.45% on $56,600.00)
+       Slab from $77,150.00 to $77,300.00 = $9.97 (at 6.65% on $150.00)
     New York State Income Tax = $4,660.60
 
     New York City Income Tax:
-       for the slab from $0.00 to $12,000.00 = $348.84 (at 2.907% on $12,000.00)
-       for the slab from $12,000.00 to $25,000.00 = $459.42 (at 3.534% on $13,000.00)
-       for the slab from $25,000.00 to $50,000.00 = $897.75 (at 3.591% on $25,000.00)
-       for the slab from $50,000.00 to $77,300.00 = $995.90 (at 3.648% on $27,300.00)
+       Slab from $0.00 to $12,000.00 = $348.84 (at 2.907% on $12,000.00)
+       Slab from $12,000.00 to $25,000.00 = $459.42 (at 3.534% on $13,000.00)
+       Slab from $25,000.00 to $50,000.00 = $897.75 (at 3.591% on $25,000.00)
+       Slab from $50,000.00 to $77,300.00 = $995.90 (at 3.648% on $27,300.00)
        minus the New York City School Tax Credit of $62.50
     New York City Income Tax = $2,639.41
 
     Total New York State & City Taxes = $7,300.01
 
     Federal Tax Deductions:
-        State, Local & Foreign Tax Deduction = $7,300.01
-        Additional Itemized Deductions = $0.00
-        Personal Exemptions = $3,950.00  (1 x $3,950.00)
+       State, Local & Foreign Tax Deduction = $7,300.01
+       Additional Itemized Deductions = $0.00
+       Personal Exemptions = $3,950.00  (1 x $3,950.00)
     Federal Tax Deductions = $11,250.01
 
     Federal Taxable Income = $73,749.99
 
     Federal Income Tax:
-       for the slab from $0.00 to $9,075.00 = $907.50 (at 10% on $9,075.00)
-       for the slab from $9,075.00 to $36,900.00 = $4,173.75 (at 15% on $27,825.00)
-       for the slab from $36,900.00 to $73,749.99 = $9,212.50 (at 25% on $36,849.99)
+       Slab from $0.00 to $9,075.00 = $907.50 (at 10% on $9,075.00)
+       Slab from $9,075.00 to $36,900.00 = $4,173.75 (at 15% on $27,825.00)
+       Slab from $36,900.00 to $73,749.99 = $9,212.50 (at 25% on $36,849.99)
     Federal Income Tax = $14,293.75
 
-    Minimum Federal Income Tax: $8,372.00 (at 26% on $32,200.00)
+    Minimum Federal Income Tax = $8,372.00 (at 26% on $32,200.00)
 
     Federal Insurance Contributions Act (FICA) Tax:
-        Social Security's Old-Age, Survivors, and Disability Insurance (OASDI) Tax: $5,270.00 (at 6.2% flat on $85,000.00)
-        Medicare's Hospital Insurance (HI) Tax: $1,232.50 (at 1.45% flat on $85,000.00)
+       Social Security's Old-Age, Survivors, and Disability Insurance (OASDI) Tax: $5,270.00 (at 6.2% flat on $85,000.00)
+       Medicare's Hospital Insurance (HI) Tax: $1,232.50 (at 1.45% flat on $85,000.00)
     Federal Insurance Contributions Act (FICA) Tax = $6,502.50
 
     Total Federal Taxes = $20,796.25
 
-    Total Federal, State & Local Tax: $28,096.26
+    Total Federal, State & Local Tax = $28,096.26
 
-    Income after taxation = $56,903.74
+    Income after Taxation = $56,903.74
     Effective Tax Rate = 33.05%
     Monthly Income = $4,741.98
 
