@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <title>Taxes in NYC</title>
+</head>
+
+<body>
+
+<div id="results"></div>
+
+<script src="nyc_taxes.js" text="text/javascript"></script>
+
+<script text="text/javascript">
+
+function createHtmlFragment(htmlStr) {
+    // from: http://stackoverflow.com/a/814649/908430
+    // also, see: http://ejohn.org/blog/dom-documentfragments/
+    var frag = document.createDocumentFragment(),
+        temp = document.createElement('div');
+    temp.innerHTML = htmlStr;
+    while (temp.firstChild) {
+        frag.appendChild(temp.firstChild);
+    }
+    return frag;
+}
+
+function setResults(htmlStr) {
+    var results = document.getElementById('results')
+    results.innerHTML = ""
+
+    var fragment = createHtmlFragment(htmlStr);
+    results.insertBefore(fragment);    
+}
+
+function calculateAndDisplayTaxes(income, deductions, exemptions) {
+    resultsHtml = ""
+
+    function w(kind, text, amt) {
+        if ( kind == 't' )
+            resultsHtml += "<br /><b><u>" + text + "</u></b> <br />"
+        else if ( kind == 'a' )
+            resultsHtml += "<b>" + text + " = " + amt + "</b> <br />"
+        else if ( kind == 'b' )
+            resultsHtml += "<li>" + text + "</li>"
+        else if ( kind == 'l_end' )
+            resultsHtml += "<br />"
+    }
+
+    calc_taxes(income, deductions, exemptions, w)
+    setResults(resultsHtml)
+}
+
+income = 100000
+deductions = 0
+exemptions = 1
+
+calculateAndDisplayTaxes(income, 18000, exemptions)
+
+</script>
+
+</body>
+
+</html>
