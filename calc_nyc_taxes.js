@@ -1,8 +1,19 @@
 
 nyc_taxes = require('./nyc_taxes.js')
 
-function print(text) {
-    console.log(text)
+// function w(text) {
+//     console.log(text)
+// }
+
+function w(kind, text, amt) {
+    if ( kind == 't' )
+        console.log(text + ":")
+    else if ( kind == 'a' )
+        console.log(text + " = " + amt)
+    else if ( kind == 'b' )
+        console.log("   " + text)
+    // else
+    //     console.log(text)
 }
 
 function node_console_main() {
@@ -39,7 +50,7 @@ optional arguments:\n\
                 exemptions = parseInt( process.argv[i+1] )
         }
 
-        nyc_taxes.calc_taxes(income, deductions, exemptions, print)
+        nyc_taxes.calc_taxes(income, deductions, exemptions, w)
     }
 }
 

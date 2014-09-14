@@ -90,7 +90,7 @@ function ns(number) {
     return "$" + numberWithCommas(number.toFixed(2))
 }
 
-function calc_slab_tax(income, slab_schedule, print) {
+function calc_slab_tax(income, slab_schedule, w) {
     result = 0.0
 
     prev_limit = 0
@@ -106,7 +106,7 @@ function calc_slab_tax(income, slab_schedule, print) {
         tax_amt = p(slab_amt, rate)
 
         slab_limit = income > limit ? ns(limit) : ns(income)
-        print("   for the slab from " + ns(prev_limit) + " to " + slab_limit + 
+        w('b', "Slab from " + ns(prev_limit) + " to " + slab_limit + 
             " = " + ns(tax_amt) + " (at " + rate + "% on " + ns(slab_amt) + ")")
 
         result += tax_amt
@@ -120,7 +120,7 @@ function calc_slab_tax(income, slab_schedule, print) {
     return result
 }
 
-function calc_alternative_minimum_tax(full_income, print) {
+function calc_alternative_minimum_tax(full_income, w) {
     exemption = 0.0
 
     if (full_income < alternative_minimum_tax_exemption_phaseout_threshold_2014)
@@ -138,21 +138,21 @@ function calc_alternative_minimum_tax(full_income, print) {
 
     amt = p(taxable_income, rate)
 
-    print("\nMinimum Federal Income Tax: " + ns(amt) + 
-        " (at " + rate + "% on " + ns(taxable_income) + ")")
+    w('a', "\nMinimum Federal Income Tax", 
+        ns(amt) + " (at " + rate + "% on " + ns(taxable_income) + ")")
 
     return amt
 }
 
-function calc_taxes(income, itemized_deductions, exemptions, print) {
+function calc_taxes(income, itemized_deductions, exemptions, w) {
     // default itemized_deductions = 0
     // default exemptions = 1
 
-    print("Adjusted Gross Income = " + ns(income))
+    w('a', "Adjusted Gross Income", ns(income))
 
     // ------------- New York State & City -------------
 
-    print("\nNew York State Tax Deductions:")
+    w('t', "\nNew York State Tax Deductions")
 
     nys_deduction = 0.0
 
@@ -160,13 +160,13 @@ function calc_taxes(income, itemized_deductions, exemptions, print) {
         nys_deduction = itemized_deductions
 
     if (nys_deduction <= new_york_state_standard_deduction_single) {
-        print("    New York State Standard Deduction = " + 
+        w('b', "New York State Standard Deduction = " + 
             ns(new_york_state_standard_deduction_single))
 
         nys_deduction = new_york_state_standard_deduction_single
     }
     else
-        print("    Itemized Deductions = " + ns(itemized_deductions))
+        w('b', "Itemized Deductions = " + ns(itemized_deductions))
 
     // NYS Personal Exemptions for Dependents
     no_of_dependents = Math.max(exemptions - 1, 0)
@@ -174,55 +174,62 @@ function calc_taxes(income, itemized_deductions, exemptions, print) {
     nys_personal_exemptions = no_of_dependents * new_york_state_personal_exemption_dependents
 
     if (no_of_dependents > 0)
-        print("    Personal exemptions for dependents = " + 
+        w('b', "Personal exemptions for dependents = " + 
             ns(nys_personal_exemptions) + "  (" + no_of_dependents + 
             " x " + ns(new_york_state_personal_exemption_dependents) +")")
 
     nys_deduction += nys_personal_exemptions
 
-    print("New York State Tax Deductions = " + ns(nys_deduction))
+    w('a', "New York State Tax Deductions", ns(nys_deduction))
 
     nys_taxable_income = Math.max(income - nys_deduction, 0)
 
-    print("\nNew York State Taxable Income = " + ns(nys_taxable_income))
+    w('a', "\nNew York State Taxable Income", ns(nys_taxable_income))
 
-    print("\nNew York State Income Tax:")
+    w('t', "\nNew York State Income Tax")
+
+    w('l_start')
 
     nys_income_tax = calc_slab_tax(nys_taxable_income, 
-        new_york_state_tax_schedule_2014_single, print)
+        new_york_state_tax_schedule_2014_single, w)
 
-    print("New York State Income Tax = " + ns(nys_income_tax))
+    w('l_end')
 
-    print("\nNew York City Income Tax:")
+    w('a', "New York State Income Tax", ns(nys_income_tax))
+
+    w('t', "\nNew York City Income Tax")
+
+    w('l_start')
 
     nyc_income_tax = calc_slab_tax(nys_taxable_income, 
-        new_york_city_tax_schedule_2014_single, print)
+        new_york_city_tax_schedule_2014_single, w)
 
-    print("   minus the New York City School Tax Credit of " + 
+    w('b', "minus the New York City School Tax Credit of " + 
         ns(nyc_school_tax_credit_single))
 
     nyc_income_tax -= nyc_school_tax_credit_single
 
-    print("New York City Income Tax = " + ns(nyc_income_tax))
+    w('l_end')
+
+    w('a', "New York City Income Tax", ns(nyc_income_tax))
 
     total_state_and_local_income_tax = nys_income_tax + nyc_income_tax
 
-    print("\nTotal New York State & City Taxes = " + 
-        ns(total_state_and_local_income_tax))
+    w('a', "\nTotal New York State & City Taxes", ns(total_state_and_local_income_tax))
 
     // ------------- Federal -------------
 
-    print("\nFederal Tax Deductions:")
+    w('t', "\nFederal Tax Deductions")
 
     federal_deduction = itemized_deductions + total_state_and_local_income_tax
 
     if (federal_deduction < standard_deduction_2014_single_person) {
         federal_deduction = standard_deduction_2014_single_person
-        print("    Federal Standard Deduction = " + ns(federal_deduction))
+        w('b', "Federal Standard Deduction = " + ns(federal_deduction))
     }
     else {
-        print("    State, Local & Foreign Tax Deduction = " + ns(total_state_and_local_income_tax))
-        print("    Additional Itemized Deductions = " + ns(itemized_deductions))
+        w('b', "State, Local & Foreign Tax Deduction = " + ns(total_state_and_local_income_tax))
+        w('b', "Additional Itemized Deductions = " + ns(itemized_deductions))
     }
 
     federal_personal_exemptions = federal_personal_exemption_2014 * exemptions
@@ -230,48 +237,52 @@ function calc_taxes(income, itemized_deductions, exemptions, print) {
     if (income > federal_personal_exemption_phaseout_agi_maximum_single)
         federal_personal_exemptions = 0
     else
-        print("    Personal Exemptions = " + ns(federal_personal_exemptions) + 
+        w('b', "Personal Exemptions = " + ns(federal_personal_exemptions) + 
             "  (" + exemptions + " x " + ns(federal_personal_exemption_2014) + ")")
 
     federal_deduction += federal_personal_exemptions
 
-    print("Federal Tax Deductions = " + ns(federal_deduction))
+    w('a', "Federal Tax Deductions", ns(federal_deduction))
 
     federal_taxable_income = Math.max(income - federal_deduction, 0)
 
-    print("\nFederal Taxable Income = " + ns(federal_taxable_income))
+    w('a', "\nFederal Taxable Income", ns(federal_taxable_income))
 
-    print("\nFederal Income Tax:")
+    w('t', "\nFederal Income Tax")
+
+    w('l_start')
 
     federal_income_tax = calc_slab_tax(federal_taxable_income, 
-        federal_income_tax_schedule_2014_single, print)
+        federal_income_tax_schedule_2014_single, w)
 
-    print("Federal Income Tax = " + ns(federal_income_tax))
+    w('l_end')
 
-    alternative_minimum_tax = calc_alternative_minimum_tax(income, print)
+    w('a', "Federal Income Tax", ns(federal_income_tax))
+
+    alternative_minimum_tax = calc_alternative_minimum_tax(income, w)
 
     actual_federal_income_tax = Math.max(federal_income_tax, alternative_minimum_tax)
 
-    print("\nFederal Insurance Contributions Act (FICA) Tax:")
+    w('t', "\nFederal Insurance Contributions Act (FICA) Tax")
 
     social_security_taxable_income = Math.min(income, social_security_taxable_income_limit)
     social_security_tax = p(social_security_taxable_income, social_security_tax_rate)
 
-    print("    Social Security's Old-Age, Survivors, and Disability Insurance (OASDI) Tax: " + 
+    w('b', "Social Security's Old-Age, Survivors, and Disability Insurance (OASDI) Tax: " + 
         ns(social_security_tax) + " (at " + social_security_tax_rate + "% flat on " + ns(income) + ")")
 
     medicare_tax = p(income, medicare_tax_rate)
 
-    print("    Medicare's Hospital Insurance (HI) Tax: " + ns(medicare_tax) + 
+    w('b', "Medicare's Hospital Insurance (HI) Tax: " + ns(medicare_tax) + 
         " (at " + medicare_tax_rate + "% flat on " + ns(income) + ")")
 
     fica_tax = social_security_tax + medicare_tax
 
-    print("Federal Insurance Contributions Act (FICA) Tax = " + ns(fica_tax))
+    w('a', "Federal Insurance Contributions Act (FICA) Tax", ns(fica_tax))
 
     total_federal_tax = actual_federal_income_tax + fica_tax
 
-    print("\nTotal Federal Taxes = " + ns(total_federal_tax))
+    w('a', "\nTotal Federal Taxes", ns(total_federal_tax))
 
     // ----------------------- Total -----------------------
 
@@ -281,13 +292,13 @@ function calc_taxes(income, itemized_deductions, exemptions, print) {
 
     monthly_income_after_tax = income_after_tax / 12.0
 
-    print("\nTotal Federal, State & Local Tax: " + ns(total_tax))
+    w('a', "\nTotal Federal, State & Local Tax", ns(total_tax))
 
-    print("\nIncome after taxation = " + ns(income_after_tax))
+    w('a', "\nIncome after Taxation", ns(income_after_tax))
 
-    print("Effective Tax Rate = " + (total_tax*100.0/income).toFixed(2) + "%")
+    w('a', "Effective Tax Rate", (total_tax*100.0/income).toFixed(2) + "%")
 
-    print("Monthly Income = " + ns(monthly_income_after_tax))
+    w('a', "Monthly Income", ns(monthly_income_after_tax))
 }
 
 exports.calc_taxes = calc_taxes
