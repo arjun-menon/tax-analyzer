@@ -4,7 +4,7 @@ This is a tool I wrote for personal use, to get a rough estimate of the taxes ow
 
 Usage
 -----
-** Online: http://www.arjungmenon.com/nyc-tax-calculator/ **
+### Use Online: http://www.arjungmenon.com/nyc-tax-calculator/
 
 ### Command Line Interface
 
@@ -87,7 +87,8 @@ no additional itemized deducations, and claiming a single personal exemption:
     Effective Tax Rate = 33.05%
     Monthly Income = $4,741.98
 
-#### References
+References
+----------
 
 * Federal tax rates (2014) are based on: http://www.forbes.com/sites/kellyphillipserb/2013/10/31/irs-announces-2014-tax-brackets-standard-deduction-amounts-and-more/ and other sources.
 * New York State & City tax rates (2014) are based on: http://www.tax.ny.gov/pit/file/tax_tables.htm
@@ -102,7 +103,8 @@ no additional itemized deducations, and claiming a single personal exemption:
     * New York City Credits: http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm
     * Instructions for Form NYC-210 (Claim for NYC School Tax Credit): http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf
 
-### Todos
+Todos
+-----
 
 * Fix the [AMT](https://en.wikipedia.org/wiki/Alternative_minimum_tax) 
   phase-out calculation.
