@@ -1,13 +1,20 @@
+/*----------------------------------------------------------*
+ *  Node.js Command Line Interface (CLI) to `nyc_taxes.js`  *
+ *----------------------------------------------------------*/
 
 nyc_taxes = require('./nyc_taxes.js')
 
 function w(kind, text, amt) {
-    if ( kind == 't' )
-        console.log(text + ":")
-    else if ( kind == 'a' )
-        console.log(text + " = " + amt)
+    if ( kind == 'a' )
+        console.log( text + ' = ' + amt + '\n' )
+    else if ( kind == 'l_start' )
+        console.log( text + ':' )
     else if ( kind == 'b' )
-        console.log("   " + text)
+        console.log( '   ' + text )
+    else if ( kind == 'l_end' )
+        console.log( text + ' = ' + amt + '\n' )
+    else if ( kind == 't' )
+        console.log( text )
 }
 
 function node_console_main() {

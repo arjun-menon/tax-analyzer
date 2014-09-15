@@ -59,7 +59,7 @@ no additional itemized deducations, and claiming a single personal exemption:
     Total New York State & City Taxes = $7,300.01
 
     Federal Tax Deductions:
-       State, Local & Foreign Tax Deduction = $7,300.01
+       State and Local Taxes Deduction = $7,300.01
        Additional Itemized Deductions = $0.00
        Personal Exemptions = $3,950.00  (1 x $3,950.00)
     Federal Tax Deductions = $11,250.01
@@ -81,10 +81,12 @@ no additional itemized deducations, and claiming a single personal exemption:
 
     Total Federal Taxes = $20,796.25
 
-    Total Federal, State & Local Tax = $28,096.26
+    Total Federal, State & Local Taxes = $28,096.26
 
     Income after Taxation = $56,903.74
+
     Effective Tax Rate = 33.05%
+
     Monthly Income = $4,741.98
 
 References
