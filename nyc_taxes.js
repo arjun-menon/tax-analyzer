@@ -6,10 +6,6 @@
 | Federal Taxes |
 \***************/
 
-// Federal rates based on et al: http://www.forbes.com/sites/kellyphillipserb/2013/10/31/irs-announces-2014-tax-brackets-standard-deduction-amounts-and-more/
-// NYS and NYC rates based on: http://www.tax.ny.gov/pit/file/tax_tables.htm
-//     and http://taxes.about.com/od/statetaxes/a/New-York-income-taxes.htm
-
 standard_deduction_2014_single_person = 6200
 
 federal_personal_exemption_2014 = 3950
@@ -162,7 +158,7 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     // ------------- New York State & City -------------
 
-    w('t', "\nNew York State Tax Deductions")
+    w('l_start', "\nNew York State Tax Deductions")
 
     nys_deduction = 0.0
 
@@ -190,26 +186,20 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     nys_deduction += nys_personal_exemptions
 
-    w('a', "New York State Tax Deductions", ns(nys_deduction))
+    w('l_end', "New York State Tax Deductions", ns(nys_deduction))
 
     nys_taxable_income = Math.max(income - nys_deduction, 0)
 
     w('a', "\nNew York State Taxable Income", ns(nys_taxable_income))
 
-    w('t', "\nNew York State Income Tax")
-
-    w('l_start')
+    w('l_start', "\nNew York State Income Tax")
 
     nys_income_tax = calc_slab_tax(nys_taxable_income, 
         new_york_state_tax_schedule_2014_single, w)
 
-    w('l_end')
+    w('l_end', "New York State Income Tax", ns(nys_income_tax))
 
-    w('a', "New York State Income Tax", ns(nys_income_tax))
-
-    w('t', "\nNew York City Income Tax")
-
-    w('l_start')
+    w('l_start', "\nNew York City Income Tax")
 
     nyc_income_tax = calc_slab_tax(nys_taxable_income, 
         new_york_city_tax_schedule_2014_single, w)
@@ -219,9 +209,7 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     nyc_income_tax -= nyc_school_tax_credit_single
 
-    w('l_end')
-
-    w('a', "New York City Income Tax", ns(nyc_income_tax))
+    w('l_end', "New York City Income Tax", ns(nyc_income_tax))
 
     total_state_and_local_income_tax = nys_income_tax + nyc_income_tax
 
@@ -229,7 +217,7 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     // ------------- Federal -------------
 
-    w('t', "\nFederal Tax Deductions")
+    w('l_start', "\nFederal Tax Deductions")
 
     federal_deduction = itemized_deductions + total_state_and_local_income_tax
 
@@ -238,7 +226,7 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
         w('b', "Federal Standard Deduction = " + ns(federal_deduction))
     }
     else {
-        w('b', "State, Local & Foreign Tax Deduction = " + ns(total_state_and_local_income_tax))
+        w('b', "State and Local Taxes Deduction = " + ns(total_state_and_local_income_tax))
         w('b', "Additional Itemized Deductions = " + ns(itemized_deductions))
     }
 
@@ -252,28 +240,27 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     federal_deduction += federal_personal_exemptions
 
-    w('a', "Federal Tax Deductions", ns(federal_deduction))
+    w('l_end', "Federal Tax Deductions", ns(federal_deduction))
 
     federal_taxable_income = Math.max(income - federal_deduction, 0)
 
     w('a', "\nFederal Taxable Income", ns(federal_taxable_income))
 
-    w('t', "\nFederal Income Tax")
-
-    w('l_start')
+    w('l_start', "\nFederal Income Tax")
 
     federal_income_tax = calc_slab_tax(federal_taxable_income, 
         federal_income_tax_schedule_2014_single, w)
 
-    w('l_end')
-
-    w('a', "Federal Income Tax", ns(federal_income_tax))
+    w('l_end', "Federal Income Tax", ns(federal_income_tax))
 
     alternative_minimum_tax = calc_alternative_minimum_tax(income, w)
 
+    if (alternative_minimum_tax > federal_income_tax)
+        w('t', "Your alternative minimum tax (AMT) exceeds your regular federal income tax.")
+
     actual_federal_income_tax = Math.max(federal_income_tax, alternative_minimum_tax)
 
-    w('t', "\nFederal Insurance Contributions Act (FICA) Tax")
+    w('l_start', "\nFederal Insurance Contributions Act (FICA) Tax")
 
     social_security_taxable_income = Math.min(income, social_security_taxable_income_limit)
     social_security_tax = p(social_security_taxable_income, social_security_tax_rate)
@@ -288,7 +275,7 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     fica_tax = social_security_tax + medicare_tax
 
-    w('a', "Federal Insurance Contributions Act (FICA) Tax", ns(fica_tax))
+    w('l_end', "Federal Insurance Contributions Act (FICA) Tax", ns(fica_tax))
 
     total_federal_tax = actual_federal_income_tax + fica_tax
 
@@ -302,7 +289,9 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     monthly_income_after_tax = income_after_tax / 12.0
 
-    w('a', "\nTotal Federal, State & Local Tax", ns(total_tax))
+    w('a', "\nTotal Federal, State & Local Taxes", ns(total_tax))
+
+    w('x', "<hr/>")
 
     w('a', "\nIncome after Taxation", ns(income_after_tax))
 

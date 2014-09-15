@@ -4,6 +4,7 @@ This is a tool I wrote for personal use, to get a rough estimate of the taxes ow
 
 Usage
 -----
+** Online: http://www.arjungmenon.com/nyc-tax-calculator/ **
 
 ### Command Line Interface
 
@@ -24,6 +25,8 @@ There's a [Node.js](http://nodejs.org/)-based command-line interface available:
                             deductions.
       -e EXEMPTIONS, --exemptions EXEMPTIONS
                             Number of personal exemptions. The default is 1.
+
+#### Sample CLI Output
 
 Sample command line output for a person with a gross annual income of $85,000, 
 no additional itemized deducations, and claiming a single personal exemption:
