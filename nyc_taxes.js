@@ -285,19 +285,31 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     total_tax = total_federal_tax + total_state_and_local_income_tax
 
-    income_after_tax = income - total_tax
-
-    monthly_income_after_tax = income_after_tax / 12.0
-
     w('a', "Total Federal, State & Local Taxes", ns(total_tax))
 
     w('x', "<hr/>")
+
+    income_after_tax = income - total_tax
+
+    monthly_income_after_tax = income_after_tax / 12.0
 
     w('a', "Income after Taxation", ns(income_after_tax))
 
     w('a', "Effective Tax Rate", (total_tax*100.0/income).toFixed(2) + "%")
 
     w('a', "Monthly Income", ns(monthly_income_after_tax))
+
+    if (itemized_deductions > 0) {
+        w('x', "<hr/>")
+
+        income_after_taxes_and_deductions = income_after_tax - itemized_deductions
+
+        monthly_income_after_taxes_and_deductions = income_after_taxes_and_deductions / 12.0
+
+        w('a', "Income after Taxes & Deductible Spending", ns(income_after_taxes_and_deductions))
+
+        w('a', "Monthly Income after Taxes & Deductible Spending", ns(monthly_income_after_taxes_and_deductions))
+    }
 }
 
 if( !( typeof exports == 'undefined' ) )
