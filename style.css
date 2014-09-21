@@ -1,0 +1,66 @@
+
+body {
+    font-family: Helvetica, Arial, "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+h1 {
+    text-align: center;
+}
+
+.purpose {
+    text-align: center;
+    font-size: small;
+}
+
+form {
+    display: table;
+    margin: 0 auto;
+}
+
+label {
+        display: inline-block;
+        vertical-align: top;
+        width: 320px;
+}
+
+#calc_submit {
+    width: 100px;
+    height: 2em;
+    display: block;
+    margin: 7px auto 3px auto;
+}
+
+#results {
+    visibility: hidden;
+
+    display: table;
+    margin: 0 auto;
+
+    padding: 10px 25px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 25px;
+    box-shadow: 5px 5px 15px #BBBBBB;
+
+    background-color:#F8F8F8;
+    /* font-family: Geneva, Tahoma; */
+    font-size: small;
+}
+
+.seclist {
+    border-width: 1px;
+    border-style: dashed;
+    border-radius: 15px;
+
+    padding: 0px 20px;
+    margin: 17px;
+}
+
+.right .github-fork-ribbon {
+    background-color: #090;
+}
+
+.left .github-fork-ribbon {
+    background-color: #f80;
+}
