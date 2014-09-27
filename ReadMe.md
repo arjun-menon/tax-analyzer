@@ -38,6 +38,7 @@ Sources
     * Instructions for Form IT-272 (New York State Residents' Claim for College Tuition Credit or Itemized Deduction): http://www.tax.ny.gov/pdf/current_forms/it/it272i.pdf
         * The non-refundable tax credit is limited to 4% of $10,000, i.e. $400.
         * The maximum itemized deduction for college is $10,000.
+    * On NY itemized deductions: http://www.taxslayer.com/support/829/new-york-itemized-deductions
 * A Guide to New York City Income Tax: http://taxes.about.com/od/statetaxes/a/New-York-City-Income-Tax.htm
     * New York City Credits: http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm
     * Instructions for Form NYC-210 (Claim for NYC School Tax Credit): http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf
