@@ -108,7 +108,15 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
             resultsHtml += text
     }
 
-    calc_taxes(income, deductions, exemptions, w)
+    function do_nothing_w(kind, text, amt) {
+    }
+
+    my_tax = calc_taxes(income, deductions, exemptions, w)
+
+    my_tax_extra = calc_taxes(income + 1.0, deductions, exemptions, do_nothing_w)
+    marginal_tax_rate = (my_tax_extra - my_tax) * 100.0
+    w('a', "Marginal Tax Rate", marginal_tax_rate.toFixed(2) + '%')
+
     setResults(resultsHtml)
 }
 

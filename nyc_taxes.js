@@ -310,6 +310,8 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
         w('a', "Monthly Income after Taxes & Deductible Spending", ns(monthly_income_after_taxes_and_deductions))
     }
+
+    return total_tax
 }
 
 if( !( typeof exports == 'undefined' ) )
