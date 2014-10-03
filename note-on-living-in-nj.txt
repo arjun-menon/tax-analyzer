@@ -27,16 +27,20 @@ Additional amount owed to NJ: NY State Tax - NJ State Tax = 3667 - 3290 = $377
 Money saved by moving to NJ = NY City Tax ($2077) - 377 = 1700
     ...which translates to $142 per month
 
-Assuming you pay for an unlmited NYC metrocard, the additional transit cost is:
+If you continue to retain a monthly NYC subway pass (which costs $112), the additional transit cost is:
 
-    (a) Cost of PATH for one month (30 days x 2 trips = 60 trips) = $1.19 x 2 x 30 = $114
+    (a) PATH monthly pass = $80
 
-    (b) Cost of NJ Transit for one month = $116 to $139 ($116 for Secaucus-NYPenn; $139 for Newark-NYPenn)
+    (b) NJ Transit monthly pass = between $116 and $139 ($116 for Secaucus-NYPenn; $139 for Newark-NYPenn)
 
     ...so $114 at the very minimum
 
-Effective Savings per month = $142 - $114 = $28
+Effective Savings per month = $142 (money saved by moving to NJ) - $80 (additional transit costs) = $62
 
-So, you save about $30 per month by living in NJ and commuting to NYC.
+By living in NJ and commuting to NYC:
 
-Not worth it.
+If you keep your NYC subway monthyl pass, you save about $62 per month.  <------------- (1)
+
+If you do not keep your NYC subway monthly pass, you save $172 per month.  <------------- (2)
+
+If you do not keep your NYC subway monthly pass, and if you do not make $18,000 in deductible donations per year ($1,500 per month), you pay $1556 less in NY taxes per year ($130 per month), and save $302 per month.  <------------- (3)
