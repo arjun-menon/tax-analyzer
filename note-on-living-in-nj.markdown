@@ -14,7 +14,7 @@ Source: http://www.arjungmenon.com/nyc-tax-calculator/?income=85000&deductions=2
 
   * NY State Tax = $3667
 
-  * **NY City Tax** = $2077
+  * **NY City Tax = $2077**
 
 You have to continue paying NY state tax regardless of where you reside.
 
@@ -31,7 +31,7 @@ Calculating NJ State Tax (with Python):
     nj_state_tax = ( p(20, 1.40) + p(15, 1.75) + p(5, 3.5) + p(35, 5.53) + p(10, 6.37) )*1000 = 3290
 ```
 
-** NJ State Tax ** = $3290
+**NJ State Tax** = $3290
 
 You can take a credit of taxes paid to NY on your NJ state tax return. However, if your NJ tax is lower than your NY tax, you will have to pay the difference to NJ.
 
