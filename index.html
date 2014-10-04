@@ -32,7 +32,7 @@
 
 <div class="purpose">Calculate total U.S. taxes owed by an unmarried resident of NYC in 2014</div>
 
-<form method="get">
+<form id="input_form" method="get">
 <fieldset>
     <legend>&#10003;</legend>
 
@@ -46,7 +46,6 @@
     $<input id="npe" name="exemptions" type="text" size="20" value="1" /><br />
 
     <input id="calc_submit" type="submit" value="Calculate" />
-
 </fieldset>
 </form>
 
@@ -87,7 +86,10 @@ function setResults(htmlStr) {
     var fragment = createHtmlFragment(htmlStr);
     results.insertBefore(fragment);
 
-    results.style.visibility = 'visible';
+    if(htmlStr != "")
+        results.style.visibility = 'visible';
+    else
+        results.style.visibility = 'hidden';
 }
 
 function calculateAndDisplayTaxes(income, deductions, exemptions) {
@@ -117,42 +119,164 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
     marginal_tax_rate = (my_tax_extra - my_tax) * 100.0
     w('a', "Marginal Tax Rate", marginal_tax_rate.toFixed(2) + '%')
 
-    setResults(resultsHtml)
+    return resultsHtml
 }
 
-var incomeParam = getParameterByName('income');
-var deductionsParam = getParameterByName('deductions');
-var exemptionsParam = getParameterByName('exemptions');
+function calcAndDisplay(income, deductions, exemptions) {
+    if (income > 0 && deductions >= 0 && exemptions >= 0) {
+        setResults( calculateAndDisplayTaxes(income, deductions, exemptions) )
+    }
+    else {
+        err_output = ""
+        if( !(income >= 0) )
+            err_output += "Income: '" + income + "'" + " is not valid. <br />"
+        if( !(deductions >= 0) )
+            err_output += "Deductions: '" + deductions + "'" + " is not valid. <br />"
+        if( !(exemptions >= 0) )
+            err_output += "Exemptions: '" + exemptions + "'" + " is not valid. <br />"
 
-if(deductionsParam == "")
-    deductionsParam = '0'
-
-if(exemptionsParam == "")
-    exemptionsParam = '1'
-
-income = parseInt(incomeParam)
-deductions = parseInt(deductionsParam)
-exemptions = parseInt(exemptionsParam)
-
-document.getElementById('agi').value = incomeParam
-document.getElementById('itd').value = deductionsParam
-document.getElementById('npe').value = exemptionsParam
-
-if(income > 0 && deductions >= 0 && exemptions >= 0) {
-    calculateAndDisplayTaxes(income, deductions, exemptions)
-}
-else {
-    err_output = ""
-    if( (incomeParam != '') && !(income >= 0) || (income < 0) )
-        err_output += "Income: '" + incomeParam + "'" + " is not valid. <br />"
-    if( (deductionsParam != '') && !(deductions >= 0) )
-        err_output += "Deductions: '" + deductionsParam + "'" + " is not valid. <br />"
-    if( (exemptionsParam != '') && !(exemptions >= 0) )
-        err_output += "Exemptions: '" + exemptionsParam + "'" + " is not valid. <br />"
-
-    if (err_output != "")
         setResults(err_output)
+    }
 }
+
+function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam) {
+    var errorMessage = ""
+
+    if( (incomeParam != '') && !(input.income >= 0) )
+        errorMessage += "Income: '" + incomeParam + "'" + " is not valid. <br />"
+    if( (deductionsParam != '') && !(input.deductions >= 0) )
+        errorMessage += "Deductions: '" + deductionsParam + "'" + " is not valid. <br />"
+    if( (exemptionsParam != '') && !(input.exemptions >= 0) )
+        errorMessage += "Exemptions: '" + exemptionsParam + "'" + " is not valid. <br />"    
+
+    return errorMessage
+}
+
+function createInputObject(incomeParam, deductionsParam, exemptionsParam) {
+    var input = {
+        income : parseInt(incomeParam), 
+        deductions : parseInt(deductionsParam), 
+        exemptions : parseInt(exemptionsParam)
+    }
+
+    if(input.income > 0 && input.deductions >= 0 && input.exemptions >= 0)
+        return input
+    else
+        throw constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam)
+}
+
+function setFormValues(incomeVal, deductionsVal, exemptionsVal) {
+    document.getElementById('agi').value = incomeVal
+    document.getElementById('itd').value = deductionsVal
+    document.getElementById('npe').value = exemptionsVal
+}
+
+function getParams() {
+    var incomeParam = getParameterByName('income');
+    var deductionsParam = getParameterByName('deductions');
+    var exemptionsParam = getParameterByName('exemptions');
+
+    if(deductionsParam == "")
+        deductionsParam = '0'
+
+    if(exemptionsParam == "")
+        exemptionsParam = '1'
+
+    setFormValues(incomeParam, deductionsParam, exemptionsParam)
+
+    return createInputObject(incomeParam, deductionsParam, exemptionsParam)
+}
+
+function getFormParams() {
+    return {
+        income : document.getElementById('agi').value, 
+        deductions : document.getElementById('itd').value, 
+        exemptions : document.getElementById('npe').value
+    }
+}
+
+function createInputObjectFromParams(formParams) {
+    return createInputObject(formParams.income, formParams.deductions, formParams.exemptions)
+}
+
+function overrideSubmit(onsubmit_function) {
+    // from: http://stackoverflow.com/a/1395254
+    // and: http://stackoverflow.com/a/3350260
+    function jsSubmit() {
+        onsubmit_function()
+        return false
+    }
+    document.forms['input_form'].onsubmit = jsSubmit;
+}
+
+function doesSupportHistoryAPI() {
+    // from: http://stackoverflow.com/a/9446306
+    return !!(window.history && history.pushState);
+}
+
+function encodeQueryData(data) {
+    // from: http://stackoverflow.com/a/111545
+    var ret = [];
+    for (var d in data)
+        ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+    return ret.join("&");
+}
+
+function dynamicUpdate(formParams) {
+    try {
+        var formParams = getFormParams()
+        var input = createInputObjectFromParams(formParams)
+    }
+    catch(err_output) {
+        history.pushState(formParams, "", "?" + encodeQueryData(formParams));
+
+        setResults(err_output)        
+        input = null
+    }
+
+    if(input) {
+        history.pushState(formParams, "", "?" + encodeQueryData(formParams));
+
+        calcAndDisplay(input.income, input.deductions, input.exemptions)
+    }
+}
+
+function dynamicSubmit() {
+    dynamicUpdate( getFormParams() )
+}
+
+/* --------------------------------------------- */
+
+try {
+    input = getParams()
+}
+catch(err_output) {
+    setResults(err_output)
+    input = null
+}
+
+if ( doesSupportHistoryAPI() ) {
+    //overrideSubmit(dynamicSubmit)
+
+    window.onpopstate = function(event) {
+        var formParams = event.state
+
+        if(!formParams) {
+            formParams = {
+                income : '', 
+                deductions : '0', 
+                exemptions : '1'
+            }
+        }
+
+        setFormValues(formParams.income, formParams.deductions, formParams.exemptions)
+
+        dynamicUpdate(formParams)
+    }
+}
+
+if(input)
+    calcAndDisplay(input.income, input.deductions, input.exemptions)
 
 </script>
 
