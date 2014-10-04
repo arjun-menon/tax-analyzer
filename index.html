@@ -209,7 +209,7 @@ function encodeQueryData(data) {
     return ret.join("&");
 }
 
-function dynamicSubmit(formParams) {
+function dynamicSubmit() {
     var formParams = getFormParams()
 
     try {
@@ -229,7 +229,7 @@ function dynamicSubmit(formParams) {
 function main() {
     try {
         var input = getParams()
-        
+
         calcAndDisplay(input)
     }
     catch(err_output) {
