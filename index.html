@@ -84,7 +84,7 @@ function setResults(htmlStr) {
     results.innerHTML = ""
 
     var fragment = createHtmlFragment(htmlStr);
-    results.insertBefore(fragment);
+    results.appendChild(fragment);
 
     if(htmlStr != "")
         results.style.visibility = 'visible';
