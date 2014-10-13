@@ -18,9 +18,10 @@ form {
 }
 
 label {
-        display: inline-block;
-        vertical-align: top;
-        width: 320px;
+    display: inline-block;
+    vertical-align: top;
+    font-size: small;
+    width: 250px;
 }
 
 #calc_submit {
