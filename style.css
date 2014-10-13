@@ -15,12 +15,12 @@ h1 {
 form {
     display: table;
     margin: 0 auto;
+    font-size: small;
 }
 
 label {
     display: inline-block;
     vertical-align: top;
-    font-size: small;
     width: 250px;
 }
 
