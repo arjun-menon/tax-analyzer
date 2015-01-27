@@ -29,10 +29,10 @@ In additon to the [web-based interface](http://www.arjungmenon.com/nyc-tax-calcu
 
 Credits
 -------
-This tool doesn't cover tax credits. New York State and NYC both offer a variety of credtis, and it can be good to sift through them and see if you qualify for any:
+This tool doesn't cover tax credits. New York State and NYC both offer a variety of credtis, and it might be beneficial to sift through them and see if you qualify for any:
 
-    * [New York State Credits](http://www.tax.ny.gov/pit/credits/income_tax_credits.htm)
-    * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
+ * [New York State Credits](http://www.tax.ny.gov/pit/credits/income_tax_credits.htm)
+ * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
 
 One credit that most unmarried individuals with no dependents almost certainly qualify for is the [NYC school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) (file with [form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf); see [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)).
 
