@@ -66,8 +66,6 @@ new_york_city_tax_schedule_2014_single = [
     [Number.MAX_VALUE , 3.876]
 ]
 
-nyc_school_tax_credit_single = 62.50 // for full-year residents not claimed as a dependent
-
 /*******************.
 | Utility Functions |
 \*******************/
@@ -203,11 +201,6 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     nyc_income_tax = calc_slab_tax(nys_taxable_income, 
         new_york_city_tax_schedule_2014_single, w)
-
-    w('b', "minus the New York City School Tax Credit of " + 
-        ns(nyc_school_tax_credit_single))
-
-    nyc_income_tax -= nyc_school_tax_credit_single
 
     w('l_end', "New York City Income Tax", ns(nyc_income_tax))
 
