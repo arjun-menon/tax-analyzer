@@ -37,7 +37,7 @@ alternative_minimum_tax_high_rate_threshold_2014 = 179500
 | State Taxes |
 \*************/
 
-new_york_state_standard_deduction_single = 7700 // as of 2013
+new_york_state_standard_deduction_single = 7800 // as of 2014
 new_york_state_personal_exemption_dependents = 1000
 new_york_state_federal_itemized_deductions_agi_limit = 100000
 
