@@ -141,9 +141,9 @@ function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsPa
 
 function createInputObject(incomeParam, deductionsParam, exemptionsParam) {
     var input = {
-        income : parseInt(incomeParam), 
-        deductions : parseInt(deductionsParam), 
-        exemptions : parseInt(exemptionsParam)
+        income : parseFloat(incomeParam), 
+        deductions : parseFloat(deductionsParam), 
+        exemptions : parseFloat(exemptionsParam)
     }
 
     if(input.income > 0 && input.deductions >= 0 && input.exemptions >= 0)
