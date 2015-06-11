@@ -6,10 +6,10 @@ This tool gives you a detailed slab-by-slab breakdown of the taxes owed by taxes
 
 How to Use
 ----------
-### Online: http://www.arjungmenon.com/nyc-tax-calculator/
+### Online: https://arjungmenon.com/taxes-in-nyc/
 
 ### Command Line
-In additon to the [web-based interface](http://www.arjungmenon.com/nyc-tax-calculator/), there's a [Node.js](http://nodejs.org/)-based command-line interface available:
+In additon to the [web-based interface](https://arjungmenon.com/taxes-in-nyc/), there's a [Node.js](http://nodejs.org/)-based command-line interface available:
 
     usage: node calc_nyc_taxes.js [-h] income [-d DEDUCTIONS] [-e EXEMPTIONS]
 
