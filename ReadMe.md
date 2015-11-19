@@ -27,7 +27,7 @@ In additon to the [web-based interface](https://arjungmenon.com/taxes-in-nyc/), 
       -e EXEMPTIONS, --exemptions EXEMPTIONS
                             Number of personal exemptions. The default is 1.
 
-Credits
+Caveats
 -------
 This tool doesn't cover tax credits. New York State and NYC both offer a variety of credtis, and it might be beneficial to sift through them and see if you qualify for any:
 
@@ -37,6 +37,8 @@ This tool doesn't cover tax credits. New York State and NYC both offer a variety
 One credit that most unmarried individuals with no dependents almost certainly qualify for is the [NYC school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) (file with [form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf); see [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)).
 
 If you are a low-income individual you might qualify for a wide variety of credits such as the [NYS Household Credit](http://www.tax.ny.gov/pit/credits/household_credit.htm), the [NYS earned income credit](http://www.tax.ny.gov/pit/credits/earned_income_credit.htm), the federal [EITC](http://www.irs.gov/Individuals/EITC,-Earned-Income-Tax-Credit,-Questions-and-Answers), the federal [Saver's Credit](http://www.irs.gov/Retirement-Plans/Plan-Participant,-Employee/Retirement-Topics-Retirement-Savings-Contributions-Credit-%28Saver%E2%80%99s-Credit%29), and a bevvy of other credits.
+
+This tool doesn't take into account the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax) (AMT). If you take a large number of deductions, you may be subject to higher than ordinary federal income tax.
 
 Sources
 -------
@@ -58,5 +60,4 @@ Sources
 
 Todos
 -----
-* Fix the AMT exemption phase-out calculation.
 * Fix the personal exemptions phase-out calculation.

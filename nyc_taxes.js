@@ -27,12 +27,6 @@ federal_income_tax_schedule_2014_single = [
     [Number.MAX_VALUE , 39.6]
 ]
 
-alternative_minimum_tax_low_rate = 26
-alternative_minimum_tax_high_rate = 28
-alternative_minimum_tax_exemption_2014 = 52800
-alternative_minimum_tax_exemption_phaseout_threshold_2014 = 115400
-alternative_minimum_tax_high_rate_threshold_2014 = 179500
-
 /*************.
 | State Taxes |
 \*************/
@@ -114,34 +108,6 @@ function calc_slab_tax(income, slab_schedule, w) {
     }
 
     return result
-}
-
-/****************.
-| AMT Calculator |
-\****************/
-
-function calc_alternative_minimum_tax(full_income, w) {
-    exemption = 0.0
-
-    if (full_income < alternative_minimum_tax_exemption_phaseout_threshold_2014)
-        exemption = alternative_minimum_tax_exemption_2014
-
-    taxable_income = full_income - exemption
-
-    if (taxable_income < 0)
-        taxable_income = 0
-
-    if (full_income <= alternative_minimum_tax_high_rate_threshold_2014)
-        rate = alternative_minimum_tax_low_rate
-    else
-        rate = alternative_minimum_tax_high_rate
-
-    amt = p(taxable_income, rate)
-
-    w('a', "Minimum Federal Income Tax", 
-        ns(amt) + " (at " + rate + "% on " + ns(taxable_income) + ")")
-
-    return amt
 }
 
 /********************.
@@ -241,17 +207,9 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     w('l_start', "Federal Income Tax")
 
-    federal_income_tax = calc_slab_tax(federal_taxable_income, 
-        federal_income_tax_schedule_2014_single, w)
+    federal_income_tax = calc_slab_tax(federal_taxable_income, federal_income_tax_schedule_2014_single, w)
 
     w('l_end', "Federal Income Tax", ns(federal_income_tax))
-
-    alternative_minimum_tax = calc_alternative_minimum_tax(income, w)
-
-    if (alternative_minimum_tax > federal_income_tax)
-        w('t', "Your alternative minimum tax (AMT) exceeds your regular federal income tax.")
-
-    actual_federal_income_tax = Math.max(federal_income_tax, alternative_minimum_tax)
 
     w('l_start', "Federal Insurance Contributions Act (FICA) Tax")
 
@@ -270,7 +228,7 @@ function calc_taxes(income, itemized_deductions, exemptions, w) {
 
     w('l_end', "Federal Insurance Contributions Act (FICA) Tax", ns(fica_tax))
 
-    total_federal_tax = actual_federal_income_tax + fica_tax
+    total_federal_tax = federal_income_tax + fica_tax
 
     w('a', "Total Federal Taxes", ns(total_federal_tax))
 
