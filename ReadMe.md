@@ -29,16 +29,22 @@ In additon to the [web-based interface](https://arjun-menon.github.io/taxes-in-n
 
 Caveats
 -------
-This tool doesn't cover tax credits. New York State and NYC both offer a variety of credtis, and it might be beneficial to sift through them and see if you qualify for any:
+
+#### Alternative Minimum Tax
+
+This tool does not consider the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax) (AMT). If you take a large number of deductions, you may be subject to a higher than normal federal income tax.
+
+#### Personal Exemptions Phase-out
+
+This tool does not factor in the [personal exemptions phase-out](https://en.wikipedia.org/wiki/Personal_exemption_(United_States)#Phase-out). Personal exemptions are reduced with higher incomes, and eventually phased out.
+
+#### Tax Credits
+This tool doesn't cover tax credits. New York State and New York City both offer a variety of credtis, see:
 
  * [New York State Credits](http://www.tax.ny.gov/pit/credits/income_tax_credits.htm)
  * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
 
-One credit that most unmarried individuals with no dependents almost certainly qualify for is the [NYC school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) (file with [form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf); see [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)).
-
-If you are a low-income individual you might qualify for a wide variety of credits such as the [NYS Household Credit](http://www.tax.ny.gov/pit/credits/household_credit.htm), the [NYS earned income credit](http://www.tax.ny.gov/pit/credits/earned_income_credit.htm), the federal [EITC](http://www.irs.gov/Individuals/EITC,-Earned-Income-Tax-Credit,-Questions-and-Answers), the federal [Saver's Credit](http://www.irs.gov/Retirement-Plans/Plan-Participant,-Employee/Retirement-Topics-Retirement-Savings-Contributions-Credit-%28Saver%E2%80%99s-Credit%29), and a bevvy of other credits.
-
-This tool doesn't take into account the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax) (AMT). If you take a large number of deductions, you may be subject to higher than ordinary federal income tax.
+For example, most single NYC residents qulify for the [school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) ([form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf), [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)). Lower incomes make one eligible for a wide variety of credits such as the [NYS Household Credit](http://www.tax.ny.gov/pit/credits/household_credit.htm), the [NYS earned income credit](http://www.tax.ny.gov/pit/credits/earned_income_credit.htm), the federal [EITC](http://www.irs.gov/Individuals/EITC,-Earned-Income-Tax-Credit,-Questions-and-Answers), the federal [Saver's Credit](http://www.irs.gov/Retirement-Plans/Plan-Participant,-Employee/Retirement-Topics-Retirement-Savings-Contributions-Credit-%28Saver%E2%80%99s-Credit%29), etc.
 
 Sources
 -------
@@ -55,9 +61,3 @@ Sources
 * A Guide to New York City Income Tax: http://taxes.about.com/od/statetaxes/a/New-York-City-Income-Tax.htm
     * New York City Credits: http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm
     * Instructions for Form NYC-210 (Claim for NYC School Tax Credit): http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf
-* Alternative Minimum Tax (AMT): https://en.wikipedia.org/wiki/Alternative_minimum_tax
-    * The AMT Exemption: http://www.amtadvisor.com/AMT_Exemption.html
-
-Todos
------
-* Fix the personal exemptions phase-out calculation.
