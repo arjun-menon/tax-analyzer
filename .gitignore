@@ -36,3 +36,8 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# JetBrains WebStorm
+.idea/workspace.xml
+.idea/tasks.xml
+*.iws
