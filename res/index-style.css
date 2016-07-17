@@ -58,10 +58,10 @@ label {
     margin: 17px;
 }
 
-.right .github-fork-ribbon {
+.github-fork-ribbon.right-top:before {
     background-color: #090;
 }
 
-.left .github-fork-ribbon {
+.github-fork-ribbon.left-top:before {
     background-color: #f80;
 }
