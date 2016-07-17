@@ -29,17 +29,22 @@ In additon to the [web-based interface](https://arjun-menon.github.io/taxes-in-n
 
 Caveats
 -------
+The purpose of this tool is to estimate tax liabilities and verify the numbers produced by tools like TaxACT and TurboTax. As such, it does not cover less-common features of tax law, including:
 
 #### Alternative Minimum Tax
 
-This tool does not consider the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax) (AMT). If you take a large number of deductions, you may be subject to a higher than normal federal income tax.
+If you have a high income and take a large number of tax deductions, you may be subject to the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax).
 
 #### Personal Exemptions Phase-out
 
-This tool does not factor in the [personal exemptions phase-out](https://en.wikipedia.org/wiki/Personal_exemption_(United_States)#Phase-out). Personal exemptions are reduced with higher incomes, and eventually phased out.
+Personal exemptions are reduced with higher incomes, and eventually [phased out](https://en.wikipedia.org/wiki/Personal_exemption_(United_States)#Phase-out).
+
+#### New York State Itemized Deductions Restrictions
+
+New York State [restricts itemized deductions](http://barclaydamon.com/alerts/New-Restrictions-on-Itemized-Deductions-for-New-York-Income-Tax-Purposes-05-28-2009) for high-income earners.
 
 #### Tax Credits
-This tool doesn't cover tax credits. New York State and New York City both offer a variety of credtis, see:
+New York State and New York City both offer a variety of credtis, see:
 
  * [New York State Credits](http://www.tax.ny.gov/pit/credits/income_tax_credits.htm)
  * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
