@@ -2,14 +2,14 @@ Calculate Taxes in NYC
 ======================
 This tool gives you a detailed slab-by-slab breakdown of the taxes owed by taxes owed by an unmarried individual with no dependants living and working in New York City.
 
-![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/taxes-in-nyc/master/res/snapshot-web.png)
+![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/nyc-taxes/master/res/snapshot-web.png)
 
 How to Use
 ----------
-### Online: https://arjun-menon.github.io/taxes-in-nyc/
+### Online: https://arjun-menon.github.io/nyc-taxes/
 
 ### Command Line
-In additon to the [web-based interface](https://arjun-menon.github.io/taxes-in-nyc/), there's a [Node.js](http://nodejs.org/)-based command-line interface available:
+In additon to the [web-based interface](https://arjun-menon.github.io/nyc-taxes/), there's a [Node.js](http://nodejs.org/)-based command-line interface available:
 
     usage: node calc_nyc_taxes.js [-h] income [-d DEDUCTIONS] [-e EXEMPTIONS]
 
