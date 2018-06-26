@@ -1,5 +1,21 @@
 
 #
+# Default contents of bsb-generated gitignore for ReasonML:
+#
+
+.DS_Store
+.merlin
+.bsb.lock
+npm-debug.log
+/lib/bs/
+/node_modules/
+
+#
+# Temporary workaround symlink for IDEA:
+#
+bsb
+
+#
 # Copied from: https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore
 #
 
