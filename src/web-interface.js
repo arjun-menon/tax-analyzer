@@ -2,7 +2,9 @@
 import * as TaxRates from './TaxRates.bs.js';
 import * as TaxCalc from './TaxCalc.bs.js';
 
-const default_income = '50,000';
+const taxRates = TaxRates.getTaxRates();
+
+const default_income = '125,000';
 
 function getParameterByName(name) {
     // from: http://stackoverflow.com/a/901144/908430
@@ -57,8 +59,8 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
 
     function do_nothing_w(kind, text, amt) {}
 
-    const my_tax = TaxCalc.calc_taxes(TaxRates.getTaxRates(), income, deductions, exemptions, w),
-        my_tax_plus = TaxCalc.calc_taxes(TaxRates.getTaxRates(), income + 1.0, deductions, exemptions, do_nothing_w);
+    const my_tax = TaxCalc.calc_taxes(taxRates, income, deductions, exemptions, w),
+        my_tax_plus = TaxCalc.calc_taxes(taxRates, income + 1.0, deductions, exemptions, do_nothing_w);
 
     const marginal_tax_rate = (my_tax_plus - my_tax) * 100.0;
     w('a', 'Marginal Tax Rate', marginal_tax_rate.toFixed(2) + '%');
@@ -221,4 +223,6 @@ function main() {
     }
 }
 
-main();
+if (typeof window !== 'undefined') {
+    main();
+}

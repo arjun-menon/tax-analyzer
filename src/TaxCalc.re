@@ -44,7 +44,7 @@ let calc_slab_tax = (income: float, schedule: TaxRates.incomeTaxRateSchedule, w:
           ++ " = "
           ++ ns(tax_amt)
           ++ " (at "
-          ++ string_of_float(rate)
+          ++ twoPointFloatRepr(rate)
           ++ "% on "
           ++ ns(slab_amt)
           ++ ")",
@@ -175,7 +175,7 @@ let calc_taxes =
     "Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax: "
     ++ ns(social_security_tax)
     ++ " (at "
-    ++ string_of_float(taxRates.federal.fica.socialSecurityTaxRate)
+    ++ twoPointFloatRepr(taxRates.federal.fica.socialSecurityTaxRate)
     ++ "% flat on "
     ++ ns(social_security_taxable_income)
     ++ ")",
@@ -189,7 +189,7 @@ let calc_taxes =
     "Medicare Hospital Insurance (HI) Tax: "
     ++ ns(medicare_tax)
     ++ " (at "
-    ++ string_of_float(taxRates.federal.fica.medicareTaxRate)
+    ++ twoPointFloatRepr(taxRates.federal.fica.medicareTaxRate)
     ++ "% flat on "
     ++ ns(income)
     ++ ")",
