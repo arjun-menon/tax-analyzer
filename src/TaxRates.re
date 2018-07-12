@@ -82,6 +82,94 @@ let getTaxRatesForYear2014Single = () : taxRates => {
   },
 };
 
+let getTaxRatesForYear2015Single = () : taxRates => {
+  federal: {
+    fica: {
+      medicareTaxRate: 1.45,
+      socialSecurityTaxRate: 6.2,
+      socialSecurityWageBase: 117000.0,
+    },
+    income: {
+      rateSchedule: [
+        (9225.0, 10.0),
+        (37450.0, 15.0),
+        (90750.0, 25.0),
+        (189300.0, 28.0),
+        (411500.0, 33.0),
+        (413200.0, 35.0),
+        (Pervasives.max_float, 39.6),
+      ],
+      personalExemption: 4000.0,
+      standardDeduction: 6300.0,
+    },
+  },
+  nyc: {
+    stateRateSchedule: [
+      (8400.0, 4.00),
+      (11600.0, 4.50),
+      (13750.0, 5.25),
+      (21150.0, 5.90),
+      (79600.0, 6.45),
+      (212500.0, 6.65),
+      (1062650.0, 6.85),
+      (Pervasives.max_float, 8.82),
+    ],
+    cityRateSchedule: [
+      (12000.0, 2.907),
+      (25000.0, 3.534),
+      (50000.0, 3.591),
+      (500000.0, 3.648),
+      (Pervasives.max_float, 3.876),
+    ],
+    dependentPersonalExemption: 1000.0,
+    standardDeduction: 7900.0,
+  },
+};
+
+let getTaxRatesForYear2016Single = () : taxRates => {
+  federal: {
+    fica: {
+      medicareTaxRate: 1.45,
+      socialSecurityTaxRate: 6.2,
+      socialSecurityWageBase: 117000.0,
+    },
+    income: {
+      rateSchedule: [
+        (9275.0, 10.0),
+        (37650.0, 15.0),
+        (91150.0, 25.0),
+        (190150.0, 28.0),
+        (413350.0, 33.0),
+        (415050.0, 35.0),
+        (Pervasives.max_float, 39.6),
+      ],
+      personalExemption: 4050.0,
+      standardDeduction: 6300.0,
+    },
+  },
+  nyc: {
+    stateRateSchedule: [
+      (8450.0, 4.00),
+      (11650.0, 4.50),
+      (13850.0, 5.25),
+      (21300.0, 5.90),
+      (80150.0, 6.45),
+      (214000.0, 6.65),
+      (1070350.0, 6.85),
+      (Pervasives.max_float, 8.82),
+    ],
+    cityRateSchedule: [
+      (12000.0, 2.907),
+      (25000.0, 3.534),
+      (50000.0, 3.591),
+      (500000.0, 3.648),
+      (Pervasives.max_float, 3.876),
+    ],
+    dependentPersonalExemption: 1000.0,
+    standardDeduction: 7950.0,
+  },
+};
+
 let getTaxRatesForYear2017Single = () : taxRates => {
   federal: {
     fica: {
