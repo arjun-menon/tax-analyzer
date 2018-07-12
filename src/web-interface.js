@@ -2,7 +2,7 @@
 import * as TaxRates from './TaxRates.bs.js';
 import * as TaxCalc from './TaxCalc.bs.js';
 
-const default_income = '125,000';
+const default_income = '100,000';
 
 function getParameterByName(name) {
     // from: http://stackoverflow.com/a/901144/908430

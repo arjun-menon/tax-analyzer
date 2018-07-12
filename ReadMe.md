@@ -1,6 +1,6 @@
 Calculate Taxes in NYC
 ======================
-This tool gives you a detailed slab-by-slab breakdown of the taxes owed by taxes owed by an unmarried individual with no dependants living and working in New York City.
+This tool gives you a detailed slab-by-slab breakdown of the taxes owed by an unmarried individual living in New York City.
 
 ![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/nyc-taxes/master/res/snapshot-web.png)
 
@@ -8,9 +8,9 @@ How to Use
 ----------
 ### Online: https://arjun-menon.github.io/nyc-taxes/
 
-Building
---------
-This uses ReasonReact. To build:
+### Building
+
+This project is partially written [ReasonML](https://reasonml.github.io/). To build:
 ```sh
 yarn install
 yarn start
@@ -18,42 +18,28 @@ yarn start
 yarn run webpack
 ```
 
-After you see the webpack compilation succeed (the `npm run webpack` step), open up `src/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.
-
-To build a production-optimized version:
+The last step is a long running command, that will monitor the filesystem for changes, and automatically rebuild. To generate a production-optimized JS artifact, run:
 ```sh
 yarn run build
 yarn run webpack:production
 ```
 
-This will replace the development artifact `build/Index.js` for an optimized version.
+### Caveats
 
-To enable dead code elimination, change `bsconfig.json`'s `package-specs` `module` from `"commonjs"` to `"es6"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.
+The purpose of this tool is simply to estimate your taxes owned. For very accurate numbers, use a tool like like TaxACT and TurboTax. This tool does not cover things like:
 
+ * Alternative Minimum Tax: if you have a high income and take a large number of tax deductions, you may be subject to the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax).
 
-Caveats
--------
-The purpose of this tool is to estimate tax liabilities and verify the numbers produced by tools like TaxACT and TurboTax. As such, it does not cover less-common features of tax law, including:
+ * Personal Exemptions Phase-out: personal exemptions are reduced with higher incomes, and eventually [phased out](https://en.wikipedia.org/wiki/Personal_exemption_(United_States)#Phase-out). This is no longer relevant after 2018, since the tax reform passed in December 2017 eliminated federal personal exemptions.
 
-#### Alternative Minimum Tax
+ * New York State [restrictions on itemized deductions](http://barclaydamon.com/alerts/New-Restrictions-on-Itemized-Deductions-for-New-York-Income-Tax-Purposes-05-28-2009) for high-income earners.
 
-If you have a high income and take a large number of tax deductions, you may be subject to the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax).
-
-#### Personal Exemptions Phase-out
-
-Personal exemptions are reduced with higher incomes, and eventually [phased out](https://en.wikipedia.org/wiki/Personal_exemption_(United_States)#Phase-out).
-
-#### New York State Itemized Deductions Restrictions
-
-New York State [restricts itemized deductions](http://barclaydamon.com/alerts/New-Restrictions-on-Itemized-Deductions-for-New-York-Income-Tax-Purposes-05-28-2009) for high-income earners.
-
-#### Tax Credits
-New York State and New York City both offer a variety of credtis, see:
-
- * [New York State Credits](http://www.tax.ny.gov/pit/credits/income_tax_credits.htm)
- * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
-
-For example, most single NYC residents qulify for the [school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) ([form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf), [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)). Lower incomes make one eligible for a wide variety of credits such as the [NYS Household Credit](http://www.tax.ny.gov/pit/credits/household_credit.htm), the [NYS earned income credit](http://www.tax.ny.gov/pit/credits/earned_income_credit.htm), the federal [EITC](http://www.irs.gov/Individuals/EITC,-Earned-Income-Tax-Credit,-Questions-and-Answers), the federal [Saver's Credit](http://www.irs.gov/Retirement-Plans/Plan-Participant,-Employee/Retirement-Topics-Retirement-Savings-Contributions-Credit-%28Saver%E2%80%99s-Credit%29), etc.
+ * Tax Credits, federal and state.
+    * New York State and New York City both offer a variety of credtis, see:
+        * [New York State Credits](http://www.tax.ny.gov/pit/credits/income_tax_credits.htm)
+        * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
+      
+      For example, most single NYC residents qulify for the [school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) ([form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf), [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)). Lower incomes make one eligible for a wide variety of credits such as the [NYS Household Credit](http://www.tax.ny.gov/pit/credits/household_credit.htm), the [NYS earned income credit](http://www.tax.ny.gov/pit/credits/earned_income_credit.htm), the federal [EITC](http://www.irs.gov/Individuals/EITC,-Earned-Income-Tax-Credit,-Questions-and-Answers), the federal [Saver's Credit](http://www.irs.gov/Retirement-Plans/Plan-Participant,-Employee/Retirement-Topics-Retirement-Savings-Contributions-Credit-%28Saver%E2%80%99s-Credit%29), etc.
 
 Sources
 -------
