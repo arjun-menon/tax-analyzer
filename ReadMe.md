@@ -8,41 +8,22 @@ How to Use
 ----------
 ### Online: https://arjun-menon.github.io/nyc-taxes/
 
-### Command Line
-In additon to the [web-based interface](https://arjun-menon.github.io/nyc-taxes/), there's a [Node.js](http://nodejs.org/)-based command-line interface available:
-
-    usage: node calc_nyc_taxes.js [-h] income [-d DEDUCTIONS] [-e EXEMPTIONS]
-
-    Calculates total U.S. taxes owed by a single (unmarried) resident of NYC.
-
-    positional arguments:
-      income                Annual Gross Income
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      -d DEDUCTIONS, --deductions DEDUCTIONS
-                            Itemized deduction other than the standard deduction,
-                            personal exemptions, and state/local/foreign tax
-                            deductions.
-      -e EXEMPTIONS, --exemptions EXEMPTIONS
-                            Number of personal exemptions. The default is 1.
-
 Building
 --------
 This uses ReasonReact. To build:
 ```sh
-npm install
-npm start
+yarn install
+yarn start
 # in another tab
-npm run webpack
+yarn run webpack
 ```
 
 After you see the webpack compilation succeed (the `npm run webpack` step), open up `src/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.
 
 To build a production-optimized version:
 ```sh
-npm run build
-npm run webpack:production
+yarn run build
+yarn run webpack:production
 ```
 
 This will replace the development artifact `build/Index.js` for an optimized version.
