@@ -29,7 +29,7 @@ type nycTaxRates = {
   standardDeduction: float,
 };
 
-type combinedTaxes = {
+type taxRates = {
   federal: federalTaxRates,
   nyc: nycTaxRates,
 };
@@ -38,10 +38,10 @@ type combinedTaxes = {
    Rates Data
  **************/
 
-type taxStatus = {single: combinedTaxes};
-type taxRates = {year2014: taxStatus};
+type taxStatus = {single: taxRates};
+type taxRatesData = {year2014: taxStatus};
 
-let getTaxRates = () : taxRates => {
+let getTaxRates = () : taxRatesData => {
   year2014: {
     single: {
       federal: {
