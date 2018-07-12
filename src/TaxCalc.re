@@ -136,11 +136,15 @@ let calc_federal_taxes =
     : float => {
   w("l_start", "Federal Tax Deductions", "");
 
-  let federal_itemized_deductions = itemized_deductions +. total_state_and_local_income_tax;
+  let salt_deduction =
+    taxRates.federal.income.personalExemption === 0.0 ?
+      Pervasives.min(total_state_and_local_income_tax, 10000.0) : total_state_and_local_income_tax;
+
+  let federal_itemized_deductions = itemized_deductions +. salt_deduction;
 
   let federal_basic_deduction =
     if (federal_itemized_deductions > taxRates.federal.income.standardDeduction) {
-      w("b", "State and Local Taxes Deduction = " ++ ns(total_state_and_local_income_tax), "");
+      w("b", "State and Local Taxes Deduction = " ++ ns(salt_deduction), "");
       w("b", "Additional Itemized Deductions = " ++ ns(itemized_deductions), "");
       federal_itemized_deductions;
     } else {
