@@ -87,7 +87,7 @@ let getTaxRatesForYear2015Single = () : taxRates => {
     fica: {
       medicareTaxRate: 1.45,
       socialSecurityTaxRate: 6.2,
-      socialSecurityWageBase: 117000.0,
+      socialSecurityWageBase: 118500.0,
     },
     income: {
       rateSchedule: [
@@ -131,7 +131,7 @@ let getTaxRatesForYear2016Single = () : taxRates => {
     fica: {
       medicareTaxRate: 1.45,
       socialSecurityTaxRate: 6.2,
-      socialSecurityWageBase: 117000.0,
+      socialSecurityWageBase: 118500.0,
     },
     income: {
       rateSchedule: [
@@ -175,7 +175,7 @@ let getTaxRatesForYear2017Single = () : taxRates => {
     fica: {
       medicareTaxRate: 1.45,
       socialSecurityTaxRate: 6.2,
-      socialSecurityWageBase: 117000.0,
+      socialSecurityWageBase: 127200.0,
     },
     income: {
       rateSchedule: [
@@ -208,4 +208,42 @@ let getTaxRatesForYear2017Single = () : taxRates => {
   },
 };
 
-let getTaxRates = () : taxRates => getTaxRatesForYear2017Single();
+let getTaxRatesForYear2018Single = () : taxRates => {
+  federal: {
+    fica: {
+      medicareTaxRate: 1.45,
+      socialSecurityTaxRate: 6.2,
+      socialSecurityWageBase: 128400.0,
+    },
+    income: {
+      rateSchedule: [
+        (9525.0, 10.0),
+        (38700.0, 12.0),
+        (82500.0, 22.0),
+        (157500.0, 24.0),
+        (200000.0, 32.0),
+        (500000.0, 35.0),
+        (Pervasives.max_float, 37.0),
+      ],
+      personalExemption: 0.0,
+      standardDeduction: 12000.0,
+    },
+  },
+  nyc: {
+    stateRateSchedule: [
+      (8500.0, 4.00),
+      (11700.0, 4.50),
+      (13900.0, 5.25),
+      (21400.0, 5.90),
+      (80650.0, 6.45),
+      (215400.0, 6.65),
+      (1077550.0, 6.85),
+      (Pervasives.max_float, 8.82),
+    ],
+    cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Pervasives.max_float, 3.876)],
+    dependentPersonalExemption: 1000.0,
+    standardDeduction: 8000.0,
+  },
+};
+
+let getTaxRates = () : taxRates => getTaxRatesForYear2018Single();
