@@ -1,14 +1,14 @@
 const path = require('path');
-const outputDir = path.join(__dirname, "build/");
+const outputDir = path.join(__dirname);
 
 const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  entry: './src/Index.bs.js',
+  entry: './src/web-interface.js',
   mode: isProd ? 'production' : 'development',
   output: {
     path: outputDir,
     publicPath: outputDir,
-    filename: 'Index.js',
+    filename: 'index.js',
   },
 };
