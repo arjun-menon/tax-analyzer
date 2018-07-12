@@ -249,17 +249,5 @@ let calc_taxes =
 
   w("a", "Monthly Income", ns(monthly_income_after_tax));
 
-  if (itemized_deductions > 0.0) {
-    w("x", "<hr/>", "");
-
-    let income_after_taxes_and_deductions: float = income_after_tax -. itemized_deductions;
-
-    let monthly_income_after_taxes_and_deductions: float = income_after_taxes_and_deductions /. 12.0;
-
-    w("a", "Income after Taxes & Deductible Spending", ns(income_after_taxes_and_deductions));
-
-    w("a", "Monthly Income after Taxes & Deductible Spending", ns(monthly_income_after_taxes_and_deductions));
-  };
-
   total_tax;
 };
