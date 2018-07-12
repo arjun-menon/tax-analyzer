@@ -246,4 +246,12 @@ let getTaxRatesForYear2018Single = () : taxRates => {
   },
 };
 
-let getTaxRates = () : taxRates => getTaxRatesForYear2018Single();
+let getTaxRates = (year: int) : taxRates =>
+  switch (year) {
+  | 2014 => getTaxRatesForYear2014Single()
+  | 2015 => getTaxRatesForYear2015Single()
+  | 2016 => getTaxRatesForYear2016Single()
+  | 2017 => getTaxRatesForYear2017Single()
+  | 2018 => getTaxRatesForYear2018Single()
+  | _ => getTaxRatesForYear2018Single()
+  };

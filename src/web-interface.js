@@ -2,8 +2,6 @@
 import * as TaxRates from './TaxRates.bs.js';
 import * as TaxCalc from './TaxCalc.bs.js';
 
-const taxRates = TaxRates.getTaxRates();
-
 const default_income = '125,000';
 
 function getParameterByName(name) {
@@ -39,7 +37,7 @@ function setResults(htmlStr) {
         results.style.visibility = 'hidden';
 }
 
-function calculateAndDisplayTaxes(income, deductions, exemptions) {
+function calculateAndDisplayTaxes(income, deductions, exemptions, taxYear) {
     let resultsHtml = '';
 
     function w(kind, text, amt) {
@@ -59,6 +57,8 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
 
     function do_nothing_w(kind, text, amt) {}
 
+    const taxRates = TaxRates.getTaxRates(parseInt(taxYear));
+
     const my_tax = TaxCalc.calc_taxes(taxRates, income, deductions, exemptions, w),
         my_tax_plus = TaxCalc.calc_taxes(taxRates, income + 1.0, deductions, exemptions, do_nothing_w);
 
@@ -69,7 +69,7 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
 }
 
 function calcAndDisplay(input) {
-    setResults(calculateAndDisplayTaxes(input.income, input.deductions, input.exemptions));
+    setResults(calculateAndDisplayTaxes(input.income, input.deductions, input.exemptions, input.taxYear));
 }
 
 function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam) {
@@ -101,11 +101,12 @@ function removeCommas(text) {
     return text.replace(/,/g, '');
 }
 
-function createInputObject(incomeParam, deductionsParam, exemptionsParam) {
+function createInputObject(incomeParam, deductionsParam, exemptionsParam, taxYear) {
     const input = {
         income: parseFloat(removeCommas(incomeParam)),
         deductions: parseFloat(removeCommas(deductionsParam)),
-        exemptions: parseFloat(removeCommas(exemptionsParam))
+        exemptions: parseFloat(removeCommas(exemptionsParam)),
+        taxYear: taxYear
     };
 
     if (isValidNumber(incomeParam) && input.income > 0 &&
@@ -116,16 +117,18 @@ function createInputObject(incomeParam, deductionsParam, exemptionsParam) {
         throw constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam);
 }
 
-function setFormValues(incomeVal, deductionsVal, exemptionsVal) {
+function setFormValues(incomeVal, deductionsVal, exemptionsVal, taxYearVal) {
     document.getElementById('agi').value = incomeVal;
     document.getElementById('itd').value = deductionsVal;
     document.getElementById('npe').value = exemptionsVal;
+    document.getElementById('taxYearSelector').value = taxYearVal;
 }
 
 function getParams() {
     let incomeParam = getParameterByName('income');
     let deductionsParam = getParameterByName('deductions');
     let exemptionsParam = getParameterByName('exemptions');
+    let taxYearParam = getParameterByName('taxYear');
 
     // if there are no parameters, use default income
     if (incomeParam === '' && deductionsParam === '' && exemptionsParam === '')
@@ -137,21 +140,25 @@ function getParams() {
     if (exemptionsParam == '')
         exemptionsParam = '1';
 
-    setFormValues(incomeParam, deductionsParam, exemptionsParam);
+    if (!(parseInt(taxYearParam) >= 2014 && parseInt(taxYearParam) <= 2018))
+        taxYearParam = '2018';
 
-    return createInputObject(incomeParam, deductionsParam, exemptionsParam);
+    setFormValues(incomeParam, deductionsParam, exemptionsParam, taxYearParam);
+
+    return createInputObject(incomeParam, deductionsParam, exemptionsParam, taxYearParam);
 }
 
 function getFormParams() {
     return {
         income: document.getElementById('agi').value,
         deductions: document.getElementById('itd').value,
-        exemptions: document.getElementById('npe').value
+        exemptions: document.getElementById('npe').value,
+        taxYear: document.getElementById('taxYearSelector').value
     };
 }
 
 function createInputObjectFromParams(formParams) {
-    return createInputObject(formParams.income, formParams.deductions, formParams.exemptions);
+    return createInputObject(formParams.income, formParams.deductions, formParams.exemptions, formParams.taxYear);
 }
 
 function overrideSubmit(onsubmit_function) {
@@ -221,6 +228,8 @@ function main() {
             }
         };
     }
+
+    document.getElementById('taxYearSelector').onchange = dynamicSubmit;
 }
 
 if (typeof window !== 'undefined') {
