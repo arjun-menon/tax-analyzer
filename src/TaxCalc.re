@@ -60,13 +60,11 @@ let calc_slab_tax = (income: float, schedule: TaxRates.incomeTaxRateSchedule, w:
   );
 };
 
-let calc_taxes =
-    (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int, w: writeDetail)
+/* ------------- New York State & City Taxes ------------- */
+
+let calc_ny_taxes =
+    (~taxRates: TaxRates.taxRates, ~income: float, ~itemized_deductions: float, ~exemptions: int, ~w: writeDetail)
     : float => {
-  w("a", "Adjusted Gross Income", "");
-
-  /* ------------- New York State & City ------------- */
-
   w("l_start", "New York State Tax Deductions", "");
 
   let nys_basic_deduction: float =
@@ -121,8 +119,21 @@ let calc_taxes =
 
   w("a", "Total New York State & City Taxes", ns(total_state_and_local_income_tax));
 
-  /* ------------- Federal ------------- */
+  total_state_and_local_income_tax;
+};
 
+/* ------------- Federal Taxes ------------- */
+
+let calc_federal_taxes =
+    (
+      ~taxRates: TaxRates.taxRates,
+      ~income: float,
+      ~total_state_and_local_income_tax: float,
+      ~itemized_deductions: float,
+      ~exemptions: int,
+      ~w: writeDetail,
+    )
+    : float => {
   w("l_start", "Federal Tax Deductions", "");
 
   let federal_itemized_deductions = itemized_deductions +. total_state_and_local_income_tax;
@@ -204,7 +215,19 @@ let calc_taxes =
 
   w("a", "Total Federal Taxes", ns(total_federal_tax));
 
-  /* ----------------------- Total ----------------------- */
+  total_federal_tax;
+};
+
+/* ----------------------- Total Tally ----------------------- */
+
+let calc_taxes =
+    (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int, w: writeDetail)
+    : float => {
+  w("a", "Adjusted Gross Income", ns(income));
+
+  let total_state_and_local_income_tax = calc_ny_taxes(~taxRates, ~income, ~itemized_deductions, ~exemptions, ~w);
+  let total_federal_tax =
+    calc_federal_taxes(~taxRates, ~income, ~total_state_and_local_income_tax, ~itemized_deductions, ~exemptions, ~w);
 
   let total_tax: float = total_federal_tax +. total_state_and_local_income_tax;
 
