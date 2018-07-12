@@ -1,10 +1,13 @@
 
-default_income = '50,000';
+import * as TaxRates from './TaxRates.bs.js';
+import * as TaxCalc from './TaxCalc.bs.js';
+
+const default_income = '50,000';
 
 function getParameterByName(name) {
     // from: http://stackoverflow.com/a/901144/908430
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
         results = regex.exec(location.search);
     return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
@@ -12,7 +15,7 @@ function getParameterByName(name) {
 function createHtmlFragment(htmlStr) {
     // from: http://stackoverflow.com/a/814649/908430
     // also, see: http://ejohn.org/blog/dom-documentfragments/
-    var frag = document.createDocumentFragment(),
+    const frag = document.createDocumentFragment(),
         temp = document.createElement('div');
     temp.innerHTML = htmlStr;
     while (temp.firstChild) {
@@ -22,10 +25,10 @@ function createHtmlFragment(htmlStr) {
 }
 
 function setResults(htmlStr) {
-    var results = document.getElementById('results');
+    const results = document.getElementById('results');
     results.innerHTML = '';
 
-    var fragment = createHtmlFragment(htmlStr);
+    const fragment = createHtmlFragment(htmlStr);
     results.appendChild(fragment);
 
     if (htmlStr != '')
@@ -35,7 +38,7 @@ function setResults(htmlStr) {
 }
 
 function calculateAndDisplayTaxes(income, deductions, exemptions) {
-    var resultsHtml = '';
+    let resultsHtml = '';
 
     function w(kind, text, amt) {
         if (kind == 'a')
@@ -54,10 +57,10 @@ function calculateAndDisplayTaxes(income, deductions, exemptions) {
 
     function do_nothing_w(kind, text, amt) {}
 
-    var my_tax = calc_taxes(taxRates, income, deductions, exemptions, w),
-        my_tax_plus = calc_taxes(taxRates, income + 1.0, deductions, exemptions, do_nothing_w);
+    const my_tax = TaxCalc.calc_taxes(TaxRates.getTaxRates(), income, deductions, exemptions, w),
+        my_tax_plus = TaxCalc.calc_taxes(TaxRates.getTaxRates(), income + 1.0, deductions, exemptions, do_nothing_w);
 
-    var marginal_tax_rate = (my_tax_plus - my_tax) * 100.0;
+    const marginal_tax_rate = (my_tax_plus - my_tax) * 100.0;
     w('a', 'Marginal Tax Rate', marginal_tax_rate.toFixed(2) + '%');
 
     return resultsHtml;
@@ -68,7 +71,7 @@ function calcAndDisplay(input) {
 }
 
 function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam) {
-    var errorMessage = '';
+    let errorMessage = '';
 
     if (!incomeParam)
         errorMessage += 'Income must be specified. <br />';
@@ -97,7 +100,7 @@ function removeCommas(text) {
 }
 
 function createInputObject(incomeParam, deductionsParam, exemptionsParam) {
-    var input = {
+    const input = {
         income: parseFloat(removeCommas(incomeParam)),
         deductions: parseFloat(removeCommas(deductionsParam)),
         exemptions: parseFloat(removeCommas(exemptionsParam))
@@ -118,9 +121,9 @@ function setFormValues(incomeVal, deductionsVal, exemptionsVal) {
 }
 
 function getParams() {
-    var incomeParam = getParameterByName('income');
-    var deductionsParam = getParameterByName('deductions');
-    var exemptionsParam = getParameterByName('exemptions');
+    let incomeParam = getParameterByName('income');
+    let deductionsParam = getParameterByName('deductions');
+    let exemptionsParam = getParameterByName('exemptions');
 
     // if there are no parameters, use default income
     if (incomeParam === '' && deductionsParam === '' && exemptionsParam === '')
@@ -166,17 +169,17 @@ function doesSupportHistoryAPI() {
 
 function encodeQueryData(data) {
     // from: http://stackoverflow.com/a/111545
-    var ret = [];
-    for (var d in data)
+    const ret = [];
+    for (const d in data)
         ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
     return ret.join('&');
 }
 
 function dynamicSubmit() {
-    var formParams = getFormParams();
+    const formParams = getFormParams();
 
     try {
-        var input = createInputObjectFromParams(formParams);
+        const input = createInputObjectFromParams(formParams);
 
         history.pushState(formParams, '', '?' + encodeQueryData(formParams));
 
@@ -201,13 +204,13 @@ function main() {
         overrideSubmit(dynamicSubmit);
 
         window.onpopstate = function(event) {
-            var formParams = event.state;
+            const formParams = event.state;
 
             if (formParams)
                 setFormValues(formParams.income, formParams.deductions, formParams.exemptions);
 
             try {
-                var input = formParams ? createInputObjectFromParams(formParams) : getParams();
+                const input = formParams ? createInputObjectFromParams(formParams) : getParams();
 
                 calcAndDisplay(input);
             }
