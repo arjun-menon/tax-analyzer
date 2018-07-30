@@ -2,11 +2,11 @@ Calculate Taxes in NYC
 ======================
 This tool gives you a detailed slab-by-slab breakdown of the taxes owed by an unmarried individual living in New York City.
 
-![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/nyc-taxes/master/res/snapshot-web.png)
+![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/tax-analyzer/master/res/snapshot-web.png)
 
 How to Use
 ----------
-### Online: https://arjun-menon.github.io/nyc-taxes/
+### Online: https://arjun-menon.github.io/tax-analyzer/
 
 ### Building
 
