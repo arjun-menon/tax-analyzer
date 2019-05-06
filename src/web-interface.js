@@ -3,6 +3,8 @@ import * as TaxRates from './TaxRates.bs.js';
 import * as TaxCalc from './TaxCalc.bs.js';
 
 const default_income = '100,000';
+const first_available_tax_year = 2014;
+const last_available_tax_year = 2019;
 
 function getParameterByName(name) {
     // from: http://stackoverflow.com/a/901144/908430
@@ -140,8 +142,9 @@ function getParams() {
     if (exemptionsParam == '')
         exemptionsParam = '1';
 
-    if (!(parseInt(taxYearParam) >= 2014 && parseInt(taxYearParam) <= 2018))
-        taxYearParam = '2018';
+    if (!(parseInt(taxYearParam) >= first_available_tax_year &&
+          parseInt(taxYearParam) <= last_available_tax_year))
+        taxYearParam = `${last_available_tax_year}`;
 
     setFormValues(incomeParam, deductionsParam, exemptionsParam, taxYearParam);
 
