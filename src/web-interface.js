@@ -14,66 +14,9 @@ function getParameterByName(name) {
     return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
-function createHtmlFragment(htmlStr) {
-    // from: http://stackoverflow.com/a/814649/908430
-    // also, see: http://ejohn.org/blog/dom-documentfragments/
-    const frag = document.createDocumentFragment(),
-        temp = document.createElement('div');
-    temp.innerHTML = htmlStr;
-    while (temp.firstChild) {
-        frag.appendChild(temp.firstChild);
-    }
-    return frag;
-}
-
-function setResults(htmlStr) {
-    const results = document.getElementById('results');
-    results.innerHTML = '';
-
-    const fragment = createHtmlFragment(htmlStr);
-    results.appendChild(fragment);
-
-    if (htmlStr != '')
-        results.style.visibility = 'visible';
-    else
-        results.style.visibility = 'hidden';
-}
-
-function calculateAndDisplayTaxes(income, deductions, exemptions, taxYear) {
-    let resultsHtml = '';
-
-    function w(kind, text, amt) {
-        if (kind == 'a')
-            resultsHtml += '<p>' + text + ': ' + amt + '</p>';
-        else if (kind == 'l_start')
-            resultsHtml += '<div class="seclist"><p><strong>' + text + '</strong><ul>';
-        else if (kind == 'b')
-            resultsHtml += '<li>' + text + '</li>';
-        else if (kind == 'l_end')
-            resultsHtml += '</ul><em>' + text + ':</em> ' + amt + '</p></div>';
-        else if (kind == 't')
-            resultsHtml += '<p>' + text + '</p>';
-        else if (kind == 'x') // html decorators
-            resultsHtml += text;
-    }
-
-    function do_nothing_w(kind, text, amt) {}
-
-    const taxRates = TaxRates.getTaxRates(parseInt(taxYear));
-
-    TaxCalc.calc_taxes_(taxRates, income, deductions, exemptions);
-
-    const my_tax = TaxCalc.calc_taxes(taxRates, income, deductions, exemptions, w),
-        my_tax_plus = TaxCalc.calc_taxes(taxRates, income + 1.0, deductions, exemptions, do_nothing_w);
-
-    const marginal_tax_rate = (my_tax_plus - my_tax) * 100.0;
-    w('a', 'Marginal Tax Rate', marginal_tax_rate.toFixed(2) + '%');
-
-    return resultsHtml;
-}
-
 function calcAndDisplay(input) {
-    setResults(calculateAndDisplayTaxes(input.income, input.deductions, input.exemptions, input.taxYear));
+    const taxRates = TaxRates.getTaxRates(parseInt(input.taxYear));
+    TaxCalc.renderReport(taxRates, input.income, input.deductions, input.exemptions);
 }
 
 function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam) {

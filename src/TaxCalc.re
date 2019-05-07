@@ -21,45 +21,6 @@ let ns = (n: float) : string => "$" ++ numberWithCommas(twoPointFloatRepr(n));
 
 let p = (n: float, percentage: float) : float => n *. percentage /. 100.0;
 
-let calc_slab_tax = (income: float, schedule: TaxRates.incomeTaxRateSchedule, w: writeDetail) : float => {
-  let prev_limit = ref(0.0);
-  List.fold_left(
-    (result: float, bracket: TaxRates.incomeBracket) => {
-      let (limit: float, rate: float) = bracket;
-
-      if (income <= prev_limit^) {
-        result;
-      } else {
-        let slab_amt: float = income <= limit ? income -. prev_limit^ : limit -. prev_limit^;
-
-        let tax_amt: float = p(slab_amt, rate);
-
-        let slab_limit = income > limit ? ns(limit) : ns(income);
-        w(
-          "b",
-          "Slab from "
-          ++ ns(prev_limit^)
-          ++ " to "
-          ++ slab_limit
-          ++ " = "
-          ++ ns(tax_amt)
-          ++ " (at "
-          ++ twoPointFloatRepr(rate)
-          ++ "% on "
-          ++ ns(slab_amt)
-          ++ ")",
-          "",
-        );
-
-        prev_limit := limit;
-        result +. tax_amt;
-      };
-    },
-    0.0,
-    schedule,
-  );
-};
-
 type slabItem = {
   fromAmt: float,
   toAmt: float,
@@ -76,7 +37,7 @@ let renderSlabItem = (slabItem: slabItem) =>
     ++ " (at " ++ twoPointFloatRepr(slabItem.taxRate)
     ++ "% on " ++ ns(slabItem.slabAmt) ++ ")");
 
-let calc_slab_tax_ = (income: float, schedule: TaxRates.incomeTaxRateSchedule) : (float, array(slabItem)) => {
+let calc_slab_tax = (income: float, schedule: TaxRates.incomeTaxRateSchedule) : (float, array(slabItem)) => {
   let prev_limit = ref(0.0);
   let (totalTax, taxSlabs) = List.fold_left(
     (result: (float, list(slabItem)), bracket: TaxRates.incomeBracket) => {
@@ -113,66 +74,6 @@ let calc_slab_tax_ = (income: float, schedule: TaxRates.incomeTaxRateSchedule) :
 
 /* ------------- New York State & City Taxes ------------- */
 
-let calc_ny_taxes =
-    (~taxRates: TaxRates.taxRates, ~income: float, ~itemized_deductions: float, ~exemptions: int, ~w: writeDetail)
-    : float => {
-  w("l_start", "New York State Tax Deductions", "");
-
-  let nys_basic_deduction: float =
-    if (itemized_deductions <= taxRates.nyc.standardDeduction) {
-      w("b", "New York State Standard Deduction = " ++ ns(taxRates.nyc.standardDeduction), "");
-      taxRates.nyc.standardDeduction;
-    } else {
-      w("b", "Itemized Deductions = " ++ ns(itemized_deductions), "");
-      itemized_deductions;
-    };
-
-  /* NYS Personal Exemptions for Dependents */
-  let no_of_dependents: int = Pervasives.max(exemptions - 1, 0);
-
-  let nys_personal_exemptions: float = float(no_of_dependents) *. taxRates.nyc.dependentPersonalExemption;
-
-  if (no_of_dependents > 0) {
-    w(
-      "b",
-      "Personal exemptions for dependents = "
-      ++ ns(nys_personal_exemptions)
-      ++ "  ("
-      ++ string_of_int(no_of_dependents)
-      ++ " x "
-      ++ ns(taxRates.nyc.dependentPersonalExemption)
-      ++ ")",
-      "",
-    );
-  };
-
-  let nys_deduction = nys_basic_deduction +. nys_personal_exemptions;
-
-  w("l_end", "New York State Tax Deductions", ns(nys_deduction));
-
-  let nys_taxable_income = Pervasives.max(income -. nys_deduction, 0.0);
-
-  w("a", "New York State Taxable Income", ns(nys_taxable_income));
-
-  w("l_start", "New York City Income Tax", "");
-
-  let nyc_income_tax: float = calc_slab_tax(nys_taxable_income, taxRates.nyc.cityRateSchedule, w);
-
-  w("l_end", "New York City Income Tax", ns(nyc_income_tax));
-
-  w("l_start", "New York State Income Tax", "");
-
-  let nys_income_tax: float = calc_slab_tax(nys_taxable_income, taxRates.nyc.stateRateSchedule, w);
-
-  w("l_end", "New York State Income Tax", ns(nys_income_tax));
-
-  let total_state_and_local_income_tax = nys_income_tax +. nyc_income_tax;
-
-  w("a", "Total New York State & City Taxes", ns(total_state_and_local_income_tax));
-
-  total_state_and_local_income_tax;
-};
-
 type deductionType = StandardDeduction | ItemizedDeductions;
 
 type personalExemptionType = {
@@ -194,7 +95,7 @@ type nysTaxType = {
   totalStateAndLocalIncomeTax: float
 };
 
-let calc_ny_taxes_ =
+let calc_ny_taxes =
     (~taxRates: TaxRates.taxRates, ~income: float, ~itemized_deductions: float, ~exemptions)
     : nysTaxType => {
   let (nysBasicDeduction: float, deduction: deductionType) =
@@ -212,8 +113,8 @@ let calc_ny_taxes_ =
 
   let totalDeductions = nysBasicDeduction +. depedentExemption.totalExemptionsAmt;
   let taxableIncome = Pervasives.max(income -. totalDeductions, 0.0);
-  let (nycIncomeTax, nycIncomeTaxSlabs) = calc_slab_tax_(taxableIncome, taxRates.nyc.cityRateSchedule);
-  let (stateIncomeTax, stateIncomeTaxSlabs) = calc_slab_tax_(taxableIncome, taxRates.nyc.stateRateSchedule);
+  let (nycIncomeTax, nycIncomeTaxSlabs) = calc_slab_tax(taxableIncome, taxRates.nyc.cityRateSchedule);
+  let (stateIncomeTax, stateIncomeTaxSlabs) = calc_slab_tax(taxableIncome, taxRates.nyc.stateRateSchedule);
   let totalStateAndLocalIncomeTax = stateIncomeTax +. nycIncomeTax;
 
   {deduction, nysBasicDeduction, depedentExemption, totalDeductions, taxableIncome,
@@ -250,7 +151,7 @@ type federalTaxesType = {
   totalFederalTax: float
 };
 
-let calc_federal_taxes_ =
+let calc_federal_taxes =
     (
       ~taxRates: TaxRates.taxRates,
       ~income: float,
@@ -281,7 +182,7 @@ let calc_federal_taxes_ =
   let federalPersonalExemptions = (taxRates.federal.income.personalExemption > 0.0) ? Some(personalExemptions) : None;
   let federalTaxableIncomeReductions = federalDeductionAmt +. personalExemptions.totalExemptionsAmt;
   let federalTaxableIncome: float = Pervasives.max(income -. federalTaxableIncomeReductions, 0.0);
-  let (federalIncomeTax, federalIncomeTaxSlabs) = calc_slab_tax_(federalTaxableIncome, taxRates.federal.income.rateSchedule);
+  let (federalIncomeTax, federalIncomeTaxSlabs) = calc_slab_tax(federalTaxableIncome, taxRates.federal.income.rateSchedule);
 
   let socialSecurityTaxableIncome: float = Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
   let socialSecurityTaxRate = taxRates.federal.fica.socialSecurityTaxRate;
@@ -297,104 +198,6 @@ let calc_federal_taxes_ =
    socialSecurityTaxableIncome, socialSecurityTaxRate, socialSecurityTax,
    medicareTaxRate, medicareTax, ficaTax,
    totalFederalTax};
-};
-
-let calc_federal_taxes =
-    (
-      ~taxRates: TaxRates.taxRates,
-      ~income: float,
-      ~total_state_and_local_income_tax: float,
-      ~itemized_deductions: float,
-      ~exemptions: int,
-      ~w: writeDetail,
-    )
-    : float => {
-  w("l_start", "Federal Tax Deductions", "");
-
-  let salt_deduction =
-    taxRates.federal.income.personalExemption === 0.0 ?
-      Pervasives.min(total_state_and_local_income_tax, 10000.0) : total_state_and_local_income_tax;
-
-  let federal_itemized_deductions = itemized_deductions +. salt_deduction;
-
-  let federal_basic_deduction =
-    if (federal_itemized_deductions > taxRates.federal.income.standardDeduction) {
-      w("b", "State and Local Taxes Deduction = " ++ ns(salt_deduction), "");
-      w("b", "Additional Itemized Deductions = " ++ ns(itemized_deductions), "");
-      federal_itemized_deductions;
-    } else {
-      w("b", "Federal Standard Deduction = " ++ ns(taxRates.federal.income.standardDeduction), "");
-      taxRates.federal.income.standardDeduction;
-    };
-
-  let federal_personal_exemptions = float(exemptions) *. taxRates.federal.income.personalExemption;
-
-  w(
-    "b",
-    "Personal Exemptions = "
-    ++ ns(federal_personal_exemptions)
-    ++ "  ("
-    ++ string_of_int(exemptions)
-    ++ " x "
-    ++ ns(taxRates.federal.income.personalExemption)
-    ++ ")",
-    "",
-  );
-
-  let federal_deduction = federal_basic_deduction +. federal_personal_exemptions;
-
-  w("l_end", "Federal Tax Deductions", ns(federal_deduction));
-
-  let federal_taxable_income: float = Pervasives.max(income -. federal_deduction, 0.0);
-
-  w("a", "Federal Taxable Income", ns(federal_taxable_income));
-
-  w("l_start", "Federal Income Tax", "");
-
-  let federal_income_tax: float = calc_slab_tax(federal_taxable_income, taxRates.federal.income.rateSchedule, w);
-
-  w("l_end", "Federal Income Tax", ns(federal_income_tax));
-
-  w("l_start", "Federal Insurance Contributions Act (FICA) Tax", "");
-
-  let social_security_taxable_income: float = Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
-  let social_security_tax: float = p(social_security_taxable_income, taxRates.federal.fica.socialSecurityTaxRate);
-
-  w(
-    "b",
-    "Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax: "
-    ++ ns(social_security_tax)
-    ++ " (at "
-    ++ twoPointFloatRepr(taxRates.federal.fica.socialSecurityTaxRate)
-    ++ "% flat on "
-    ++ ns(social_security_taxable_income)
-    ++ ")",
-    "",
-  );
-
-  let medicare_tax: float = p(income, taxRates.federal.fica.medicareTaxRate);
-
-  w(
-    "b",
-    "Medicare Hospital Insurance (HI) Tax: "
-    ++ ns(medicare_tax)
-    ++ " (at "
-    ++ twoPointFloatRepr(taxRates.federal.fica.medicareTaxRate)
-    ++ "% flat on "
-    ++ ns(income)
-    ++ ")",
-    "",
-  );
-
-  let fica_tax = social_security_tax +. medicare_tax;
-
-  w("l_end", "Federal Insurance Contributions Act (FICA) Tax", ns(fica_tax));
-
-  let total_federal_tax = federal_income_tax +. fica_tax;
-
-  w("a", "Total Federal Taxes", ns(total_federal_tax));
-
-  total_federal_tax;
 };
 
 /* ----------------------- Total Tally ----------------------- */
@@ -436,15 +239,17 @@ module Point = {
     <p>{ReasonReact.string(name ++ ": " ++ value)}</p>;
 };
 
-let calc_taxes_ =
-    (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int) => {
-  let nyTaxes = calc_ny_taxes_(~taxRates, ~income, ~itemized_deductions, ~exemptions);
-  let federalTaxes = calc_federal_taxes_(~taxRates, ~income, ~total_state_and_local_income_tax=nyTaxes.totalStateAndLocalIncomeTax, ~itemized_deductions, ~exemptions);
+module TaxReport = {
+[@react.component]
+let make =
+    (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int) => {
+  let nyTaxes = calc_ny_taxes(~taxRates, ~income, ~itemized_deductions=itemizedDeductions, ~exemptions);
+  let federalTaxes = calc_federal_taxes(~taxRates, ~income, ~total_state_and_local_income_tax=nyTaxes.totalStateAndLocalIncomeTax, ~itemized_deductions=itemizedDeductions, ~exemptions);
   let totalTax: float = nyTaxes.totalStateAndLocalIncomeTax +. federalTaxes.totalFederalTax;
   let incomeAfterTax: float = income -. totalTax;
   let incomeMonthly = incomeAfterTax /. 12.0;
   let effectiveTaxRate = totalTax *. 100.0 /. income;
-  let report = <>
+  <>
     <Point name="Adjusted Gross Income" value={ns(income)} />
     <Section label="New York Taxable Income Reductions" total={nyTaxes.totalDeductions}>
       <ul>
@@ -510,33 +315,15 @@ let calc_taxes_ =
     <Point name="Monthly Income" value={ns(incomeMonthly)} />
     <Point name="Effective Tax Rate" value={twoPointFloatRepr(effectiveTaxRate) ++ "%"} />
   </>;
-  ReactDOMRe.renderToElementWithId(report, "report");
+};
 };
 
-let calc_taxes =
-    (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int, w: writeDetail)
-    : float => {
-  w("a", "Adjusted Gross Income", ns(income));
-
-  let total_state_and_local_income_tax = calc_ny_taxes(~taxRates, ~income, ~itemized_deductions, ~exemptions, ~w);
-  let total_federal_tax =
-    calc_federal_taxes(~taxRates, ~income, ~total_state_and_local_income_tax, ~itemized_deductions, ~exemptions, ~w);
-
-  let total_tax: float = total_federal_tax +. total_state_and_local_income_tax;
-
-  w("a", "Total Federal, State & Local Taxes", ns(total_tax));
-
-  w("x", "<hr/>", "");
-
-  let income_after_tax: float = income -. total_tax;
-
-  let monthly_income_after_tax = income_after_tax /. 12.0;
-
-  w("a", "Income after Taxation", ns(income_after_tax));
-
-  w("a", "Effective Tax Rate", twoPointFloatRepr(total_tax *. 100.0 /. income) ++ "%");
-
-  w("a", "Monthly Income", ns(monthly_income_after_tax));
-
-  total_tax;
+let renderReport = (taxRates: TaxRates.taxRates, income: float, itemizedDeductions: float, exemptions: int) => {
+  ReactDOMRe.renderToElementWithId(
+    <TaxReport
+      taxRates={taxRates}
+      income={income}
+      itemizedDeductions={itemizedDeductions}
+      exemptions={exemptions}
+    />, "report");
 };
