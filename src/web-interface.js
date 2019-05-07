@@ -61,6 +61,8 @@ function calculateAndDisplayTaxes(income, deductions, exemptions, taxYear) {
 
     const taxRates = TaxRates.getTaxRates(parseInt(taxYear));
 
+    TaxCalc.calc_taxes_(taxRates, income, deductions, exemptions);
+
     const my_tax = TaxCalc.calc_taxes(taxRates, income, deductions, exemptions, w),
         my_tax_plus = TaxCalc.calc_taxes(taxRates, income + 1.0, deductions, exemptions, do_nothing_w);
 
@@ -199,7 +201,7 @@ function dynamicSubmit() {
     }
     catch (err_output) {
         history.pushState(formParams, '', '?' + encodeQueryData(formParams));
-
+        console.error(err_output);
         setResults(err_output);
     }
 }
@@ -209,6 +211,7 @@ function main() {
         calcAndDisplay(getParams());
     }
     catch (err_output) {
+        console.error(err_output);
         setResults(err_output);
     }
 
@@ -227,6 +230,7 @@ function main() {
                 calcAndDisplay(input);
             }
             catch (err_output) {
+                console.error(err_output);
                 setResults(err_output);
             }
         };
