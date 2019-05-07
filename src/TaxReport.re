@@ -70,10 +70,13 @@ module MultiplicationPoint = {
     );
 };
 
-let flatRateItem = (label: string, tax: float, rate: float, income: float) =>
-  ReasonReact.string(
-    label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
-  );
+module FlatRatePoint = {
+  [@react.component]
+  let make = (~label: string, ~tax: float, ~rate: float, ~income: float) =>
+    ReasonReact.string(
+      label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
+    );
+};
 
 [@react.component]
 let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int) => {
@@ -97,11 +100,11 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
            ? ReasonReact.null
            : <li>
                <MultiplicationPoint
-                  label={"Personal exemptions for dependents"}
-                  amt={taxes.statePersonalExemptions.totalExemptionsAmt}
-                  multiplicant={taxes.statePersonalExemptions.numOfExemptions}
-                  one={taxes.statePersonalExemptions.oneExemptionAmt}
-                />
+                 label="Personal exemptions for dependents"
+                 amt={taxes.statePersonalExemptions.totalExemptionsAmt}
+                 multiplicant={taxes.statePersonalExemptions.numOfExemptions}
+                 one={taxes.statePersonalExemptions.oneExemptionAmt}
+               />
              </li>}
       </ul>
     </Section>
@@ -135,11 +138,11 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
          | Some(personalExemptions) =>
            <li>
              <MultiplicationPoint
-                label={"Personal Exemptions"}
-                amt={personalExemptions.totalExemptionsAmt}
-                multiplicant={personalExemptions.numOfExemptions}
-                one={personalExemptions.oneExemptionAmt}
-              />
+               label="Personal Exemptions"
+               amt={personalExemptions.totalExemptionsAmt}
+               multiplicant={personalExemptions.numOfExemptions}
+               one={personalExemptions.oneExemptionAmt}
+             />
            </li>
          | None => ReasonReact.null
          }}
@@ -151,13 +154,18 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
     </Section>
     <Section label="Federal Insurance Contributions Act (FICA) Tax" total={taxes.ficaTax}>
       {renderUl([|
-         flatRateItem(
-           "Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax",
-           taxes.socialSecurityTax,
-           taxes.socialSecurityTaxRate,
-           taxes.socialSecurityTaxableIncome,
-         ),
-         flatRateItem("Medicare Hospital Insurance (HI) Tax", taxes.medicareTax, taxes.medicareTaxRate, income),
+         <FlatRatePoint
+           label="Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax"
+           tax={taxes.socialSecurityTax}
+           rate={taxes.socialSecurityTaxRate}
+           income={taxes.socialSecurityTaxableIncome}
+         />,
+         <FlatRatePoint
+           label="Medicare Hospital Insurance (HI) Tax"
+           tax={taxes.medicareTax}
+           rate={taxes.medicareTaxRate}
+           income
+         />,
        |])}
     </Section>
     <Point name="Total Federal Taxes" value={ns(taxes.totalFederalTax)} />
