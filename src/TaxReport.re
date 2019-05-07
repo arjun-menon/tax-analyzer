@@ -62,8 +62,13 @@ module EqualsPoint = {
   let make = (~label: string, ~amt: float) => ReasonReact.string(label ++ " = " ++ ns(amt));
 };
 
-let multiplicationItem = (label: string, amt: float, multiplicant: int, one: float) =>
-  ReasonReact.string(label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")");
+module MultiplicationPoint = {
+  [@react.component]
+  let make = (~label: string, ~amt: float, ~multiplicant: int, ~one: float) =>
+    ReasonReact.string(
+      label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")",
+    );
+};
 
 let flatRateItem = (label: string, tax: float, rate: float, income: float) =>
   ReasonReact.string(
@@ -91,12 +96,12 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
         {taxes.statePersonalExemptions.numOfExemptions <= 0
            ? ReasonReact.null
            : <li>
-               {multiplicationItem(
-                  "Personal exemptions for dependents",
-                  taxes.statePersonalExemptions.totalExemptionsAmt,
-                  taxes.statePersonalExemptions.numOfExemptions,
-                  taxes.statePersonalExemptions.oneExemptionAmt,
-                )}
+               <MultiplicationPoint
+                  label={"Personal exemptions for dependents"}
+                  amt={taxes.statePersonalExemptions.totalExemptionsAmt}
+                  multiplicant={taxes.statePersonalExemptions.numOfExemptions}
+                  one={taxes.statePersonalExemptions.oneExemptionAmt}
+                />
              </li>}
       </ul>
     </Section>
@@ -129,12 +134,12 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
         {switch (taxes.federalPersonalExemptions) {
          | Some(personalExemptions) =>
            <li>
-             {multiplicationItem(
-                "Personal Exemptions",
-                personalExemptions.totalExemptionsAmt,
-                personalExemptions.numOfExemptions,
-                personalExemptions.oneExemptionAmt,
-              )}
+             <MultiplicationPoint
+                label={"Personal Exemptions"}
+                amt={personalExemptions.totalExemptionsAmt}
+                multiplicant={personalExemptions.numOfExemptions}
+                one={personalExemptions.oneExemptionAmt}
+              />
            </li>
          | None => ReasonReact.null
          }}
