@@ -57,7 +57,10 @@ module Point = {
   let make = (~name: string, ~value: string) => <p> {ReasonReact.string(name ++ ": " ++ value)} </p>;
 };
 
-let equalsItem = (label: string, amt: float) => ReasonReact.string(label ++ " = " ++ ns(amt));
+module EqualsPoint = {
+  [@react.component]
+  let make = (~label: string, ~amt: float) => ReasonReact.string(label ++ " = " ++ ns(amt));
+};
 
 let multiplicationItem = (label: string, amt: float, multiplicant: int, one: float) =>
   ReasonReact.string(label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")");
@@ -75,13 +78,15 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
     <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
       <ul>
         <li>
-          {equalsItem(
-             switch (taxes.stateDeduction) {
-             | StateItemizedDeductions => "New York Itemized Deductions"
-             | StateStandardDeduction => "New York Standard Deduction"
-             },
-             taxes.stateDeductionAmt,
-           )}
+          <EqualsPoint
+            label={
+              switch (taxes.stateDeduction) {
+              | StateItemizedDeductions => "New York Itemized Deductions"
+              | StateStandardDeduction => "New York Standard Deduction"
+              }
+            }
+            amt={taxes.stateDeductionAmt}
+          />
         </li>
         {taxes.statePersonalExemptions.numOfExemptions <= 0
            ? ReasonReact.null
@@ -109,12 +114,13 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
          | FederalItemizedDeductions(federalItemizations) =>
            <>
              <li>
-               {equalsItem(
-                  "State and Local Taxes Deduction", federalItemizations.stateAndLocalTaxesDeduction
-                )}
+               <EqualsPoint
+                 label="State and Local Taxes Deduction"
+                 amt={federalItemizations.stateAndLocalTaxesDeduction}
+               />
              </li>
              <li>
-               {equalsItem("Other Itemized Deductions", federalItemizations.otherItemizedDeductions)}
+               <EqualsPoint label="Other Itemized Deductions" amt={federalItemizations.otherItemizedDeductions} />
              </li>
            </>
          | FederalStandardDeduction(amt) =>
@@ -127,7 +133,7 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
                 "Personal Exemptions",
                 personalExemptions.totalExemptionsAmt,
                 personalExemptions.numOfExemptions,
-                personalExemptions.oneExemptionAmt
+                personalExemptions.oneExemptionAmt,
               )}
            </li>
          | None => ReasonReact.null
