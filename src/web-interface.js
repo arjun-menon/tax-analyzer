@@ -1,6 +1,4 @@
-
-import * as TaxRates from './TaxRates.bs.js';
-import * as TaxCalc from './TaxCalc.bs.js';
+import * as WebInterface from './WebInterface.bs.js';
 
 const default_income = '100,000';
 const first_available_tax_year = 2014;
@@ -14,9 +12,8 @@ function getParameterByName(name) {
     return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
-function calcAndDisplay(input) {
-    const taxRates = TaxRates.getTaxRates(parseInt(input.taxYear));
-    TaxCalc.renderReport(taxRates, input.income, input.deductions, input.exemptions);
+function renderReport(input) {
+    WebInterface.renderReport(parseInt(input.taxYear), input.income, input.deductions, input.exemptions);
 }
 
 function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam) {
@@ -140,7 +137,7 @@ function dynamicSubmit() {
 
         history.pushState(formParams, '', '?' + encodeQueryData(formParams));
 
-        calcAndDisplay(input);
+        renderReport(input);
     }
     catch (err_output) {
         history.pushState(formParams, '', '?' + encodeQueryData(formParams));
@@ -151,7 +148,7 @@ function dynamicSubmit() {
 
 function main() {
     try {
-        calcAndDisplay(getParams());
+        renderReport(getParams());
     }
     catch (err_output) {
         console.error(err_output);
@@ -170,7 +167,7 @@ function main() {
             try {
                 const input = formParams ? createInputObjectFromParams(formParams) : getParams();
 
-                calcAndDisplay(input);
+                renderReport(input);
             }
             catch (err_output) {
                 console.error(err_output);
