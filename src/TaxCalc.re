@@ -60,6 +60,57 @@ let calc_slab_tax = (income: float, schedule: TaxRates.incomeTaxRateSchedule, w:
   );
 };
 
+type slabItem = {
+  fromAmt: float,
+  toAmt: float,
+  taxAmt: float,
+  taxRate: float,
+  slabAmt: float
+};
+
+let renderSlabItem = (slabItem: slabItem) =>
+  ReasonReact.string(
+    "Slab from " ++ ns(slabItem.fromAmt)
+    ++ " to " ++ ns(slabItem.toAmt)
+    ++ " = " ++ ns(slabItem.taxAmt)
+    ++ " (at " ++ twoPointFloatRepr(slabItem.taxRate)
+    ++ "% on " ++ ns(slabItem.slabAmt) ++ ")");
+
+let calc_slab_tax_ = (income: float, schedule: TaxRates.incomeTaxRateSchedule) : (float, array(slabItem)) => {
+  let prev_limit = ref(0.0);
+  let (totalTax, taxSlabs) = List.fold_left(
+    (result: (float, list(slabItem)), bracket: TaxRates.incomeBracket) => {
+      let (limit: float, rate: float) = bracket;
+
+      if (income <= prev_limit^) {
+        result;
+      } else {
+        let (tax_so_far, slabs) = result;
+        let slab_amt: float = income <= limit ? income -. prev_limit^ : limit -. prev_limit^;
+        let tax_amt: float = p(slab_amt, rate);
+        let slab_limit = income > limit ? limit : income;
+
+        let slab: slabItem = {
+          fromAmt: prev_limit^,
+          toAmt: slab_limit,
+          taxAmt: tax_amt,
+          taxRate: rate,
+          slabAmt: slab_amt
+        }
+
+        prev_limit := limit;
+        let accumulated_tax = tax_so_far +. tax_amt;
+
+        (accumulated_tax, [slab, ...slabs]);
+      };
+    },
+    (0.0, []),
+    schedule,
+  );
+
+  (totalTax, Array.of_list(List.rev(taxSlabs)));
+};
+
 /* ------------- New York State & City Taxes ------------- */
 
 let calc_ny_taxes =
@@ -120,6 +171,53 @@ let calc_ny_taxes =
   w("a", "Total New York State & City Taxes", ns(total_state_and_local_income_tax));
 
   total_state_and_local_income_tax;
+};
+
+type deductionType = StandardDeduction | ItemizedDeductions;
+
+type nysDepedentExemptionType = {
+  oneExemptionAmt: float,
+  numOfDependents: int,
+  totalExemptionsAmt: float,
+};
+
+type nysTaxType = {
+  nysBasicDeduction: float,
+  deduction: deductionType,
+  depedentExemption: nysDepedentExemptionType,
+  totalDeductions: float,
+  taxableIncome: float,
+  nycIncomeTax: float,
+  nycIncomeTaxSlabs: array(slabItem),
+  stateIncomeTax: float,
+  stateIncomeTaxSlabs: array(slabItem),
+  totalStateAndLocalIncomeTax: float
+};
+
+let calc_ny_taxes_ =
+    (~taxRates: TaxRates.taxRates, ~income: float, ~itemized_deductions: float, ~exemptions)
+    : nysTaxType => {
+  let (nysBasicDeduction: float, deduction: deductionType) =
+    (itemized_deductions <= taxRates.nyc.standardDeduction) ?
+      (taxRates.nyc.standardDeduction, StandardDeduction)
+    : (itemized_deductions, ItemizedDeductions);
+
+  /* NYS Personal Exemptions for Dependents */
+  let numOfDependents: int = Pervasives.max(exemptions - 1, 0);
+  let depedentExemption: nysDepedentExemptionType = {
+    oneExemptionAmt: taxRates.nyc.dependentPersonalExemption,
+    numOfDependents: numOfDependents,
+    totalExemptionsAmt: float(numOfDependents) *. taxRates.nyc.dependentPersonalExemption,
+  }
+
+  let totalDeductions = nysBasicDeduction +. depedentExemption.totalExemptionsAmt;
+  let taxableIncome = Pervasives.max(income -. totalDeductions, 0.0);
+  let (nycIncomeTax, nycIncomeTaxSlabs) = calc_slab_tax_(taxableIncome, taxRates.nyc.cityRateSchedule);
+  let (stateIncomeTax, stateIncomeTaxSlabs) = calc_slab_tax_(taxableIncome, taxRates.nyc.stateRateSchedule);
+  let totalStateAndLocalIncomeTax = stateIncomeTax +. nycIncomeTax;
+
+  {deduction, nysBasicDeduction, depedentExemption, totalDeductions, taxableIncome,
+  nycIncomeTax, nycIncomeTaxSlabs, stateIncomeTax, stateIncomeTaxSlabs, totalStateAndLocalIncomeTax}
 };
 
 /* ------------- Federal Taxes ------------- */
@@ -223,6 +321,65 @@ let calc_federal_taxes =
 };
 
 /* ----------------------- Total Tally ----------------------- */
+
+let renderUl = (items: array(ReasonReact.reactElement)) =>
+  <ul>
+    {ReasonReact.array(Array.map(item => <li>item</li>, items))}
+  </ul>;
+
+let renderSlabs = (slabs: array(slabItem)) =>
+  renderUl(Array.map(renderSlabItem, slabs))
+
+module Section = {
+  [@react.component]
+  let make = (~label: string, ~children, ~total: float) =>
+    <div className="seclist">
+      <p>
+        <strong>{ReasonReact.string(label)}</strong>
+        children
+        <em>{ReasonReact.string(label ++ ": ")}</em>
+        {ReasonReact.string(ns(total))}
+      </p>
+    </div>;
+};
+
+module Point = {
+  [@react.component]
+  let make = (~name: string, ~value: string) =>
+    <p>{ReasonReact.string(name ++ ": " ++ value)}</p>;
+};
+
+let calc_taxes_ =
+    (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int) => {
+  let nyTaxes = calc_ny_taxes_(~taxRates, ~income, ~itemized_deductions, ~exemptions);
+
+  let report = <div>
+    <p>{ReasonReact.string("Adjusted Gross Income: " ++ ns(income))}</p>
+    <Section label="New York State Tax Deductions" total={nyTaxes.totalDeductions}>
+      <ul>
+      <li>{ReasonReact.string((nyTaxes.deduction == ItemizedDeductions
+        ? "Itemized Deductions" : "New York State Standard Deduction")
+        ++ " = " ++ ns(nyTaxes.nysBasicDeduction))}</li>
+      {nyTaxes.depedentExemption.numOfDependents <= 0 ? ReasonReact.null :
+        <li>{ReasonReact.string(
+          "Personal exemptions for dependents = "
+          ++ ns(nyTaxes.depedentExemption.totalExemptionsAmt)
+          ++ " (" ++ string_of_int(nyTaxes.depedentExemption.numOfDependents)
+          ++ " x " ++ ns(nyTaxes.depedentExemption.oneExemptionAmt) ++ ")"
+        )}</li>}
+      </ul>
+    </Section>
+    <Point name="New York State Taxable Income" value={ns(nyTaxes.taxableIncome)} />
+    <Section label="New York City Income Tax" total={nyTaxes.nycIncomeTax}>
+      {renderSlabs(nyTaxes.nycIncomeTaxSlabs)}
+    </Section>
+    <Section label="New York State Income Tax" total={nyTaxes.stateIncomeTax}>
+      {renderSlabs(nyTaxes.stateIncomeTaxSlabs)}
+    </Section>
+    <Point name="Total New York State & City Taxes" value={ns(nyTaxes.totalStateAndLocalIncomeTax)} />
+  </div>;
+  ReactDOMRe.renderToElementWithId(report, "report");
+};
 
 let calc_taxes =
     (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int, w: writeDetail)
