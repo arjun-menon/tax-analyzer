@@ -45,7 +45,7 @@ let renderSlabItem = (slabItem: slabItem) =>
     ++ ")",
   );
 
-let calc_slab_tax =
+let calcSlabTax =
     (income: float, schedule: TaxRates.incomeTaxRateSchedule)
     : (float, array(slabItem)) => {
   let prev_limit = ref(0.0);
@@ -113,14 +113,14 @@ let calc_ny_taxes =
     (
       ~taxRates: TaxRates.taxRates,
       ~income: float,
-      ~itemized_deductions: float,
+      ~itemizedDeductions: float,
       ~exemptions,
     )
     : nysTaxType => {
   let (nysBasicDeduction: float, deduction: deductionType) =
-    itemized_deductions <= taxRates.nyc.standardDeduction
+    itemizedDeductions <= taxRates.nyc.standardDeduction
       ? (taxRates.nyc.standardDeduction, StandardDeduction)
-      : (itemized_deductions, ItemizedDeductions);
+      : (itemizedDeductions, ItemizedDeductions);
 
   /* NYS Personal Exemptions for Dependents */
   let numOfDependents: int = Pervasives.max(exemptions - 1, 0);
@@ -135,9 +135,9 @@ let calc_ny_taxes =
     nysBasicDeduction +. depedentExemption.totalExemptionsAmt;
   let taxableIncome = Pervasives.max(income -. totalDeductions, 0.0);
   let (nycIncomeTax, nycIncomeTaxSlabs) =
-    calc_slab_tax(taxableIncome, taxRates.nyc.cityRateSchedule);
+    calcSlabTax(taxableIncome, taxRates.nyc.cityRateSchedule);
   let (stateIncomeTax, stateIncomeTaxSlabs) =
-    calc_slab_tax(taxableIncome, taxRates.nyc.stateRateSchedule);
+    calcSlabTax(taxableIncome, taxRates.nyc.stateRateSchedule);
   let totalStateAndLocalIncomeTax = stateIncomeTax +. nycIncomeTax;
 
   {
@@ -186,34 +186,34 @@ type federalTaxesType = {
   totalFederalTax: float,
 };
 
-let calc_federal_taxes =
+let calcFederalTaxes =
     (
       ~taxRates: TaxRates.taxRates,
       ~income: float,
-      ~total_state_and_local_income_tax: float,
-      ~itemized_deductions: float,
+      ~totalStateAndLocalIncomeTax: float,
+      ~itemizedDeductions: float,
       ~exemptions: int,
     )
     : federalTaxesType => {
   let salt_deduction =
     taxRates.federal.income.personalExemption === 0.0
-      ? Pervasives.min(total_state_and_local_income_tax, 10000.0)
-      : total_state_and_local_income_tax;
+      ? Pervasives.min(totalStateAndLocalIncomeTax, 10000.0)
+      : totalStateAndLocalIncomeTax;
 
-  let federal_itemized_deductions = itemized_deductions +. salt_deduction;
+  let federalItemizedDeductions = itemizedDeductions +. salt_deduction;
 
   let (federalDeductionAmt: float, federalDeduction: federalDeductionType) =
-    federal_itemized_deductions <= taxRates.federal.income.standardDeduction
+    federalItemizedDeductions <= taxRates.federal.income.standardDeduction
       ? (
         taxRates.federal.income.standardDeduction,
         FederalStandardDeduction(taxRates.federal.income.standardDeduction),
       )
       : (
-        federal_itemized_deductions,
+        federalItemizedDeductions,
         FederalItemizedDeductions({
           stateAndLocalTaxesDeduction: salt_deduction,
-          otherItemizedDeductions: itemized_deductions,
-          totalDeductions: federal_itemized_deductions,
+          otherItemizedDeductions: itemizedDeductions,
+          totalDeductions: federalItemizedDeductions,
         }),
       );
   let personalExemptions = {
@@ -230,7 +230,7 @@ let calc_federal_taxes =
   let federalTaxableIncome: float =
     Pervasives.max(income -. federalTaxableIncomeReductions, 0.0);
   let (federalIncomeTax, federalIncomeTaxSlabs) =
-    calc_slab_tax(federalTaxableIncome, taxRates.federal.income.rateSchedule);
+    calcSlabTax(federalTaxableIncome, taxRates.federal.income.rateSchedule);
 
   let socialSecurityTaxableIncome: float =
     Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
@@ -319,18 +319,13 @@ module TaxReport = {
         ~exemptions: int,
       ) => {
     let nyTaxes =
-      calc_ny_taxes(
-        ~taxRates,
-        ~income,
-        ~itemized_deductions=itemizedDeductions,
-        ~exemptions,
-      );
+      calc_ny_taxes(~taxRates, ~income, ~itemizedDeductions, ~exemptions);
     let federalTaxes =
-      calc_federal_taxes(
+      calcFederalTaxes(
         ~taxRates,
         ~income,
-        ~total_state_and_local_income_tax=nyTaxes.totalStateAndLocalIncomeTax,
-        ~itemized_deductions=itemizedDeductions,
+        ~totalStateAndLocalIncomeTax=nyTaxes.totalStateAndLocalIncomeTax,
+        ~itemizedDeductions,
         ~exemptions,
       );
     let totalTax: float =
