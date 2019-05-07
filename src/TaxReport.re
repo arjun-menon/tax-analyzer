@@ -34,11 +34,6 @@ let renderSlabItem = (slabItem: TaxCalc.slabItem) =>
     ++ ")",
   );
 
-let flatRateItem = (label: string, tax: float, rate: float, income: float) =>
-  ReasonReact.string(
-    label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
-  );
-
 let renderUl = (items: array(ReasonReact.reactElement)) =>
   <ul> {ReasonReact.array(Array.mapi((index, item) => <li key={string_of_int(index)}> item </li>, items))} </ul>;
 
@@ -62,6 +57,16 @@ module Point = {
   let make = (~name: string, ~value: string) => <p> {ReasonReact.string(name ++ ": " ++ value)} </p>;
 };
 
+let equalsItem = (label: string, amt: float) => ReasonReact.string(label ++ " = " ++ ns(amt));
+
+let multiplicationItem = (label: string, amt: float, multiplicant: int, one: float) =>
+  ReasonReact.string(label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")");
+
+let flatRateItem = (label: string, tax: float, rate: float, income: float) =>
+  ReasonReact.string(
+    label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
+  );
+
 [@react.component]
 let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int) => {
   let taxes = TaxCalc.calcTaxes(~taxRates, ~income, ~itemizedDeductions, ~exemptions);
@@ -70,28 +75,22 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
     <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
       <ul>
         <li>
-          {ReasonReact.string(
-             (
-               switch (taxes.stateDeduction) {
-               | StateItemizedDeductions => "New York Itemized Deductions"
-               | StateStandardDeduction => "New York Standard Deduction"
-               }
-             )
-             ++ " = "
-             ++ ns(taxes.stateDeductionAmt),
+          {equalsItem(
+             switch (taxes.stateDeduction) {
+             | StateItemizedDeductions => "New York Itemized Deductions"
+             | StateStandardDeduction => "New York Standard Deduction"
+             },
+             taxes.stateDeductionAmt,
            )}
         </li>
         {taxes.statePersonalExemptions.numOfExemptions <= 0
            ? ReasonReact.null
            : <li>
-               {ReasonReact.string(
-                  "Personal exemptions for dependents = "
-                  ++ ns(taxes.statePersonalExemptions.totalExemptionsAmt)
-                  ++ " ("
-                  ++ string_of_int(taxes.statePersonalExemptions.numOfExemptions)
-                  ++ " x "
-                  ++ ns(taxes.statePersonalExemptions.oneExemptionAmt)
-                  ++ ")",
+               {multiplicationItem(
+                  "Personal exemptions for dependents",
+                  taxes.statePersonalExemptions.totalExemptionsAmt,
+                  taxes.statePersonalExemptions.numOfExemptions,
+                  taxes.statePersonalExemptions.oneExemptionAmt,
                 )}
              </li>}
       </ul>
@@ -110,12 +109,12 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
          | FederalItemizedDeductions(federalItemizations) =>
            <>
              <li>
-               {ReasonReact.string(
-                  "State and Local Taxes Deduction = " ++ ns(federalItemizations.stateAndLocalTaxesDeduction),
+               {equalsItem(
+                  "State and Local Taxes Deduction", federalItemizations.stateAndLocalTaxesDeduction
                 )}
              </li>
              <li>
-               {ReasonReact.string("Other Itemized Deductions = " ++ ns(federalItemizations.otherItemizedDeductions))}
+               {equalsItem("Other Itemized Deductions", federalItemizations.otherItemizedDeductions)}
              </li>
            </>
          | FederalStandardDeduction(amt) =>
@@ -124,14 +123,11 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
         {switch (taxes.federalPersonalExemptions) {
          | Some(personalExemptions) =>
            <li>
-             {ReasonReact.string(
-                "Personal Exemptions = "
-                ++ ns(personalExemptions.totalExemptionsAmt)
-                ++ "  ("
-                ++ string_of_int(personalExemptions.numOfExemptions)
-                ++ " x "
-                ++ ns(personalExemptions.oneExemptionAmt)
-                ++ ")",
+             {multiplicationItem(
+                "Personal Exemptions",
+                personalExemptions.totalExemptionsAmt,
+                personalExemptions.numOfExemptions,
+                personalExemptions.oneExemptionAmt
               )}
            </li>
          | None => ReasonReact.null
