@@ -86,24 +86,24 @@ let calcSlabTax =
 
 /* ------------- New York State & City Taxes ------------- */
 
-type deductionType =
-  | StandardDeduction
-  | ItemizedDeductions;
+type stateDeductionType =
+  | StateStandardDeduction
+  | StateItemizedDeductions;
 
 type personalExemptionType = {
   oneExemptionAmt: float,
-  numOfDependents: int,
+  numOfExemptions: int,
   totalExemptionsAmt: float,
 };
 
 type nysTaxType = {
-  nysBasicDeduction: float,
-  deduction: deductionType,
-  depedentExemption: personalExemptionType,
-  totalDeductions: float,
-  taxableIncome: float,
-  nycIncomeTax: float,
-  nycIncomeTaxSlabs: array(slabItem),
+  stateDeduction: stateDeductionType,
+  stateDeductionAmt: float,
+  statePersonalExemptions: personalExemptionType,
+  stateTaxableIncomeReductions: float,
+  stateTaxableIncome: float,
+  cityIncomeTax: float,
+  cityIncomeTaxSlabs: array(slabItem),
   stateIncomeTax: float,
   stateIncomeTaxSlabs: array(slabItem),
   totalStateAndLocalIncomeTax: float,
@@ -117,37 +117,37 @@ let calc_ny_taxes =
       ~exemptions,
     )
     : nysTaxType => {
-  let (nysBasicDeduction: float, deduction: deductionType) =
+  let (stateDeductionAmt: float, stateDeduction: stateDeductionType) =
     itemizedDeductions <= taxRates.nyc.standardDeduction
-      ? (taxRates.nyc.standardDeduction, StandardDeduction)
-      : (itemizedDeductions, ItemizedDeductions);
+      ? (taxRates.nyc.standardDeduction, StateStandardDeduction)
+      : (itemizedDeductions, StateItemizedDeductions);
 
   /* NYS Personal Exemptions for Dependents */
-  let numOfDependents: int = Pervasives.max(exemptions - 1, 0);
-  let depedentExemption: personalExemptionType = {
+  let numOfExemptions: int = Pervasives.max(exemptions - 1, 0);
+  let statePersonalExemptions: personalExemptionType = {
     oneExemptionAmt: taxRates.nyc.dependentPersonalExemption,
-    numOfDependents,
+    numOfExemptions,
     totalExemptionsAmt:
-      float(numOfDependents) *. taxRates.nyc.dependentPersonalExemption,
+      float(numOfExemptions) *. taxRates.nyc.dependentPersonalExemption,
   };
 
-  let totalDeductions =
-    nysBasicDeduction +. depedentExemption.totalExemptionsAmt;
-  let taxableIncome = Pervasives.max(income -. totalDeductions, 0.0);
-  let (nycIncomeTax, nycIncomeTaxSlabs) =
-    calcSlabTax(taxableIncome, taxRates.nyc.cityRateSchedule);
+  let stateTaxableIncomeReductions =
+    stateDeductionAmt +. statePersonalExemptions.totalExemptionsAmt;
+  let stateTaxableIncome = Pervasives.max(income -. stateTaxableIncomeReductions, 0.0);
+  let (cityIncomeTax, cityIncomeTaxSlabs) =
+    calcSlabTax(stateTaxableIncome, taxRates.nyc.cityRateSchedule);
   let (stateIncomeTax, stateIncomeTaxSlabs) =
-    calcSlabTax(taxableIncome, taxRates.nyc.stateRateSchedule);
-  let totalStateAndLocalIncomeTax = stateIncomeTax +. nycIncomeTax;
+    calcSlabTax(stateTaxableIncome, taxRates.nyc.stateRateSchedule);
+  let totalStateAndLocalIncomeTax = stateIncomeTax +. cityIncomeTax;
 
   {
-    deduction,
-    nysBasicDeduction,
-    depedentExemption,
-    totalDeductions,
-    taxableIncome,
-    nycIncomeTax,
-    nycIncomeTaxSlabs,
+    stateDeduction,
+    stateDeductionAmt,
+    statePersonalExemptions,
+    stateTaxableIncomeReductions,
+    stateTaxableIncome,
+    cityIncomeTax,
+    cityIncomeTaxSlabs,
     stateIncomeTax,
     stateIncomeTaxSlabs,
     totalStateAndLocalIncomeTax,
@@ -159,7 +159,7 @@ let calc_ny_taxes =
 type federalItemizedDeductions = {
   stateAndLocalTaxesDeduction: float,
   otherItemizedDeductions: float,
-  totalDeductions: float,
+  stateTaxableIncomeReductions: float,
 };
 
 type federalDeductionType =
@@ -213,12 +213,12 @@ let calcFederalTaxes =
         FederalItemizedDeductions({
           stateAndLocalTaxesDeduction: salt_deduction,
           otherItemizedDeductions: itemizedDeductions,
-          totalDeductions: federalItemizedDeductions,
+          stateTaxableIncomeReductions: federalItemizedDeductions,
         }),
       );
   let personalExemptions = {
     oneExemptionAmt: taxRates.federal.income.personalExemption,
-    numOfDependents: exemptions,
+    numOfExemptions: exemptions,
     totalExemptionsAmt:
       float(exemptions) *. taxRates.federal.income.personalExemption,
   };
@@ -337,31 +337,30 @@ module TaxReport = {
       <Point name="Adjusted Gross Income" value={ns(income)} />
       <Section
         label="New York Taxable Income Reductions"
-        total={nyTaxes.totalDeductions}>
+        total={nyTaxes.stateTaxableIncomeReductions}>
         <ul>
           <li>
             {ReasonReact.string(
-               (
-                 nyTaxes.deduction == ItemizedDeductions
-                   ? "Itemized Deductions"
-                   : "New York State Standard Deduction"
-               )
+              switch(nyTaxes.stateDeduction) {
+                | StateItemizedDeductions => "New York Itemized Deductions"
+                | StateStandardDeduction => "New York Standard Deduction"
+              }
                ++ " = "
-               ++ ns(nyTaxes.nysBasicDeduction),
+               ++ ns(nyTaxes.stateDeductionAmt),
              )}
           </li>
-          {nyTaxes.depedentExemption.numOfDependents <= 0
+          {nyTaxes.statePersonalExemptions.numOfExemptions <= 0
              ? ReasonReact.null
              : <li>
                  {ReasonReact.string(
                     "Personal exemptions for dependents = "
-                    ++ ns(nyTaxes.depedentExemption.totalExemptionsAmt)
+                    ++ ns(nyTaxes.statePersonalExemptions.totalExemptionsAmt)
                     ++ " ("
                     ++ string_of_int(
-                         nyTaxes.depedentExemption.numOfDependents,
+                         nyTaxes.statePersonalExemptions.numOfExemptions,
                        )
                     ++ " x "
-                    ++ ns(nyTaxes.depedentExemption.oneExemptionAmt)
+                    ++ ns(nyTaxes.statePersonalExemptions.oneExemptionAmt)
                     ++ ")",
                   )}
                </li>}
@@ -369,10 +368,10 @@ module TaxReport = {
       </Section>
       <Point
         name="New York State Taxable Income"
-        value={ns(nyTaxes.taxableIncome)}
+        value={ns(nyTaxes.stateTaxableIncome)}
       />
-      <Section label="New York City Income Tax" total={nyTaxes.nycIncomeTax}>
-        <Slabs slabs={nyTaxes.nycIncomeTaxSlabs} />
+      <Section label="New York City Income Tax" total={nyTaxes.cityIncomeTax}>
+        <Slabs slabs={nyTaxes.cityIncomeTaxSlabs} />
       </Section>
       <Section
         label="New York State Income Tax" total={nyTaxes.stateIncomeTax}>
@@ -416,7 +415,7 @@ module TaxReport = {
                   "Personal Exemptions = "
                   ++ ns(personalExemptions.totalExemptionsAmt)
                   ++ "  ("
-                  ++ string_of_int(personalExemptions.numOfDependents)
+                  ++ string_of_int(personalExemptions.numOfExemptions)
                   ++ " x "
                   ++ ns(personalExemptions.oneExemptionAmt)
                   ++ ")",
