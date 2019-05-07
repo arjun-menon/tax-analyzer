@@ -440,7 +440,10 @@ let calc_taxes_ =
     (taxRates: TaxRates.taxRates, income: float, itemized_deductions: float, exemptions: int) => {
   let nyTaxes = calc_ny_taxes_(~taxRates, ~income, ~itemized_deductions, ~exemptions);
   let federalTaxes = calc_federal_taxes_(~taxRates, ~income, ~total_state_and_local_income_tax=nyTaxes.totalStateAndLocalIncomeTax, ~itemized_deductions, ~exemptions);
-  let totalTaxes: float = nyTaxes.totalStateAndLocalIncomeTax +. federalTaxes.totalFederalTax;
+  let totalTax: float = nyTaxes.totalStateAndLocalIncomeTax +. federalTaxes.totalFederalTax;
+  let incomeAfterTax: float = income -. totalTax;
+  let incomeMonthly = incomeAfterTax /. 12.0;
+  let effectiveTaxRate = totalTax *. 100.0 /. income;
   let report = <>
     <Point name="Adjusted Gross Income" value={ns(income)} />
     <Section label="New York Taxable Income Reductions" total={nyTaxes.totalDeductions}>
@@ -501,7 +504,11 @@ let calc_taxes_ =
       |])}
     </Section>
     <Point name="Total Federal Taxes" value={ns(federalTaxes.totalFederalTax)} />
-    <Point name="Total Federal, State & Local Taxes" value={ns(totalTaxes)} />
+    <Point name="Total Federal, State & Local Taxes" value={ns(totalTax)} />
+    <hr />
+    <Point name="Income after Taxation" value={ns(incomeAfterTax)} />
+    <Point name="Monthly Income" value={ns(incomeMonthly)} />
+    <Point name="Effective Tax Rate" value={twoPointFloatRepr(effectiveTaxRate) ++ "%"} />
   </>;
   ReactDOMRe.renderToElementWithId(report, "report");
 };
