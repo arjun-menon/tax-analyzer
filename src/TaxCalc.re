@@ -17,8 +17,7 @@ let numberWithCommas: string => string = [%bs.raw
 ];
 
 /* Stringify a number representing money: */
-let ns = (n: float): string =>
-  "$" ++ numberWithCommas(twoPointFloatRepr(n));
+let ns = (n: float): string => "$" ++ numberWithCommas(twoPointFloatRepr(n));
 
 let p = (n: float, percentage: float): float => n *. percentage /. 100.0;
 
@@ -45,9 +44,7 @@ let renderSlabItem = (slabItem: slabItem) =>
     ++ ")",
   );
 
-let calcSlabTax =
-    (income: float, schedule: TaxRates.incomeTaxRateSchedule)
-    : (float, array(slabItem)) => {
+let calcSlabTax = (income: float, schedule: TaxRates.incomeTaxRateSchedule): (float, array(slabItem)) => {
   let prev_limit = ref(0.0);
   let (totalTax, taxSlabs) =
     List.fold_left(
@@ -58,8 +55,7 @@ let calcSlabTax =
           result;
         } else {
           let (tax_so_far, slabs) = result;
-          let slab_amt: float =
-            income <= limit ? income -. prev_limit^ : limit -. prev_limit^;
+          let slab_amt: float = income <= limit ? income -. prev_limit^ : limit -. prev_limit^;
           let tax_amt: float = p(slab_amt, rate);
           let slab_limit = income > limit ? limit : income;
 
@@ -135,45 +131,32 @@ type taxesType = {
 };
 
 let calcTaxes =
-    (
-      ~taxRates: TaxRates.taxRates,
-      ~income: float,
-      ~itemizedDeductions: float,
-      ~exemptions: int,
-    )
-    : taxesType => {
+    (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int): taxesType => {
   /* ------------- New York State & City Taxes ------------- */
 
   let (stateDeductionAmt: float, stateDeduction: stateDeductionType) =
     itemizedDeductions <= taxRates.nyc.standardDeduction
-      ? (taxRates.nyc.standardDeduction, StateStandardDeduction)
-      : (itemizedDeductions, StateItemizedDeductions);
+      ? (taxRates.nyc.standardDeduction, StateStandardDeduction) : (itemizedDeductions, StateItemizedDeductions);
 
   /* NYS Personal Exemptions for Dependents */
   let numOfExemptions: int = Pervasives.max(exemptions - 1, 0);
   let statePersonalExemptions: personalExemptionType = {
     oneExemptionAmt: taxRates.nyc.dependentPersonalExemption,
     numOfExemptions,
-    totalExemptionsAmt:
-      float(numOfExemptions) *. taxRates.nyc.dependentPersonalExemption,
+    totalExemptionsAmt: float(numOfExemptions) *. taxRates.nyc.dependentPersonalExemption,
   };
 
-  let stateTaxableIncomeReductions =
-    stateDeductionAmt +. statePersonalExemptions.totalExemptionsAmt;
-  let stateTaxableIncome =
-    Pervasives.max(income -. stateTaxableIncomeReductions, 0.0);
-  let (cityIncomeTax, cityIncomeTaxSlabs) =
-    calcSlabTax(stateTaxableIncome, taxRates.nyc.cityRateSchedule);
-  let (stateIncomeTax, stateIncomeTaxSlabs) =
-    calcSlabTax(stateTaxableIncome, taxRates.nyc.stateRateSchedule);
+  let stateTaxableIncomeReductions = stateDeductionAmt +. statePersonalExemptions.totalExemptionsAmt;
+  let stateTaxableIncome = Pervasives.max(income -. stateTaxableIncomeReductions, 0.0);
+  let (cityIncomeTax, cityIncomeTaxSlabs) = calcSlabTax(stateTaxableIncome, taxRates.nyc.cityRateSchedule);
+  let (stateIncomeTax, stateIncomeTaxSlabs) = calcSlabTax(stateTaxableIncome, taxRates.nyc.stateRateSchedule);
   let totalStateAndLocalIncomeTax = stateIncomeTax +. cityIncomeTax;
 
   /* ------------- Federal Taxes ------------- */
 
   let salt_deduction =
     taxRates.federal.income.personalExemption === 0.0
-      ? Pervasives.min(totalStateAndLocalIncomeTax, 10000.0)
-      : totalStateAndLocalIncomeTax;
+      ? Pervasives.min(totalStateAndLocalIncomeTax, 10000.0) : totalStateAndLocalIncomeTax;
 
   let federalItemizedDeductions = itemizedDeductions +. salt_deduction;
 
@@ -194,24 +177,17 @@ let calcTaxes =
   let personalExemptions = {
     oneExemptionAmt: taxRates.federal.income.personalExemption,
     numOfExemptions: exemptions,
-    totalExemptionsAmt:
-      float(exemptions) *. taxRates.federal.income.personalExemption,
+    totalExemptionsAmt: float(exemptions) *. taxRates.federal.income.personalExemption,
   };
-  let federalPersonalExemptions =
-    taxRates.federal.income.personalExemption > 0.0
-      ? Some(personalExemptions) : None;
-  let federalTaxableIncomeReductions =
-    federalDeductionAmt +. personalExemptions.totalExemptionsAmt;
-  let federalTaxableIncome: float =
-    Pervasives.max(income -. federalTaxableIncomeReductions, 0.0);
+  let federalPersonalExemptions = taxRates.federal.income.personalExemption > 0.0 ? Some(personalExemptions) : None;
+  let federalTaxableIncomeReductions = federalDeductionAmt +. personalExemptions.totalExemptionsAmt;
+  let federalTaxableIncome: float = Pervasives.max(income -. federalTaxableIncomeReductions, 0.0);
   let (federalIncomeTax, federalIncomeTaxSlabs) =
     calcSlabTax(federalTaxableIncome, taxRates.federal.income.rateSchedule);
 
-  let socialSecurityTaxableIncome: float =
-    Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
+  let socialSecurityTaxableIncome: float = Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
   let socialSecurityTaxRate = taxRates.federal.fica.socialSecurityTaxRate;
-  let socialSecurityTax: float =
-    p(socialSecurityTaxableIncome, socialSecurityTaxRate);
+  let socialSecurityTax: float = p(socialSecurityTaxableIncome, socialSecurityTaxRate);
   let medicareTaxRate = taxRates.federal.fica.medicareTaxRate;
   let medicareTax: float = p(income, medicareTaxRate);
   let ficaTax = socialSecurityTax +. medicareTax;
@@ -249,30 +225,15 @@ let calcTaxes =
 
 let flatRateItem = (label: string, tax: float, rate: float, income: float) =>
   ReasonReact.string(
-    label
-    ++ ": "
-    ++ ns(tax)
-    ++ " (at "
-    ++ twoPointFloatRepr(rate)
-    ++ "% flat on "
-    ++ ns(income)
-    ++ ")",
+    label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
   );
 
 let renderUl = (items: array(ReasonReact.reactElement)) =>
-  <ul>
-    {ReasonReact.array(
-       Array.mapi(
-         (index, item) => <li key={string_of_int(index)}> item </li>,
-         items,
-       ),
-     )}
-  </ul>;
+  <ul> {ReasonReact.array(Array.mapi((index, item) => <li key={string_of_int(index)}> item </li>, items))} </ul>;
 
 module Slabs = {
   [@react.component]
-  let make = (~slabs: array(slabItem)) =>
-    renderUl(Array.map(renderSlabItem, slabs));
+  let make = (~slabs: array(slabItem)) => renderUl(Array.map(renderSlabItem, slabs));
 };
 
 module Section = {
@@ -281,40 +242,26 @@ module Section = {
     <div className="seclist">
       <p> <strong> {ReasonReact.string(label)} </strong> </p>
       children
-      <p>
-        <em> {ReasonReact.string(label ++ ": ")} </em>
-        {ReasonReact.string(ns(total))}
-      </p>
+      <p> <em> {ReasonReact.string(label ++ ": ")} </em> {ReasonReact.string(ns(total))} </p>
     </div>;
 };
 
 module Point = {
   [@react.component]
-  let make = (~name: string, ~value: string) =>
-    <p> {ReasonReact.string(name ++ ": " ++ value)} </p>;
+  let make = (~name: string, ~value: string) => <p> {ReasonReact.string(name ++ ": " ++ value)} </p>;
 };
 
 module TaxReport = {
   [@react.component]
-  let make =
-      (
-        ~taxRates: TaxRates.taxRates,
-        ~income: float,
-        ~itemizedDeductions: float,
-        ~exemptions: int,
-      ) => {
-    let taxes =
-      calcTaxes(~taxRates, ~income, ~itemizedDeductions, ~exemptions);
-    let totalTax: float =
-      taxes.totalStateAndLocalIncomeTax +. taxes.totalFederalTax;
+  let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int) => {
+    let taxes = calcTaxes(~taxRates, ~income, ~itemizedDeductions, ~exemptions);
+    let totalTax: float = taxes.totalStateAndLocalIncomeTax +. taxes.totalFederalTax;
     let incomeAfterTax: float = income -. totalTax;
     let incomeMonthly = incomeAfterTax /. 12.0;
     let effectiveTaxRate = totalTax *. 100.0 /. income;
     <>
       <Point name="Adjusted Gross Income" value={ns(income)} />
-      <Section
-        label="New York Taxable Income Reductions"
-        total={taxes.stateTaxableIncomeReductions}>
+      <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
         <ul>
           <li>
             {ReasonReact.string(
@@ -335,9 +282,7 @@ module TaxReport = {
                     "Personal exemptions for dependents = "
                     ++ ns(taxes.statePersonalExemptions.totalExemptionsAmt)
                     ++ " ("
-                    ++ string_of_int(
-                         taxes.statePersonalExemptions.numOfExemptions,
-                       )
+                    ++ string_of_int(taxes.statePersonalExemptions.numOfExemptions)
                     ++ " x "
                     ++ ns(taxes.statePersonalExemptions.oneExemptionAmt)
                     ++ ")",
@@ -345,46 +290,32 @@ module TaxReport = {
                </li>}
         </ul>
       </Section>
-      <Point
-        name="New York State Taxable Income"
-        value={ns(taxes.stateTaxableIncome)}
-      />
+      <Point name="New York State Taxable Income" value={ns(taxes.stateTaxableIncome)} />
       <Section label="New York City Income Tax" total={taxes.cityIncomeTax}>
         <Slabs slabs={taxes.cityIncomeTaxSlabs} />
       </Section>
       <Section label="New York State Income Tax" total={taxes.stateIncomeTax}>
         <Slabs slabs={taxes.stateIncomeTaxSlabs} />
       </Section>
-      <Point
-        name="Total New York State & City Taxes"
-        value={ns(taxes.totalStateAndLocalIncomeTax)}
-      />
-      <Section
-        label="Federal Taxable Income Reductions"
-        total={taxes.federalTaxableIncomeReductions}>
+      <Point name="Total New York State & City Taxes" value={ns(taxes.totalStateAndLocalIncomeTax)} />
+      <Section label="Federal Taxable Income Reductions" total={taxes.federalTaxableIncomeReductions}>
         <ul>
           {switch (taxes.federalDeduction) {
            | FederalItemizedDeductions(federalItemizations) =>
              <>
                <li>
                  {ReasonReact.string(
-                    "State and Local Taxes Deduction = "
-                    ++ ns(federalItemizations.stateAndLocalTaxesDeduction),
+                    "State and Local Taxes Deduction = " ++ ns(federalItemizations.stateAndLocalTaxesDeduction),
                   )}
                </li>
                <li>
                  {ReasonReact.string(
-                    "Other Itemized Deductions = "
-                    ++ ns(federalItemizations.otherItemizedDeductions),
+                    "Other Itemized Deductions = " ++ ns(federalItemizations.otherItemizedDeductions),
                   )}
                </li>
              </>
            | FederalStandardDeduction(amt) =>
-             <li>
-               {ReasonReact.string(
-                  "Federal Standard Deduction = " ++ ns(amt),
-                )}
-             </li>
+             <li> {ReasonReact.string("Federal Standard Deduction = " ++ ns(amt))} </li>
            }}
           {switch (taxes.federalPersonalExemptions) {
            | Some(personalExemptions) =>
@@ -403,16 +334,11 @@ module TaxReport = {
            }}
         </ul>
       </Section>
-      <Point
-        name="Federal Taxable Income"
-        value={ns(taxes.federalTaxableIncome)}
-      />
+      <Point name="Federal Taxable Income" value={ns(taxes.federalTaxableIncome)} />
       <Section label="Federal Income Tax" total={taxes.federalIncomeTax}>
         <Slabs slabs={taxes.federalIncomeTaxSlabs} />
       </Section>
-      <Section
-        label="Federal Insurance Contributions Act (FICA) Tax"
-        total={taxes.ficaTax}>
+      <Section label="Federal Insurance Contributions Act (FICA) Tax" total={taxes.ficaTax}>
         {renderUl([|
            flatRateItem(
              "Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax",
@@ -420,12 +346,7 @@ module TaxReport = {
              taxes.socialSecurityTaxRate,
              taxes.socialSecurityTaxableIncome,
            ),
-           flatRateItem(
-             "Medicare Hospital Insurance (HI) Tax",
-             taxes.medicareTax,
-             taxes.medicareTaxRate,
-             income,
-           ),
+           flatRateItem("Medicare Hospital Insurance (HI) Tax", taxes.medicareTax, taxes.medicareTaxRate, income),
          |])}
       </Section>
       <Point name="Total Federal Taxes" value={ns(taxes.totalFederalTax)} />
@@ -433,23 +354,11 @@ module TaxReport = {
       <hr />
       <Point name="Income after Taxation" value={ns(incomeAfterTax)} />
       <Point name="Monthly Income" value={ns(incomeMonthly)} />
-      <Point
-        name="Effective Tax Rate"
-        value={twoPointFloatRepr(effectiveTaxRate) ++ "%"}
-      />
+      <Point name="Effective Tax Rate" value={twoPointFloatRepr(effectiveTaxRate) ++ "%"} />
     </>;
   };
 };
 
-let renderReport =
-    (
-      taxRates: TaxRates.taxRates,
-      income: float,
-      itemizedDeductions: float,
-      exemptions: int,
-    ) => {
-  ReactDOMRe.renderToElementWithId(
-    <TaxReport taxRates income itemizedDeductions exemptions />,
-    "report",
-  );
+let renderReport = (taxRates: TaxRates.taxRates, income: float, itemizedDeductions: float, exemptions: int) => {
+  ReactDOMRe.renderToElementWithId(<TaxReport taxRates income itemizedDeductions exemptions />, "report");
 };
