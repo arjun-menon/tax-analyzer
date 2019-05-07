@@ -31,6 +31,22 @@ label {
     margin: 7px auto 3px auto;
 }
 
+#report {
+    display: table;
+    margin: 0 auto;
+
+    padding: 10px 25px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 25px;
+    box-shadow: 5px 5px 15px #BBBBBB;
+
+    background-color:#F8F8F8;
+    /* font-family: Geneva, Tahoma; */
+    font-size: small;
+}
+
 #results {
     visibility: hidden;
 
