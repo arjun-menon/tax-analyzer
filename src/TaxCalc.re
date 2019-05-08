@@ -68,7 +68,8 @@ type federalPersonalExemptionsType =
   | None
   | Some(personalExemptionType);
 
-type taxesType = {
+type taxesAnalysis = {
+  income: float,
   stateDeduction: stateDeductionType,
   stateDeductionAmt: float,
   statePersonalExemptions: personalExemptionType,
@@ -99,7 +100,7 @@ type taxesType = {
 };
 
 let calcTaxes =
-    (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int): taxesType => {
+    (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int): taxesAnalysis => {
   /* ------------- New York State & City Taxes ------------- */
 
   let (stateDeductionAmt: float, stateDeduction: stateDeductionType) =
@@ -165,6 +166,7 @@ let calcTaxes =
   let effectiveTaxRate = totalTax *. 100.0 /. income;
 
   {
+    income,
     stateDeduction,
     stateDeductionAmt,
     statePersonalExemptions,

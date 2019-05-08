@@ -19,27 +19,32 @@ let numberWithCommas: string => string = [%bs.raw
 /* Stringify a number representing money: */
 let ns = (n: float): string => "$" ++ numberWithCommas(twoPointFloatRepr(n));
 
-let renderSlabItem = (slabItem: TaxCalc.slabItem) =>
-  ReasonReact.string(
-    "Slab from "
-    ++ ns(slabItem.fromAmt)
-    ++ " to "
-    ++ ns(slabItem.toAmt)
-    ++ " = "
-    ++ ns(slabItem.taxAmt)
-    ++ " (at "
-    ++ twoPointFloatRepr(slabItem.taxRate)
-    ++ "% on "
-    ++ ns(slabItem.slabAmt)
-    ++ ")",
-  );
-
-let renderUl = (items: array(ReasonReact.reactElement)) =>
-  <ul> {ReasonReact.array(Array.mapi((index, item) => <li key={string_of_int(index)}> item </li>, items))} </ul>;
+module SlabItem = {
+  [@react.component]
+  let make = (~slab: TaxCalc.slabItem) =>
+    <li>
+      {ReasonReact.string(
+         "Slab from "
+         ++ ns(slab.fromAmt)
+         ++ " to "
+         ++ ns(slab.toAmt)
+         ++ " = "
+         ++ ns(slab.taxAmt)
+         ++ " (at "
+         ++ twoPointFloatRepr(slab.taxRate)
+         ++ "% on "
+         ++ ns(slab.slabAmt)
+         ++ ")",
+       )}
+    </li>;
+};
 
 module Slabs = {
   [@react.component]
-  let make = (~slabs: array(TaxCalc.slabItem)) => renderUl(Array.map(renderSlabItem, slabs));
+  let make = (~slabs: array(TaxCalc.slabItem)) =>
+    <ul>
+      {ReasonReact.array(Array.mapi((index, slab) => <SlabItem slab key={string_of_int(index)} />, slabs))}
+    </ul>;
 };
 
 module Section = {
@@ -83,10 +88,9 @@ module FlatRatePoint = {
 };
 
 [@react.component]
-let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int) => {
-  let taxes = TaxCalc.calcTaxes(~taxRates, ~income, ~itemizedDeductions, ~exemptions);
+let make = (~taxes: TaxCalc.taxesAnalysis) =>
   <>
-    <Point name="Adjusted Gross Income" value={ns(income)} />
+    <Point name="Adjusted Gross Income" value={ns(taxes.income)} />
     <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
       <ul>
         <EqualsItem
@@ -158,7 +162,7 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
           label="Medicare Hospital Insurance (HI) Tax"
           tax={taxes.medicareTax}
           rate={taxes.medicareTaxRate}
-          income
+          income={taxes.income}
         />
       </ul>
     </Section>
@@ -169,4 +173,3 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
     <Point name="Monthly Income" value={ns(taxes.incomeAfterTaxMonthly)} />
     <Point name="Effective Tax Rate" value={twoPointFloatRepr(taxes.effectiveTaxRate) ++ "%"} />
   </>;
-};
