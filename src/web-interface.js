@@ -24,19 +24,19 @@ function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsPa
     let errorMessage = '';
 
     if (!incomeParam)
-        errorMessage += 'Income must be specified. <br />';
+        errorMessage += 'Income must be specified.';
     if (incomeParam && input.income == 0)
-        errorMessage += 'Income must be greater than zero. <br />';
+        errorMessage += 'Income must be greater than zero.';
     if (incomeParam && (!isValidNumber(incomeParam) || !(input.income >= 0)))
-        errorMessage += "Income: '" + incomeParam + "'" + ' is not valid. <br />';
+        errorMessage += "Income: '" + incomeParam + "'" + ' is not valid.';
     if (!deductionsParam)
-        errorMessage += 'The total dollar amount of tax deductions must be specified. <br />';
+        errorMessage += 'The total dollar amount of tax deductions must be specified.';
     if (deductionsParam && (!isValidNumber(deductionsParam) || !(input.deductions >= 0)))
-        errorMessage += "Deductions: '" + deductionsParam + "'" + ' is not valid. <br />';
+        errorMessage += "Deductions: '" + deductionsParam + "'" + ' is not valid.';
     if (!exemptionsParam)
-        errorMessage += 'The number of personal exemptions must be specified. <br />';
+        errorMessage += 'The number of personal exemptions must be specified.';
     if (exemptionsParam && (!isValidNumber(exemptionsParam) || !(input.exemptions >= 0)))
-        errorMessage += "Exemptions: '" + exemptionsParam + "'" + ' is not valid. <br />';
+        errorMessage += "Exemptions: '" + exemptionsParam + "'" + ' is not valid.';
 
     return errorMessage;
 }
