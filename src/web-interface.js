@@ -4,16 +4,20 @@ const default_income = '100,000';
 const first_available_tax_year = 2014;
 const last_available_tax_year = 2019;
 
+function renderReport(input) {
+    WebInterface.renderReport(parseInt(input.taxYear), input.income, input.deductions, input.exemptions);
+}
+
+function renderError(message) {
+    WebInterface.renderError(message.toString());
+}
+
 function getParameterByName(name) {
     // from: http://stackoverflow.com/a/901144/908430
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     const regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
         results = regex.exec(location.search);
     return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
-
-function renderReport(input) {
-    WebInterface.renderReport(parseInt(input.taxYear), input.income, input.deductions, input.exemptions);
 }
 
 function constructErrorMessage(input, incomeParam, deductionsParam, exemptionsParam) {
@@ -142,7 +146,7 @@ function dynamicSubmit() {
     catch (err_output) {
         history.pushState(formParams, '', '?' + encodeQueryData(formParams));
         console.error(err_output);
-        setResults(err_output);
+        renderError(err_output);
     }
 }
 
@@ -152,7 +156,7 @@ function main() {
     }
     catch (err_output) {
         console.error(err_output);
-        setResults(err_output);
+        renderError(err_output);
     }
 
     if (doesSupportHistoryAPI()) {
@@ -171,7 +175,7 @@ function main() {
             }
             catch (err_output) {
                 console.error(err_output);
-                setResults(err_output);
+                renderError(err_output);
             }
         };
     }
