@@ -57,25 +57,29 @@ module Point = {
   let make = (~name: string, ~value: string) => <p> {ReasonReact.string(name ++ ": " ++ value)} </p>;
 };
 
-module EqualsPoint = {
+module EqualsItem = {
   [@react.component]
-  let make = (~label: string, ~amt: float) => ReasonReact.string(label ++ " = " ++ ns(amt));
+  let make = (~label: string, ~amt: float) => <li> {ReasonReact.string(label ++ " = " ++ ns(amt))} </li>;
 };
 
-module MultiplicationPoint = {
+module MultiplicationItem = {
   [@react.component]
   let make = (~label: string, ~amt: float, ~multiplicant: int, ~one: float) =>
-    ReasonReact.string(
-      label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")",
-    );
+    <li>
+      {ReasonReact.string(
+         label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")",
+       )}
+    </li>;
 };
 
 module FlatRatePoint = {
   [@react.component]
   let make = (~label: string, ~tax: float, ~rate: float, ~income: float) =>
-    ReasonReact.string(
-      label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
-    );
+    <li>
+      {ReasonReact.string(
+         label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
+       )}
+    </li>;
 };
 
 [@react.component]
@@ -85,27 +89,23 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
     <Point name="Adjusted Gross Income" value={ns(income)} />
     <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
       <ul>
-        <li>
-          <EqualsPoint
-            label={
-              switch (taxes.stateDeduction) {
-              | StateItemizedDeductions => "New York Itemized Deductions"
-              | StateStandardDeduction => "New York Standard Deduction"
-              }
+        <EqualsItem
+          label={
+            switch (taxes.stateDeduction) {
+            | StateItemizedDeductions => "New York Itemized Deductions"
+            | StateStandardDeduction => "New York Standard Deduction"
             }
-            amt={taxes.stateDeductionAmt}
-          />
-        </li>
+          }
+          amt={taxes.stateDeductionAmt}
+        />
         {taxes.statePersonalExemptions.numOfExemptions <= 0
            ? ReasonReact.null
-           : <li>
-               <MultiplicationPoint
-                 label="Personal exemptions for dependents"
-                 amt={taxes.statePersonalExemptions.totalExemptionsAmt}
-                 multiplicant={taxes.statePersonalExemptions.numOfExemptions}
-                 one={taxes.statePersonalExemptions.oneExemptionAmt}
-               />
-             </li>}
+           : <MultiplicationItem
+               label="Personal exemptions for dependents"
+               amt={taxes.statePersonalExemptions.totalExemptionsAmt}
+               multiplicant={taxes.statePersonalExemptions.numOfExemptions}
+               one={taxes.statePersonalExemptions.oneExemptionAmt}
+             />}
       </ul>
     </Section>
     <Point name="New York State Taxable Income" value={ns(taxes.stateTaxableIncome)} />
@@ -121,29 +121,23 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
         {switch (taxes.federalDeduction) {
          | FederalItemizedDeductions(federalItemizations) =>
            <>
-             <li>
-               <EqualsPoint
-                 label="State and Local Taxes Deduction"
-                 amt={federalItemizations.stateAndLocalTaxesDeduction}
-               />
-             </li>
-             <li>
-               <EqualsPoint label="Other Itemized Deductions" amt={federalItemizations.otherItemizedDeductions} />
-             </li>
+             <EqualsItem
+               label="State and Local Taxes Deduction"
+               amt={federalItemizations.stateAndLocalTaxesDeduction}
+             />
+             <EqualsItem label="Other Itemized Deductions" amt={federalItemizations.otherItemizedDeductions} />
            </>
          | FederalStandardDeduction(amt) =>
            <li> {ReasonReact.string("Federal Standard Deduction = " ++ ns(amt))} </li>
          }}
         {switch (taxes.federalPersonalExemptions) {
          | Some(personalExemptions) =>
-           <li>
-             <MultiplicationPoint
-               label="Personal Exemptions"
-               amt={personalExemptions.totalExemptionsAmt}
-               multiplicant={personalExemptions.numOfExemptions}
-               one={personalExemptions.oneExemptionAmt}
-             />
-           </li>
+           <MultiplicationItem
+             label="Personal Exemptions"
+             amt={personalExemptions.totalExemptionsAmt}
+             multiplicant={personalExemptions.numOfExemptions}
+             one={personalExemptions.oneExemptionAmt}
+           />
          | None => ReasonReact.null
          }}
       </ul>
@@ -153,20 +147,20 @@ let make = (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: f
       <Slabs slabs={taxes.federalIncomeTaxSlabs} />
     </Section>
     <Section label="Federal Insurance Contributions Act (FICA) Tax" total={taxes.ficaTax}>
-      {renderUl([|
-         <FlatRatePoint
-           label="Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax"
-           tax={taxes.socialSecurityTax}
-           rate={taxes.socialSecurityTaxRate}
-           income={taxes.socialSecurityTaxableIncome}
-         />,
-         <FlatRatePoint
-           label="Medicare Hospital Insurance (HI) Tax"
-           tax={taxes.medicareTax}
-           rate={taxes.medicareTaxRate}
-           income
-         />,
-       |])}
+      <ul>
+        <FlatRatePoint
+          label="Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax"
+          tax={taxes.socialSecurityTax}
+          rate={taxes.socialSecurityTaxRate}
+          income={taxes.socialSecurityTaxableIncome}
+        />
+        <FlatRatePoint
+          label="Medicare Hospital Insurance (HI) Tax"
+          tax={taxes.medicareTax}
+          rate={taxes.medicareTaxRate}
+          income
+        />
+      </ul>
     </Section>
     <Point name="Total Federal Taxes" value={ns(taxes.totalFederalTax)} />
     <Point name="Total Federal, State & Local Taxes" value={ns(taxes.totalTax)} />
