@@ -88,8 +88,14 @@ module FlatRatePoint = {
 };
 
 [@react.component]
-let make = (~taxes: TaxCalc.taxesAnalysis) =>
-  <div className={"report"}>
+let make = (~params: TaxCalc.taxParams) => {
+  let taxes = TaxCalc.calcTaxes(params);
+
+  let taxesWithOneExtraDollar = TaxCalc.calcTaxes({...params, income: params.income +. 1.0});
+  let totalTaxDiff: float = taxesWithOneExtraDollar.totalTax -. taxes.totalTax;
+  let marginalTaxRate = totalTaxDiff *. 100.0;
+
+  <div className="report">
     <Point name="Adjusted Gross Income" value={ns(taxes.income)} />
     <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
       <ul>
@@ -172,4 +178,6 @@ let make = (~taxes: TaxCalc.taxesAnalysis) =>
     <Point name="Income after Taxation" value={ns(taxes.incomeAfterTax)} />
     <Point name="Monthly Income" value={ns(taxes.incomeAfterTaxMonthly)} />
     <Point name="Effective Tax Rate" value={twoPointFloatRepr(taxes.effectiveTaxRate) ++ "%"} />
+    <Point name="Marginal Tax Rate" value={twoPointFloatRepr(marginalTaxRate) ++ "%"} />
   </div>;
+};

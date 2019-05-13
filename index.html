@@ -23,36 +23,6 @@
 <a class="github-fork-ribbon left-top" href="https://arjun-menon.com" title="By Arjun G. Menon"></a>
 <a class="github-fork-ribbon right-top" href="https://github.com/arjun-menon/tax-analyzer" title="Contribute on GitHub"></a>
 
-<h1>NYC Taxes</h1>
-
-<div class="purpose">Calculate total U.S. taxes owed by an unmarried resident of NYC in
-    <select id="taxYearSelector">
-        <option value="2019">2019</option>
-        <option value="2018">2018</option>
-        <option value="2017">2017</option>
-        <option value="2016">2016</option>
-        <option value="2015">2015</option>
-        <option value="2014">2014</option>
-    </select>
-</div>
-
-<form id="input_form" method="get">
-<fieldset>
-    <legend>&#10003;</legend>
-
-    <label for="agi">Adjusted Gross Income:</label>
-    $ <input id="agi" name="income" type="text" size="20" value="" /><br />
-
-    <label for="itd">Tax Deductions Total Amount: </label>
-    $ <input id="itd" name="deductions" type="text" size="20" value="0" /><br />
-
-    <label for="npe">Number of Personal Exemptions: </label>
-    n <input id="npe" name="exemptions" type="text" size="20" value="1" /><br />
-
-    <input id="calc_submit" type="submit" value="Calculate" />
-</fieldset>
-</form>
-
 <div id="root"/>
 
 <script src="index.js"></script>

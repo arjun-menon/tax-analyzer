@@ -99,15 +99,21 @@ type taxesAnalysis = {
   effectiveTaxRate: float,
 };
 
-let calcTaxes =
-    (~taxRates: TaxRates.taxRates, ~income: float, ~itemizedDeductions: float, ~exemptions: int): taxesAnalysis => {
-  /* ------------- New York State & City Taxes ------------- */
+type taxParams = {
+  year: int,
+  income: float,
+  deductions: float,
+  exemptions: int
+};
 
+let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
+  let {year, income, deductions, exemptions} = taxParams;
+  let taxRates: TaxRates.taxRates = TaxRates.getSingleRatesForYear(year);
+
+  /* ------------- New York Deductions and Personal Exemptions  ------------- */
   let (stateDeductionAmt: float, stateDeduction: stateDeductionType) =
-    itemizedDeductions <= taxRates.nyc.standardDeduction
-      ? (taxRates.nyc.standardDeduction, StateStandardDeduction) : (itemizedDeductions, StateItemizedDeductions);
-
-  /* NYS Personal Exemptions for Dependents */
+    deductions <= taxRates.nyc.standardDeduction
+      ? (taxRates.nyc.standardDeduction, StateStandardDeduction) : (deductions, StateItemizedDeductions);
   let numOfExemptions: int = Pervasives.max(exemptions - 1, 0);
   let statePersonalExemptions: personalExemptionType = {
     oneExemptionAmt: taxRates.nyc.dependentPersonalExemption,
@@ -115,6 +121,7 @@ let calcTaxes =
     totalExemptionsAmt: float(numOfExemptions) *. taxRates.nyc.dependentPersonalExemption,
   };
 
+  /* ------------- New York State & City Taxes ------------- */
   let stateTaxableIncomeReductions = stateDeductionAmt +. statePersonalExemptions.totalExemptionsAmt;
   let stateTaxableIncome = Pervasives.max(income -. stateTaxableIncomeReductions, 0.0);
   let (cityIncomeTax, cityIncomeTaxSlabs) = calcSlabTax(stateTaxableIncome, taxRates.nyc.cityRateSchedule);
@@ -125,7 +132,7 @@ let calcTaxes =
   let stateAndLocalTaxesDeduction =
     taxRates.federal.income.personalExemption === 0.0
       ? Pervasives.min(totalStateAndLocalIncomeTax, 10000.0) : totalStateAndLocalIncomeTax;
-  let federalItemizedDeductions = itemizedDeductions +. stateAndLocalTaxesDeduction;
+  let federalItemizedDeductions = deductions +. stateAndLocalTaxesDeduction;
   let (federalDeductionAmt: float, federalDeduction: federalDeductionType) =
     federalItemizedDeductions <= taxRates.federal.income.standardDeduction
       ? (
@@ -136,7 +143,7 @@ let calcTaxes =
         federalItemizedDeductions,
         FederalItemizedDeductions({
           stateAndLocalTaxesDeduction,
-          otherItemizedDeductions: itemizedDeductions,
+          otherItemizedDeductions: deductions,
           stateTaxableIncomeReductions: federalItemizedDeductions,
         }),
       );
@@ -151,7 +158,7 @@ let calcTaxes =
   let (federalIncomeTax, federalIncomeTaxSlabs) =
     calcSlabTax(federalTaxableIncome, taxRates.federal.income.rateSchedule);
 
-  /* FICA (Social Security and Medicare) Taxes */
+  /* ------------- FICA (Social Security and Medicare) Taxes ------------- */
   let socialSecurityTaxableIncome: float = Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
   let socialSecurityTaxRate = taxRates.federal.fica.socialSecurityTaxRate;
   let socialSecurityTax: float = p(socialSecurityTaxableIncome, socialSecurityTaxRate);
@@ -159,6 +166,7 @@ let calcTaxes =
   let medicareTax: float = p(income, medicareTaxRate);
   let ficaTax = socialSecurityTax +. medicareTax;
 
+  /* ------------- Totoal Picture ------------- */
   let totalFederalTax = federalIncomeTax +. ficaTax;
   let totalTax: float = totalStateAndLocalIncomeTax +. totalFederalTax;
   let incomeAfterTax = income -. totalTax;

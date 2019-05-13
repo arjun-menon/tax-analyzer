@@ -24,7 +24,7 @@ label {
     width: 250px;
 }
 
-#calc_submit {
+.calc_submit {
     width: 100px;
     height: 2em;
     display: block;
