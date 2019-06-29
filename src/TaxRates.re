@@ -47,7 +47,7 @@ type allTaxRates = {
    Rates Data
  **************/
 let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
-  [|
+  Belt.Map.Int.fromArray([|
     // Year 2014 Single Tax Rates
     (
       2014,
@@ -312,8 +312,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
         },
       },
     ),
-  |]
-  ->Belt.Map.Int.fromArray;
+  |]);
 
-let getSingleRatesForYear = (year: int): taxRates => singleTaxRatesByYear->Belt.Map.Int.getExn(year);
-let availableYears: array(int) = singleTaxRatesByYear->Belt.Map.Int.keysToArray;
+let getSingleRatesForYear = (year: int): taxRates => Belt.Map.Int.getExn(singleTaxRatesByYear, year);
+let availableYears: array(int) = Belt.Map.Int.keysToArray(singleTaxRatesByYear);
