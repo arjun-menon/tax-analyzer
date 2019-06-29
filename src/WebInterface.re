@@ -1,17 +1,5 @@
 let rs = ReasonReact.string;
 
-let parseint: string => int = [%raw {| x => {
-  const v = parseInt(x, 10);
-  return isNaN(v) ? 0 : v;
-} |}];
-
-let getParamsFromStrings = (year: string, income: string, deductions: string, exemptions: string): TaxCalc.taxParams => {
-  year: parseint(year),
-  income: Js.Float.fromString(income),
-  deductions: Js.Float.fromString(deductions),
-  exemptions: parseint(exemptions),
-};
-
 let checkYear = (year: int): bool => {
   switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
   | Some(_) => true
@@ -19,9 +7,10 @@ let checkYear = (year: int): bool => {
   };
 };
 
-// any comaprison against NaN _floats_ yields false
-let checkIncome = (income: float): bool => income > 0.0;
-let checkDeductions = (deductions: float): bool => deductions >= 0.0;
+// Note 1: any comaprison against NaN yields a false-like value. Negating this false-like value with `!` does not work.
+// Note 2: the seemingly unnecessary `? true : false` turns a potential false-like value into an actual ReML false bool.
+let checkIncome = (income: float): bool => income > 0.0 ? true : false;
+let checkDeductions = (deductions: float): bool => deductions >= 0.0 ? true : false;
 
 let checkExemptions = (exemptions: int): bool => exemptions >= 0;
 
@@ -56,6 +45,18 @@ let removeCommas: string => string = [%bs.raw
 
 let parseFloat = (s: string): float => Js.Float.fromString(removeCommas(s));
 
+let parseInt: string => int = [%raw {| x => {
+  const v = parseInt(x, 10);
+  return isNaN(v) ? 0 : v;
+} |}];
+
+let getParamsFromStrings = (year: string, income: string, deductions: string, exemptions: string): TaxCalc.taxParams => {
+  year: parseInt(year),
+  income: parseFloat(income),
+  deductions: parseFloat(deductions),
+  exemptions: parseInt(exemptions),
+};
+
 let makeUrlParams = (params: TaxCalc.taxParams): string => {
   let year = string_of_int(params.year);
   let income = Js.Float.toString(params.income);
@@ -87,10 +88,13 @@ let getUrlParams = (url: ReasonReactRouter.url): urlParams => {
     exemptions: getParameterByName(urlParams, "exemptions"),
   };
 };
+
 let destringUrlParams = (urlParams: urlParams): TaxCalc.taxParams =>
   getParamsFromStrings(urlParams.year, urlParams.income, urlParams.deductions, urlParams.exemptions);
 
 let fixUrlIfNecessary = (defaultParams: TaxCalc.taxParams) => {
+  // test with: http://localhost:8000/?income=150%2C000&deductions=7000&exemptions=3&taxYear=2019
+  // test with: http://localhost:8000/?year=2019&income=NaN&deductions=7000&exemptions=3
   let url = ReasonReactRouter.dangerouslyGetInitialUrl();
   if (url.search === "") {
     ReasonReactRouter.replace(makeUrlParams(defaultParams));
