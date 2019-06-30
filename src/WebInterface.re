@@ -139,6 +139,17 @@ module TaxAnalyzer = {
       ReasonReactRouter.push(makeUrlParams(formParams));
     };
 
+    let onChangeYear = event => {
+      let newYearS: string = ReactEvent.Form.target(event)##value;
+      let newYear = parseInt(newYearS);
+      setYearS(oldYear => {
+        if (oldYear != newYearS) {
+          ReasonReactRouter.push(makeUrlParams({...params, year: newYear}));
+        }
+        newYearS;
+      });
+    };
+
     let isCalcEnabled: bool = checkParams(formParams);
 
     let checkSign = (valid: bool) => {
@@ -151,7 +162,7 @@ module TaxAnalyzer = {
       <h1> {rs("Taxes in NYC")} </h1>
       <div className="purpose">
         {rs("Calculate total U.S. taxes owed by an unmarried resident of NYC in ")}
-        <select id="taxYearSelector" value=yearS onChange={eventS(setYearS)}>
+        <select id="taxYearSelector" value=yearS onChange={onChangeYear}>
           {ReasonReact.array(
              Array.map(
                year => <option value=year key=year> {rs(year)} </option>,
