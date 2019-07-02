@@ -57,26 +57,30 @@ let getParamsFromStrings = (year: string, income: string, deductions: string, ex
   exemptions: parseInt(exemptions),
 };
 
-let makeUrlParams = (params: TaxCalc.taxParams): string => {
-  let year = string_of_int(params.year);
-  let income = Js.Float.toString(params.income);
-  let deductions = Js.Float.toString(params.deductions);
-  let exemptions = string_of_int(params.exemptions);
-  "?year="
-  ++ Js_global.encodeURIComponent(year)
-  ++ "&income="
-  ++ Js_global.encodeURIComponent(income)
-  ++ "&deductions="
-  ++ Js_global.encodeURIComponent(deductions)
-  ++ "&exemptions="
-  ++ Js_global.encodeURIComponent(exemptions);
-};
-
 type urlParams = {
   year: string,
   income: string,
   deductions: string,
   exemptions: string,
+};
+
+let toUrlParams = (params: TaxCalc.taxParams): urlParams => {
+  year: string_of_int(params.year),
+  income: Js.Float.toString(params.income),
+  deductions: Js.Float.toString(params.deductions),
+  exemptions: string_of_int(params.exemptions),
+};
+
+let makeUrlParams = (params: TaxCalc.taxParams): string => {
+  let p: urlParams = toUrlParams(params);
+  "?year="
+  ++ Js_global.encodeURIComponent(p.year)
+  ++ "&income="
+  ++ Js_global.encodeURIComponent(p.income)
+  ++ "&deductions="
+  ++ Js_global.encodeURIComponent(p.deductions)
+  ++ "&exemptions="
+  ++ Js_global.encodeURIComponent(p.exemptions);
 };
 
 let getUrlParams = (url: ReasonReactRouter.url): urlParams => {
@@ -121,6 +125,9 @@ let eventS = (setValue, event) => {
   setValue(_ => value);
 };
 
+let areParamsDifferent = (p1: TaxCalc.taxParams, p2: TaxCalc.taxParams) =>
+  p1.year != p2.year || p1.income != p2.income || p1.deductions != p2.deductions || p1.exemptions != p2.exemptions;
+
 module TaxAnalyzer = {
   [@react.component]
   let make = () => {
@@ -135,8 +142,26 @@ module TaxAnalyzer = {
 
     let formParams: TaxCalc.taxParams = getParamsFromStrings(yearS, incomeS, deductionsS, exemptionsS);
 
-    let onCalc = _ => {
-      ReasonReactRouter.push(makeUrlParams(formParams));
+    React.useEffect(() => {
+      let watcherId =
+        ReasonReactRouter.watchUrl(url => {
+          let p = getUrlParams(url);
+          setYearS(_ => p.year);
+          setIncomeS(_ => p.income);
+          setDeductionsS(_ => p.deductions);
+          setExemptionsS(_ => p.exemptions);
+        });
+      Some(() => ReasonReactRouter.unwatchUrl(watcherId));
+    });
+
+    let onCalc = () =>
+      if (areParamsDifferent(params, formParams)) {
+        ReasonReactRouter.push(makeUrlParams(formParams));
+      };
+
+    let onSubmit = event => {
+      ReactEvent.Mouse.preventDefault(event);
+      onCalc();
     };
 
     let onChangeYear = event => {
@@ -145,7 +170,7 @@ module TaxAnalyzer = {
       setYearS(oldYear => {
         if (oldYear != newYearS) {
           ReasonReactRouter.push(makeUrlParams({...params, year: newYear}));
-        }
+        };
         newYearS;
       });
     };
@@ -162,7 +187,7 @@ module TaxAnalyzer = {
       <h1> {rs("Taxes in NYC")} </h1>
       <div className="purpose">
         {rs("Calculate total U.S. taxes owed by an unmarried resident of NYC in ")}
-        <select id="taxYearSelector" value=yearS onChange={onChangeYear}>
+        <select id="taxYearSelector" value=yearS onChange=onChangeYear>
           {ReasonReact.array(
              Array.map(
                year => <option value=year key=year> {rs(year)} </option>,
@@ -189,7 +214,7 @@ module TaxAnalyzer = {
           <input name="exemptions" type_="number" size=20 value=exemptionsS onChange={eventS(setExemptionsS)} />
           {checkSign(checkExemptions(formParams.exemptions))}
           <br />
-          <input className="calc_submit" type_="button" value="Calculate" onClick=onCalc disabled={!isCalcEnabled} />
+          <input className="calc_submit" type_="submit" value="Calculate" disabled={!isCalcEnabled} onClick=onSubmit />
         </fieldset>
       </form>
       <br />
