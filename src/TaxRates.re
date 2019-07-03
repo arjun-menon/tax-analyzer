@@ -34,15 +34,6 @@ type taxRates = {
   nyc: nycTaxRates,
 };
 
-type allTaxRates = {
-  y2014: taxRates,
-  y2015: taxRates,
-  y2016: taxRates,
-  y2017: taxRates,
-  y2018: taxRates,
-  y2019: taxRates,
-};
-
 /**************
    Rates Data
  **************/
