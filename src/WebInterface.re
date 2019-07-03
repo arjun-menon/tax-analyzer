@@ -232,6 +232,4 @@ fixUrlIfNecessary({
   exemptions: 1,
 });
 
-let render = () => {
-  ReactDOMRe.renderToElementWithId(<TaxAnalyzer />, "root");
-};
+ReactDOMRe.renderToElementWithId(<TaxAnalyzer />, "root");
