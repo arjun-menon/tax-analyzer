@@ -171,7 +171,7 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   let totalTax: float = totalStateAndLocalIncomeTax +. totalFederalTax;
   let incomeAfterTax = income -. totalTax;
   let incomeAfterTaxMonthly = incomeAfterTax /. 12.0;
-  let effectiveTaxRate = totalTax *. 100.0 /. income;
+  let effectiveTaxRate = (income > 0.0) ? totalTax *. 100.0 /. income : 0.0;
 
   {
     income,
