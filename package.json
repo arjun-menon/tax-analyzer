@@ -16,9 +16,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@ahrefs/bs-recharts": "^0.3.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
-    "reason-react": ">=0.7.0"
+    "reason-react": ">=0.7.0",
+    "recharts": "^1.6.2"
   },
   "devDependencies": {
     "bs-platform": "^5.0.4",
