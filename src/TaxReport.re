@@ -83,19 +83,20 @@ module FlatRatePoint = {
   [@react.component]
   let make = (~label: string, ~tax: float, ~rate: float, ~income: float) =>
     <li>
-      {ReasonReact.string(
-         label ++ ": " ++ ns(tax) ++ " (at " ++ percent(rate) ++ " flat on " ++ ns(income) ++ ")",
-       )}
+      {ReasonReact.string(label ++ ": " ++ ns(tax) ++ " (at " ++ percent(rate) ++ " flat on " ++ ns(income) ++ ")")}
     </li>;
+};
+
+let calcMarginalTaxRate = (params: TaxCalc.taxParams, taxes: TaxCalc.taxesAnalysis): float => {
+  let taxesWithOneExtraDollar = TaxCalc.calcTaxes({...params, income: params.income +. 1.0});
+  let totalTaxDiff: float = taxesWithOneExtraDollar.totalTax -. taxes.totalTax;
+  totalTaxDiff *. 100.0;
 };
 
 [@react.component]
 let make = (~params: TaxCalc.taxParams) => {
   let taxes = TaxCalc.calcTaxes(params);
-
-  let taxesWithOneExtraDollar = TaxCalc.calcTaxes({...params, income: params.income +. 1.0});
-  let totalTaxDiff: float = taxesWithOneExtraDollar.totalTax -. taxes.totalTax;
-  let marginalTaxRate = totalTaxDiff *. 100.0;
+  let marginalTaxRate = calcMarginalTaxRate(params, taxes);
 
   <div className="report">
     <Point name="Adjusted Gross Income" value={ns(taxes.income)} />
