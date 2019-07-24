@@ -8,6 +8,8 @@ let twoPointFloatRepr: float => string = [%bs.raw
 |}
 ];
 
+let percent = (n: float): string => twoPointFloatRepr(n) ++ "%";
+
 let numberWithCommas: string => string = [%bs.raw
   {|
  function numberWithCommas_(n) { /* from: http://stackoverflow.com/a/2901298 */
@@ -31,8 +33,8 @@ module SlabItem = {
          ++ " = "
          ++ ns(slab.taxAmt)
          ++ " (at "
-         ++ twoPointFloatRepr(slab.taxRate)
-         ++ "% on "
+         ++ percent(slab.taxRate)
+         ++ " on "
          ++ ns(slab.slabAmt)
          ++ ")",
        )}
@@ -82,7 +84,7 @@ module FlatRatePoint = {
   let make = (~label: string, ~tax: float, ~rate: float, ~income: float) =>
     <li>
       {ReasonReact.string(
-         label ++ ": " ++ ns(tax) ++ " (at " ++ twoPointFloatRepr(rate) ++ "% flat on " ++ ns(income) ++ ")",
+         label ++ ": " ++ ns(tax) ++ " (at " ++ percent(rate) ++ " flat on " ++ ns(income) ++ ")",
        )}
     </li>;
 };
@@ -177,7 +179,7 @@ let make = (~params: TaxCalc.taxParams) => {
     <hr />
     <Point name="Income after Taxation" value={ns(taxes.incomeAfterTax)} />
     <Point name="Monthly Income" value={ns(taxes.incomeAfterTaxMonthly)} />
-    <Point name="Effective Tax Rate" value={twoPointFloatRepr(taxes.effectiveTaxRate) ++ "%"} />
-    <Point name="Marginal Tax Rate" value={twoPointFloatRepr(marginalTaxRate) ++ "%"} />
+    <Point name="Effective Tax Rate" value={percent(taxes.effectiveTaxRate)} />
+    <Point name="Marginal Tax Rate" value={percent(marginalTaxRate)} />
   </div>;
 };
