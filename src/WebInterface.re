@@ -9,7 +9,7 @@ let checkYear = (year: int): bool => {
 
 // Note 1: any comaprison against NaN yields a false-like value. Negating this false-like value with `!` does not work.
 // Note 2: the seemingly unnecessary `? true : false` turns a potential false-like value into an actual ReML false bool.
-let checkIncome = (income: float): bool => income > 0.0 ? true : false;
+let checkIncome = (income: float): bool => income >= 0.0 ? true : false;
 let checkDeductions = (deductions: float): bool => deductions >= 0.0 ? true : false;
 
 let checkExemptions = (exemptions: int): bool => exemptions >= 0;
@@ -128,11 +128,103 @@ let eventS = (setValue, event) => {
 let areParamsDifferent = (p1: TaxCalc.taxParams, p2: TaxCalc.taxParams) =>
   p1.year != p2.year || p1.income != p2.income || p1.deductions != p2.deductions || p1.exemptions != p2.exemptions;
 
+let determineDataPoints = (income: float): array(int) => {
+  let incomeInt = int_of_float(income);
+  let stepMaybe: int = int_of_float(income /. 12.5);
+  let uptoMaybe: int = incomeInt * 2;
+  let stepMin: int = 10000;
+  let uptoMin: int = 250000;
+  let step: int = Pervasives.max(stepMin, stepMaybe);
+  let upto: int = Pervasives.max(uptoMin, uptoMaybe);
+
+  let lowerHalf: array(int) = Belt.Array.rangeBy(0, incomeInt - 1, ~step);
+  let lastElem: option(int) = Belt.Array.get(lowerHalf, Belt.Array.length(lowerHalf) - 1);
+  let nextAmt: int =
+    (
+      switch (lastElem) {
+      | Some(x) => x
+      | None => 0
+      }
+    )
+    + step;
+  let middle: array(int) = incomeInt == nextAmt ? [||] : [|incomeInt|];
+  let upperHalf: array(int) = Belt.Array.rangeBy(nextAmt, upto, ~step);
+
+  Belt.Array.concatMany([|lowerHalf, middle, upperHalf|]);
+};
+
+[@bs.deriving abstract]
+type dataPoint = {
+  effective: float,
+  marginal: float,
+  income: string,
+};
+
+let toDataPoint = (params: TaxCalc.taxParams): dataPoint => {
+  let taxes = TaxCalc.calcTaxes(params);
+  let marginalTaxRate = TaxReport.calcMarginalTaxRate(params, taxes);
+  let round = (n: float): float => parseFloat(TaxReport.twoPointFloatRepr(n));
+  dataPoint(
+    ~effective=round(taxes.effectiveTaxRate),
+    ~marginal=round(marginalTaxRate),
+    ~income=TaxReport.nsiof(taxes.income),
+  );
+};
+
+module TaxRateChart = {
+  [@react.component]
+  let make = (~params: TaxCalc.taxParams) => {
+    let incomeIntS = TaxReport.nsiof(params.income);
+    let points: array(int) = determineDataPoints(params.income);
+    let toStepParams = (income: float): TaxCalc.taxParams => {...params, income};
+    let data: array(dataPoint) =
+      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
+
+    let marginalRateColor = "rgb(256,0,0)";
+    let effectiveRateColor = "rgb(0,0,256)";
+    let referenceLineColor = "rgb(0,256,0)";
+
+    <>
+      <h1> {rs("Tax Rate Visualizer")} </h1>
+      <center>
+        <BsRecharts.AreaChart width=600 height=400 data>
+          <BsRecharts.CartesianGrid strokeDasharray="3 3" />
+          <BsRecharts.XAxis dataKey="income" />
+          <BsRecharts.YAxis />
+          <BsRecharts.Tooltip />
+          <BsRecharts.Legend verticalAlign=`top height=36 />
+          <BsRecharts.Area
+            _type=`monotone
+            dataKey="marginal"
+            unit="%"
+            name="Marginal Tax Rate"
+            stackId="1"
+            legendType=`circle
+            stroke=marginalRateColor
+            fill=marginalRateColor
+          />
+          <BsRecharts.Area
+            _type=`monotone
+            dataKey="effective"
+            unit="%"
+            name="Effective Tax Rate"
+            stackId="2"
+            legendType=`circle
+            stroke=effectiveRateColor
+            fill=effectiveRateColor
+          />
+          <BsRecharts.ReferenceLine x=incomeIntS stroke=referenceLineColor />
+        </BsRecharts.AreaChart>
+      </center>
+    </>;
+  };
+};
+
 module TaxAnalyzer = {
   [@react.component]
   let make = () => {
-    let urlParams = getUrlParams(ReasonReactRouter.useUrl());
-
+    let url = ReasonReactRouter.useUrl();
+    let urlParams: urlParams = getUrlParams(url);
     let params: TaxCalc.taxParams = destringUrlParams(urlParams);
 
     let (yearS, setYearS) = React.useState(() => urlParams.year);
@@ -142,7 +234,7 @@ module TaxAnalyzer = {
 
     let formParams: TaxCalc.taxParams = getParamsFromStrings(yearS, incomeS, deductionsS, exemptionsS);
 
-    React.useEffect(() => {
+    React.useEffect0(() => {
       let watcherId =
         ReasonReactRouter.watchUrl(url => {
           let p = getUrlParams(url);
@@ -220,6 +312,8 @@ module TaxAnalyzer = {
       <br />
       <TaxReport params />
       <br />
+      <TaxRateChart params />
+      <br />
     </>;
   };
 };
@@ -232,4 +326,4 @@ fixUrlIfNecessary({
   exemptions: 1,
 });
 
-ReactDOMRe.renderToElementWithId(<TaxAnalyzer />, "root");
+ReactDOMRe.renderToElementWithId(<> <TaxAnalyzer /> </>, "root");

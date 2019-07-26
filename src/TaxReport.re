@@ -20,6 +20,8 @@ let numberWithCommas: string => string = [%bs.raw
 
 /* Stringify a number representing money: */
 let ns = (n: float): string => "$" ++ numberWithCommas(twoPointFloatRepr(n));
+let nsi = (n: int): string => "$" ++ numberWithCommas(string_of_int(n));
+let nsiof = (n: float): string => nsi(int_of_float(n));
 
 module SlabItem = {
   [@react.component]
@@ -92,6 +94,9 @@ let calcMarginalTaxRate = (params: TaxCalc.taxParams, taxes: TaxCalc.taxesAnalys
   let totalTaxDiff: float = taxesWithOneExtraDollar.totalTax -. taxes.totalTax;
   totalTaxDiff *. 100.0;
 };
+
+// let make = (~year: int, ~income: float, ~deductions: float, ~exemptions: int) => {
+//   let params: TaxCalc.taxParams = {year, income, deductions, exemptions};
 
 [@react.component]
 let make = (~params: TaxCalc.taxParams) => {
