@@ -318,7 +318,7 @@ module TaxAnalyzer = {
           <input name="income" type_="text" size=20 value=incomeS onChange={eventS(setIncomeS)} />
           {checkSign(checkIncome(formParams.income))}
           <br />
-          <label> {rs("Tax Deductions Total Amount: ")} </label>
+          <label> {rs("Deductions (excluding SALT")} <sup> {rs("1")} </sup> {rs("): ")} </label>
           {rs("$ ")}
           <input name="deductions" type_="text" size=20 value=deductionsS onChange={eventS(setDeductionsS)} />
           {checkSign(checkDeductions(formParams.deductions))}
@@ -342,11 +342,17 @@ module TaxAnalyzer = {
                 };
               }}
             />
-            <span style=verticalAlignMiddle> {rs("Include taxes paid by employer")} </span>
+            <span style=verticalAlignMiddle> {rs("Include taxes paid by employer")} <sup> {rs("2")} </sup> </span>
           </label>
           <br />
           <input className="calc_submit" type_="submit" value="Calculate" disabled={!isCalcEnabled} onClick=onSubmit />
         </fieldset>
+        <small>
+          <sup> {rs("1")} </sup>
+          <span> {rs("State and local tax taxes. ")} </span>
+          <sup> {rs("2")} </sup>
+          <span> {rs("Self-employed folks pay this themselves.")} </span>
+        </small>
       </form>
       <br />
       // <h1> {rs("Point-by-point Breakdown")} </h1>
