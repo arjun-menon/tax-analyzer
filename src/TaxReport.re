@@ -189,32 +189,35 @@ let make = (~params: TaxCalc.taxParams) => {
         />
       </ul>
     </Section>
-    <Section label="Additional taxes paid by employers" total={taxes.totalEmployerTax}>
-      <ul>
-        <CustomPoint
-          label="Employer's portion of the FICA Tax (see above)"
-          tax={taxes.ficaTax}
-          explanation="same as previous"
-        />
-        <CustomPoint
-          label="Federal Unemployment Tax (disregarding state credits)"
-          tax={taxes.federalUnemploymentTax}
-          explanation={
-            percent(TaxRates.federalUnemploymentTax.federalUnemploymentTaxRate)
-            ++ " on up to "
-            ++ ns(TaxRates.federalUnemploymentTax.federalUnemploymentTaxBase)
-          }
-        />
-        <CustomPoint
-          label="New York State Disability Insurance (SDI) Tax"
-          tax={taxes.stateDisabilityInsuranceTax}
-          explanation={
-            ns(TaxRates.nySDI.perWeek) ++ " per week, which is " ++ ns(TaxRates.nySDI.perYear) ++ " yearly"
-          }
-        />
-      </ul>
-    </Section>
-    <Point name="Income including Employer Taxes" value={ns(taxes.incomeInclEmployerTaxes)} />
+    {params.excludeEmp
+       ? ReasonReact.null
+       : <Section label="Additional taxes paid by employers" total={taxes.totalEmployerTax}>
+           <ul>
+             <CustomPoint
+               label="Employer's portion of the FICA Tax (see above)"
+               tax={taxes.ficaTax}
+               explanation="same as previous"
+             />
+             <CustomPoint
+               label="Federal Unemployment Tax (disregarding state credits)"
+               tax={taxes.federalUnemploymentTax}
+               explanation={
+                 percent(TaxRates.federalUnemploymentTax.federalUnemploymentTaxRate)
+                 ++ " on up to "
+                 ++ ns(TaxRates.federalUnemploymentTax.federalUnemploymentTaxBase)
+               }
+             />
+             <CustomPoint
+               label="New York State Disability Insurance (SDI) Tax"
+               tax={taxes.stateDisabilityInsuranceTax}
+               explanation={
+                 ns(TaxRates.nySDI.perWeek) ++ " per week, which is " ++ ns(TaxRates.nySDI.perYear) ++ " yearly"
+               }
+             />
+           </ul>
+         </Section>}
+    {params.excludeEmp
+       ? ReasonReact.null : <Point name="Income including Employer Taxes" value={ns(taxes.incomeInclEmployerTaxes)} />}
     <Point name="Total Federal Taxes" value={ns(taxes.totalFederalTax)} />
     <Point name="Total Federal, State & Local Taxes" value={ns(taxes.totalPersonalTax)} />
     {params.excludeEmp
