@@ -191,7 +191,8 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   let incomeAfterTax = income -. totalPersonalTax;
   let incomeAfterTaxMonthly = incomeAfterTax /. 12.0;
   let totalTax: float = taxParams.excludeEmp ? totalPersonalTax : totalPersonalTax +. totalEmployerTax;
-  let effectiveTaxRate = income > 0.0 ? totalTax *. 100.0 /. income : 0.0;
+  let rateIncome: float = taxParams.excludeEmp ? income : incomeInclEmployerTaxes;
+  let effectiveTaxRate = rateIncome > 0.0 ? totalTax *. 100.0 /. rateIncome : 0.0;
 
   {
     income,
