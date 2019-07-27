@@ -315,7 +315,7 @@ module TaxAnalyzer = {
       </div>
       <form id="input_form" method="get">
         <fieldset>
-          <legend> {rs({js|⛃|js})} </legend>
+          <legend> {rs({js|⚜|js})} </legend>
           <label> {rs("Adjusted Gross Income:")} </label>
           {rs("$ ")}
           <input name="income" type_="text" size=20 value=incomeS onChange={eventS(setIncomeS)} />
