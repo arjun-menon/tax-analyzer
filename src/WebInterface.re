@@ -316,17 +316,17 @@ module TaxAnalyzer = {
       <form id="input_form" method="get">
         <fieldset>
           <legend> {rs({js|⛃|js})} </legend>
-          <label htmlFor="agi"> {rs("Adjusted Gross Income:")} </label>
+          <label> {rs("Adjusted Gross Income:")} </label>
           {rs("$ ")}
           <input name="income" type_="text" size=20 value=incomeS onChange={eventS(setIncomeS)} />
           {checkSign(checkIncome(formParams.income))}
           <br />
-          <label htmlFor="itd"> {rs("Tax Deductions Total Amount: ")} </label>
+          <label> {rs("Tax Deductions Total Amount: ")} </label>
           {rs("$ ")}
           <input name="deductions" type_="text" size=20 value=deductionsS onChange={eventS(setDeductionsS)} />
           {checkSign(checkDeductions(formParams.deductions))}
           <br />
-          <label htmlFor="npe"> {rs("Number of Personal Exemptions: ")} </label>
+          <label> {rs("Number of Personal Exemptions: ")} </label>
           {rs("n ")}
           <input name="exemptions" type_="number" size=20 value=exemptionsS onChange={eventS(setExemptionsS)} />
           {checkSign(checkExemptions(formParams.exemptions))}
