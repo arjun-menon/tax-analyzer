@@ -11,6 +11,11 @@ type ficaTaxRate = {
 type incomeBracket = (float, float); /* (Limit, Rate) */
 type incomeTaxRateSchedule = list(incomeBracket);
 
+type federalUnemploymentTax = {
+  federalUnemploymentTaxBase: float,
+  federalUnemploymentTaxRate: float,
+};
+
 type federalIncomeTaxRate = {
   rateSchedule: incomeTaxRateSchedule,
   personalExemption: float,
@@ -20,6 +25,12 @@ type federalIncomeTaxRate = {
 type federalTaxRates = {
   income: federalIncomeTaxRate,
   fica: ficaTaxRate,
+  federalUnemploymentTax,
+};
+
+type nySDI = {
+  perWeek: float,
+  perYear: float,
 };
 
 type nycTaxRates = {
@@ -27,6 +38,7 @@ type nycTaxRates = {
   cityRateSchedule: incomeTaxRateSchedule,
   dependentPersonalExemption: float,
   standardDeduction: float,
+  nySDI,
 };
 
 type taxRates = {
@@ -37,6 +49,18 @@ type taxRates = {
 /**************
    Rates Data
  **************/
+let federalUnemploymentTax: federalUnemploymentTax = {
+  // These have not changed in a while.
+  federalUnemploymentTaxBase: 7000.0,
+  federalUnemploymentTaxRate: 6.0,
+};
+
+let nySDI: nySDI = {
+  // Has not changed much either.
+  perWeek: 0.60,
+  perYear: 0.60 *. 52.0,
+};
+
 let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
   Belt.Map.Int.fromArray([|
     // Year 2014 Single Tax Rates
@@ -62,6 +86,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
             personalExemption: 3950.0,
             standardDeduction: 6200.0,
           },
+          federalUnemploymentTax,
         },
         nyc: {
           stateRateSchedule: [
@@ -83,6 +108,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
           ],
           dependentPersonalExemption: 1000.0,
           standardDeduction: 7800.0,
+          nySDI,
         },
       },
     ),
@@ -109,6 +135,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
             personalExemption: 4000.0,
             standardDeduction: 6300.0,
           },
+          federalUnemploymentTax,
         },
         nyc: {
           stateRateSchedule: [
@@ -130,6 +157,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
           ],
           dependentPersonalExemption: 1000.0,
           standardDeduction: 7900.0,
+          nySDI,
         },
       },
     ),
@@ -156,6 +184,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
             personalExemption: 4050.0,
             standardDeduction: 6300.0,
           },
+          federalUnemploymentTax,
         },
         nyc: {
           stateRateSchedule: [
@@ -177,6 +206,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
           ],
           dependentPersonalExemption: 1000.0,
           standardDeduction: 7950.0,
+          nySDI,
         },
       },
     ),
@@ -203,6 +233,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
             personalExemption: 4050.0,
             standardDeduction: 6350.0,
           },
+          federalUnemploymentTax,
         },
         nyc: {
           stateRateSchedule: [
@@ -218,6 +249,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
           cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Pervasives.max_float, 3.876)],
           dependentPersonalExemption: 1000.0,
           standardDeduction: 8000.0,
+          nySDI,
         },
       },
     ),
@@ -244,6 +276,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
             personalExemption: 0.0,
             standardDeduction: 12000.0,
           },
+          federalUnemploymentTax,
         },
         nyc: {
           stateRateSchedule: [
@@ -259,6 +292,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
           cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Pervasives.max_float, 3.876)],
           dependentPersonalExemption: 1000.0,
           standardDeduction: 8000.0,
+          nySDI,
         },
       },
     ),
@@ -285,6 +319,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
             personalExemption: 0.0,
             standardDeduction: 12200.0,
           },
+          federalUnemploymentTax,
         },
         nyc: {
           stateRateSchedule: [
@@ -300,6 +335,7 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
           cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Pervasives.max_float, 3.876)],
           dependentPersonalExemption: 1000.0,
           standardDeduction: 8000.0,
+          nySDI,
         },
       },
     ),

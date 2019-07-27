@@ -89,6 +89,15 @@ module FlatRatePoint = {
     </li>;
 };
 
+module CustomPoint = {
+  [@react.component]
+  let make = (~label: string, ~tax: float, ~explanation: string) =>
+    <li>
+      {ReasonReact.string(label ++ ": " ++ ns(tax))}
+      <em> {ReasonReact.string(" (" ++ explanation ++ ")")} </em>
+    </li>;
+};
+
 let calcMarginalTaxRate = (params: TaxCalc.taxParams, taxes: TaxCalc.taxesAnalysis): float => {
   let taxesWithOneExtraDollar = TaxCalc.calcTaxes({...params, income: params.income +. 1.0});
   let totalTaxDiff: float = taxesWithOneExtraDollar.totalTax -. taxes.totalTax;
@@ -177,6 +186,31 @@ let make = (~params: TaxCalc.taxParams) => {
           tax={taxes.medicareTax}
           rate={taxes.medicareTaxRate}
           income={taxes.income}
+        />
+      </ul>
+    </Section>
+    <Section label="Additional taxes paid by employers (and self-employed people)" total={taxes.totalEmployerTax}>
+      <ul>
+        <CustomPoint
+          label="Employer's portion of the FICA Tax (see above)"
+          tax={taxes.ficaTax}
+          explanation="same as previous"
+        />
+        <CustomPoint
+          label="Federal Unemployment Tax (disregarding state credits)"
+          tax={taxes.federalUnemploymentTax}
+          explanation={
+            percent(TaxRates.federalUnemploymentTax.federalUnemploymentTaxRate)
+            ++ " on up to "
+            ++ ns(TaxRates.federalUnemploymentTax.federalUnemploymentTaxBase)
+          }
+        />
+        <CustomPoint
+          label="New York State Disability Insurance (SDI) Tax"
+          tax={taxes.stateDisabilityInsuranceTax}
+          explanation={
+            ns(TaxRates.nySDI.perWeek) ++ " per week, which is " ++ ns(TaxRates.nySDI.perYear) ++ " yearly"
+          }
         />
       </ul>
     </Section>

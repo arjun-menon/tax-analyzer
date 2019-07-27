@@ -80,12 +80,14 @@ type taxesAnalysis = {
   stateIncomeTax: float,
   stateIncomeTaxSlabs: array(slabItem),
   totalStateAndLocalIncomeTax: float,
+  stateDisabilityInsuranceTax: float,
   federalDeduction: federalDeductionType,
   federalPersonalExemptions: federalPersonalExemptionsType,
   federalTaxableIncomeReductions: float,
   federalTaxableIncome: float,
   federalIncomeTaxSlabs: array(slabItem),
   federalIncomeTax: float,
+  federalUnemploymentTax: float,
   socialSecurityTaxableIncome: float,
   socialSecurityTaxRate: float,
   socialSecurityTax: float,
@@ -93,6 +95,7 @@ type taxesAnalysis = {
   medicareTax: float,
   ficaTax: float,
   totalFederalTax: float,
+  totalEmployerTax: float,
   totalTax: float,
   incomeAfterTax: float,
   incomeAfterTaxMonthly: float,
@@ -103,7 +106,7 @@ type taxParams = {
   year: int,
   income: float,
   deductions: float,
-  exemptions: int
+  exemptions: int,
 };
 
 let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
@@ -166,12 +169,21 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   let medicareTax: float = p(income, medicareTaxRate);
   let ficaTax = socialSecurityTax +. medicareTax;
 
+  /* ------------- Employer Taxes ------------- */
+  // Federal Unemployment Tax
+  let fuTaxBase: float = Pervasives.min(income, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxBase);
+  let fuTax = p(fuTaxBase, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxRate);
+  // New York State Disability Insurance (SDI) Tax
+  let stateDisabilityInsuranceTax: float = taxRates.nyc.nySDI.perYear;
+  // Total (including additioanl FICA):
+  let totalEmployerTax = ficaTax +. fuTax +. stateDisabilityInsuranceTax;
+
   /* ------------- Totoal Picture ------------- */
   let totalFederalTax = federalIncomeTax +. ficaTax;
   let totalTax: float = totalStateAndLocalIncomeTax +. totalFederalTax;
   let incomeAfterTax = income -. totalTax;
   let incomeAfterTaxMonthly = incomeAfterTax /. 12.0;
-  let effectiveTaxRate = (income > 0.0) ? totalTax *. 100.0 /. income : 0.0;
+  let effectiveTaxRate = income > 0.0 ? totalTax *. 100.0 /. income : 0.0;
 
   {
     income,
@@ -185,12 +197,14 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
     stateIncomeTax,
     stateIncomeTaxSlabs,
     totalStateAndLocalIncomeTax,
+    stateDisabilityInsuranceTax,
     federalDeduction,
     federalPersonalExemptions,
     federalTaxableIncomeReductions,
     federalTaxableIncome,
     federalIncomeTax,
     federalIncomeTaxSlabs,
+    federalUnemploymentTax: fuTax,
     socialSecurityTaxableIncome,
     socialSecurityTaxRate,
     socialSecurityTax,
@@ -198,6 +212,7 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
     medicareTax,
     ficaTax,
     totalFederalTax,
+    totalEmployerTax,
     totalTax,
     incomeAfterTax,
     incomeAfterTaxMonthly,
