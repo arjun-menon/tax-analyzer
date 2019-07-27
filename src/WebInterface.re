@@ -280,13 +280,10 @@ module TaxAnalyzer = {
 
     let onChangeYear = event => {
       let newYearS: string = ReactEvent.Form.target(event)##value;
-      let newYear = parseInt(newYearS);
-      setYearS(oldYear => {
-        if (oldYear != newYearS) {
-          ReasonReactRouter.push(makeUrlParams({...params, year: newYear}));
-        };
-        newYearS;
-      });
+      let year = parseInt(newYearS);
+      if (year != params.year) {
+        ReasonReactRouter.push(makeUrlParams({...params, year}));
+      };
     };
 
     let isCalcEnabled: bool = checkParams(formParams);
@@ -301,7 +298,7 @@ module TaxAnalyzer = {
     let verticalAlignMiddle = ReactDOMRe.Style.make(~verticalAlign="middle", ());
 
     <>
-      <h1> {rs("Taxes in NYC")} </h1>
+      <h1> {rs("Tax Analyzer for NYC")} </h1>
       <div className="purpose">
         {rs("Calculate total U.S. taxes owed by an unmarried resident of NYC in ")}
         <select id="taxYearSelector" value=yearS onChange=onChangeYear>
@@ -339,8 +336,10 @@ module TaxAnalyzer = {
               checked={!excludeEmpB}
               onChange={event => {
                 let isChecked: bool = ReactEvent.Form.target(event)##checked;
-                setExcludeEmpB(_ => !isChecked);
-                onCalc();
+                let excludeEmp = !isChecked;
+                if (excludeEmp != params.excludeEmp) {
+                  ReasonReactRouter.push(makeUrlParams({...params, excludeEmp}));
+                };
               }}
             />
             <span style=verticalAlignMiddle> {rs("Include taxes paid by employer")} </span>
@@ -350,6 +349,7 @@ module TaxAnalyzer = {
         </fieldset>
       </form>
       <br />
+      // <h1> {rs("Point-by-point Breakdown")} </h1>
       <TaxReport params />
       <br />
       <TaxRateChart params />
