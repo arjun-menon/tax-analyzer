@@ -96,7 +96,9 @@ type taxesAnalysis = {
   ficaTax: float,
   totalFederalTax: float,
   totalEmployerTax: float,
+  totalPersonalTax: float,
   totalTax: float,
+  incomeInclEmployerTaxes: float,
   incomeAfterTax: float,
   incomeAfterTaxMonthly: float,
   effectiveTaxRate: float,
@@ -107,6 +109,7 @@ type taxParams = {
   income: float,
   deductions: float,
   exemptions: int,
+  excludeEmp: bool,
 };
 
 let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
@@ -179,10 +182,12 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   let totalEmployerTax = ficaTax +. fuTax +. stateDisabilityInsuranceTax;
 
   /* ------------- Totoal Picture ------------- */
+  let incomeInclEmployerTaxes = income +. totalEmployerTax;
   let totalFederalTax = federalIncomeTax +. ficaTax;
-  let totalTax: float = totalStateAndLocalIncomeTax +. totalFederalTax;
-  let incomeAfterTax = income -. totalTax;
+  let totalPersonalTax = totalStateAndLocalIncomeTax +. totalFederalTax;
+  let incomeAfterTax = income -. totalPersonalTax;
   let incomeAfterTaxMonthly = incomeAfterTax /. 12.0;
+  let totalTax: float = taxParams.excludeEmp ? totalPersonalTax : totalPersonalTax +. totalEmployerTax;
   let effectiveTaxRate = income > 0.0 ? totalTax *. 100.0 /. income : 0.0;
 
   {
@@ -213,7 +218,9 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
     ficaTax,
     totalFederalTax,
     totalEmployerTax,
+    totalPersonalTax,
     totalTax,
+    incomeInclEmployerTaxes,
     incomeAfterTax,
     incomeAfterTaxMonthly,
     effectiveTaxRate,

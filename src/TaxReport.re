@@ -189,7 +189,7 @@ let make = (~params: TaxCalc.taxParams) => {
         />
       </ul>
     </Section>
-    <Section label="Additional taxes paid by employers (and self-employed people)" total={taxes.totalEmployerTax}>
+    <Section label="Additional taxes paid by employers" total={taxes.totalEmployerTax}>
       <ul>
         <CustomPoint
           label="Employer's portion of the FICA Tax (see above)"
@@ -214,8 +214,11 @@ let make = (~params: TaxCalc.taxParams) => {
         />
       </ul>
     </Section>
+    <Point name="Income including Employer Taxes" value={ns(taxes.incomeInclEmployerTaxes)} />
     <Point name="Total Federal Taxes" value={ns(taxes.totalFederalTax)} />
-    <Point name="Total Federal, State & Local Taxes" value={ns(taxes.totalTax)} />
+    <Point name="Total Federal, State & Local Taxes" value={ns(taxes.totalPersonalTax)} />
+    {params.excludeEmp
+       ? ReasonReact.null : <Point name="Total Federal, State, Local & Employer Taxes" value={ns(taxes.totalTax)} />}
     <hr />
     <Point name="Income after Taxation" value={ns(taxes.incomeAfterTax)} />
     <Point name="Monthly Income" value={ns(taxes.incomeAfterTaxMonthly)} />
