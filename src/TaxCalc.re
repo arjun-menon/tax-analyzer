@@ -177,7 +177,10 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   let fuTaxBase: float = Pervasives.min(income, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxBase);
   let fuTax = p(fuTaxBase, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxRate);
   // New York State Disability Insurance (SDI) Tax
-  let stateDisabilityInsuranceTax: float = taxRates.nyc.nySDI.perYear;
+  let minWageAnnual = 14500.0;
+  let stateDisabilityInsuranceTax: float =
+    // Calculate NY SDI on a sliding scale for people below the annual minimum wage
+    income > minWageAnnual ? taxRates.nyc.nySDI.perYear : income /. minWageAnnual *. taxRates.nyc.nySDI.perYear;
   // Total (including additioanl FICA):
   let totalEmployerTax = ficaTax +. fuTax +. stateDisabilityInsuranceTax;
 
