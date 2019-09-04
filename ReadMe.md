@@ -6,11 +6,12 @@ This tool gives you a detailed slab-by-slab breakdown of the taxes owed by an un
 
 How to Use
 ----------
-### Online: https://arjun-menon.github.io/tax-analyzer/
+### Click here: https://arjun-menon.github.io/tax-analyzer/
 
-### Building
+Building
+--------
 
-This project is partially written [ReasonML](https://reasonml.github.io/). To build:
+This web app is written in [ReasonML](https://reasonml.github.io/), and uses [ReasonReact](https://reasonml.github.io/reason-react/) and [Recharts](http://recharts.org/en-US/). To build this project:
 ```sh
 yarn install
 yarn start
@@ -18,15 +19,18 @@ yarn start
 yarn run webpack
 ```
 
-The last step is a long running command, that will monitor the filesystem for changes, and automatically rebuild. To generate a production-optimized JS artifact, run:
+The last step is a long running command, that will monitor the filesystem for changes, and automatically rebuild.
+
+To generate a production-optimized JS artifact, run:
 ```sh
 yarn run build
 yarn run webpack:production
 ```
 
-### Caveats
+Caveats
+-------
 
-The purpose of this tool is simply to estimate your taxes owned. For very accurate numbers, use a tool like like TaxACT and TurboTax. This tool does not cover things like:
+The purpose of this web app is to just get a rough analysis of the taxes you owe. It doesn't cover things like:
 
  * Alternative Minimum Tax: if you have a high income and take a large number of tax deductions, you may be subject to the [Alternative Minimum Tax](https://en.wikipedia.org/wiki/Alternative_minimum_tax).
 
@@ -40,19 +44,3 @@ The purpose of this tool is simply to estimate your taxes owned. For very accura
         * [New York City Credits](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm)
       
       For example, most single NYC residents qulify for the [school tax credit](http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm#nyc_school) ([form NYC-210](http://www.tax.ny.gov/pdf/current_forms/it/nyc210_fill_in.pdf), [instructions](http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf)). Lower incomes make one eligible for a wide variety of credits such as the [NYS Household Credit](http://www.tax.ny.gov/pit/credits/household_credit.htm), the [NYS earned income credit](http://www.tax.ny.gov/pit/credits/earned_income_credit.htm), the federal [EITC](http://www.irs.gov/Individuals/EITC,-Earned-Income-Tax-Credit,-Questions-and-Answers), the federal [Saver's Credit](http://www.irs.gov/Retirement-Plans/Plan-Participant,-Employee/Retirement-Topics-Retirement-Savings-Contributions-Credit-%28Saver%E2%80%99s-Credit%29), etc.
-
-Sources
--------
-* Federal tax rates (2014) are based on: http://www.forbes.com/sites/kellyphillipserb/2013/10/31/irs-announces-2014-tax-brackets-standard-deduction-amounts-and-more/ and other sources.
-* New York State & City tax rates (2014) are based on: http://www.tax.ny.gov/pit/file/tax_tables.htm
-* For more on state & local tax federal income tax deductions, see: http://taxes.about.com/od/Deductions/a/State-Income-Tax-Deduction.htm
-* A Guide to New York Personal Income Tax: http://taxes.about.com/od/statetaxes/a/New-York-income-taxes.htm
-    * Standard Deductions: http://www.tax.ny.gov/pit/file/standard_deductions.htm
-    * Instructions for Form IT-201 (New York State Resident Income Tax Return): http://www.tax.ny.gov/pdf/2013/inc/it201i_2013.pdf
-    * Instructions for Form IT-272 (New York State Residents' Claim for College Tuition Credit or Itemized Deduction): http://www.tax.ny.gov/pdf/current_forms/it/it272i.pdf
-        * The non-refundable tax credit is limited to 4% of $10,000, i.e. $400.
-        * The maximum itemized deduction for college is $10,000.
-    * On NY itemized deductions: http://www.taxslayer.com/support/829/new-york-itemized-deductions
-* A Guide to New York City Income Tax: http://taxes.about.com/od/statetaxes/a/New-York-City-Income-Tax.htm
-    * New York City Credits: http://www.tax.ny.gov/pit/credits/new_york_city_credits.htm
-    * Instructions for Form NYC-210 (Claim for NYC School Tax Credit): http://www.tax.ny.gov/pdf/current_forms/it/nyc210i.pdf
