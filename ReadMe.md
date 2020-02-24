@@ -1,6 +1,6 @@
 Calculate Taxes in NYC
 ======================
-This tool gives you a detailed slab-by-slab breakdown of the taxes owed by an unmarried individual living in New York City.
+This tool gives you a detailed slab-by-slab breakdown of the taxes owed by an unmarried individual living in New York City. This tool is written in [ReasonML](https://reasonml.github.io/), and uses [ReasonReact](https://reasonml.github.io/reason-react/) and [Recharts](http://recharts.org/en-US/).
 
 ![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/tax-analyzer/master/res/snapshot-web.png)
 
@@ -11,15 +11,18 @@ How to Use
 Building
 --------
 
-This web app is written in [ReasonML](https://reasonml.github.io/), and uses [ReasonReact](https://reasonml.github.io/reason-react/) and [Recharts](http://recharts.org/en-US/). To build this project:
-```sh
+To install dependencies, run:
+``sh
 yarn install
-yarn start
-# in another tab
-yarn run webpack
-```
+``
 
-The last step is a long running command, that will monitor the filesystem for changes, and automatically rebuild.
+During development, run:
+```sh
+yarn start
+# in another tab:
+yarn webpack-dev-server
+```
+Both are long running commands, that will monitor the filesystem for changes, and automatically rebuild.
 
 To generate a production-optimized JS artifact, run:
 ```sh
