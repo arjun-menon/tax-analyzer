@@ -53,11 +53,18 @@ module Slabs = {
 
 module Section = {
   [@react.component]
-  let make = (~label: string, ~children, ~total: float) =>
+  let make = (~label: string, ~children, ~total: float, ~pcof=?, ()) =>
     <div className="seclist">
       <p> <strong> {ReasonReact.string(label)} </strong> </p>
       children
-      <p> <em> {ReasonReact.string(label ++ ": ")} </em> {ReasonReact.string(ns(total))} </p>
+      <p>
+        <em> {ReasonReact.string(label ++ ": ")} </em>
+        {ReasonReact.string(ns(total))}
+        {switch (pcof) {
+         | None => ReasonReact.null
+         | Some(a) => <em> {ReasonReact.string(" (" ++ percent(total *. 100.0 /. a) ++ ")")} </em>
+         }}
+      </p>
     </div>;
 };
 
@@ -136,10 +143,10 @@ let make = (~params: TaxCalc.taxParams) => {
       </ul>
     </Section>
     <Point name="New York State Taxable Income" value={ns(taxes.stateTaxableIncome)} />
-    <Section label="New York City Income Tax" total={taxes.cityIncomeTax}>
+    <Section label="New York City Income Tax" total={taxes.cityIncomeTax} pcof={taxes.income}>
       <Slabs slabs={taxes.cityIncomeTaxSlabs} />
     </Section>
-    <Section label="New York State Income Tax" total={taxes.stateIncomeTax}>
+    <Section label="New York State Income Tax" total={taxes.stateIncomeTax} pcof={taxes.income}>
       <Slabs slabs={taxes.stateIncomeTaxSlabs} />
     </Section>
     <Point name="Total New York State & City Taxes" value={ns(taxes.totalStateAndLocalIncomeTax)} />
@@ -170,10 +177,10 @@ let make = (~params: TaxCalc.taxParams) => {
       </ul>
     </Section>
     <Point name="Federal Taxable Income" value={ns(taxes.federalTaxableIncome)} />
-    <Section label="Federal Income Tax" total={taxes.federalIncomeTax}>
+    <Section label="Federal Income Tax" total={taxes.federalIncomeTax} pcof={taxes.income}>
       <Slabs slabs={taxes.federalIncomeTaxSlabs} />
     </Section>
-    <Section label="Federal Insurance Contributions Act (FICA) Tax" total={taxes.ficaTax}>
+    <Section label="Federal Insurance Contributions Act (FICA) Tax" total={taxes.ficaTax} pcof={taxes.income}>
       <ul>
         <FlatRatePoint
           label="Social Security Old-Age, Survivors, and Disability Insurance (OASDI) Tax"
@@ -191,7 +198,7 @@ let make = (~params: TaxCalc.taxParams) => {
     </Section>
     {params.excludeEmp
        ? ReasonReact.null
-       : <Section label="Additional taxes paid by employers" total={taxes.totalEmployerTax}>
+       : <Section label="Additional taxes paid by employers" total={taxes.totalEmployerTax} pcof={taxes.income}>
            <ul>
              <CustomPoint
                label="Employer's portion of the FICA Tax (see above)"
