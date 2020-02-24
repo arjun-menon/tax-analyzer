@@ -1,5 +1,7 @@
 type writeDetail = (string, string, string) => unit;
 
+let rs = ReasonReact.string;
+
 let twoPointFloatRepr: float => string = [%bs.raw
   {|
  function twoPointFloatRepr_(n) {
@@ -27,7 +29,7 @@ module SlabItem = {
   [@react.component]
   let make = (~slab: TaxCalc.slabItem) =>
     <li>
-      {ReasonReact.string(
+      {rs(
          "Slab from "
          ++ ns(slab.fromAmt)
          ++ " to "
@@ -55,14 +57,14 @@ module Section = {
   [@react.component]
   let make = (~label: string, ~children, ~total: float, ~pcof=?, ()) =>
     <div className="seclist">
-      <p> <strong> {ReasonReact.string(label)} </strong> </p>
+      <p> <strong> {rs(label)} </strong> </p>
       children
       <p>
-        <em> {ReasonReact.string(label ++ ": ")} </em>
-        {ReasonReact.string(ns(total))}
+        <em> {rs(label ++ ": ")} </em>
+        {rs(ns(total))}
         {switch (pcof) {
          | None => ReasonReact.null
-         | Some(a) => <em> {ReasonReact.string(" (" ++ percent(total *. 100.0 /. a) ++ ")")} </em>
+         | Some(a) => <em> {rs(" (" ++ percent(total *. 100.0 /. a) ++ ")")} </em>
          }}
       </p>
     </div>;
@@ -70,39 +72,30 @@ module Section = {
 
 module Point = {
   [@react.component]
-  let make = (~name: string, ~value: string) => <p> {ReasonReact.string(name ++ ": " ++ value)} </p>;
+  let make = (~name: string, ~value: string) => <p> {rs(name ++ ": " ++ value)} </p>;
 };
 
 module EqualsItem = {
   [@react.component]
-  let make = (~label: string, ~amt: float) => <li> {ReasonReact.string(label ++ " = " ++ ns(amt))} </li>;
+  let make = (~label: string, ~amt: float) => <li> {rs(label ++ " = " ++ ns(amt))} </li>;
 };
 
 module MultiplicationItem = {
   [@react.component]
   let make = (~label: string, ~amt: float, ~multiplicant: int, ~one: float) =>
-    <li>
-      {ReasonReact.string(
-         label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")",
-       )}
-    </li>;
+    <li> {rs(label ++ " = " ++ ns(amt) ++ " (" ++ string_of_int(multiplicant) ++ " x " ++ ns(one) ++ ")")} </li>;
 };
 
 module FlatRatePoint = {
   [@react.component]
   let make = (~label: string, ~tax: float, ~rate: float, ~income: float) =>
-    <li>
-      {ReasonReact.string(label ++ ": " ++ ns(tax) ++ " (at " ++ percent(rate) ++ " flat on " ++ ns(income) ++ ")")}
-    </li>;
+    <li> {rs(label ++ ": " ++ ns(tax) ++ " (at " ++ percent(rate) ++ " flat on " ++ ns(income) ++ ")")} </li>;
 };
 
 module CustomPoint = {
   [@react.component]
   let make = (~label: string, ~tax: float, ~explanation: string) =>
-    <li>
-      {ReasonReact.string(label ++ ": " ++ ns(tax))}
-      <em> {ReasonReact.string(" (" ++ explanation ++ ")")} </em>
-    </li>;
+    <li> {rs(label ++ ": " ++ ns(tax))} <em> {rs(" (" ++ explanation ++ ")")} </em> </li>;
 };
 
 let calcMarginalTaxRate = (params: TaxCalc.taxParams, taxes: TaxCalc.taxesAnalysis): float => {
@@ -121,6 +114,8 @@ let make = (~params: TaxCalc.taxParams) => {
 
   <div className="report">
     <Point name="Adjusted Gross Income" value={ns(taxes.income)} />
+    <hr />
+    <h3> {rs("State & Local Income Taxes")} </h3>
     <Section label="New York Taxable Income Reductions" total={taxes.stateTaxableIncomeReductions}>
       <ul>
         <EqualsItem
@@ -149,7 +144,9 @@ let make = (~params: TaxCalc.taxParams) => {
     <Section label="New York State Income Tax" total={taxes.stateIncomeTax} pcof={taxes.income}>
       <Slabs slabs={taxes.stateIncomeTaxSlabs} />
     </Section>
-    <Point name="Total New York State & City Taxes" value={ns(taxes.totalStateAndLocalIncomeTax)} />
+    <Point name="Total State & Local Income Taxes" value={ns(taxes.totalStateAndLocalIncomeTax)} />
+    <hr />
+    <h3> {rs("Federal Income Tax")} </h3>
     <Section label="Federal Taxable Income Reductions" total={taxes.federalTaxableIncomeReductions}>
       <ul>
         {switch (taxes.federalDeduction) {
@@ -161,8 +158,7 @@ let make = (~params: TaxCalc.taxParams) => {
              />
              <EqualsItem label="Other Itemized Deductions" amt={federalItemizations.otherItemizedDeductions} />
            </>
-         | FederalStandardDeduction(amt) =>
-           <li> {ReasonReact.string("Federal Standard Deduction = " ++ ns(amt))} </li>
+         | FederalStandardDeduction(amt) => <li> {rs("Federal Standard Deduction = " ++ ns(amt))} </li>
          }}
         {switch (taxes.federalPersonalExemptions) {
          | Some(personalExemptions) =>
@@ -180,6 +176,8 @@ let make = (~params: TaxCalc.taxParams) => {
     <Section label="Federal Income Tax" total={taxes.federalIncomeTax} pcof={taxes.income}>
       <Slabs slabs={taxes.federalIncomeTaxSlabs} />
     </Section>
+    <hr />
+    <h3> {rs("Personal FICA & Employer Taxes")} </h3>
     <Section label="Federal Insurance Contributions Act (FICA) Tax" total={taxes.ficaTax} pcof={taxes.income}>
       <ul>
         <FlatRatePoint
@@ -223,13 +221,20 @@ let make = (~params: TaxCalc.taxParams) => {
              />
            </ul>
          </Section>}
-    {params.excludeEmp
-       ? ReasonReact.null : <Point name="Income including Employer Taxes" value={ns(taxes.incomeInclEmployerTaxes)} />}
-    <Point name="Total Federal Taxes" value={ns(taxes.totalFederalTax)} />
+    <hr />
+    <h3>{rs("Various Totals")}</h3>
+    <h4>
+      {params.excludeEmp
+         ? ReasonReact.null
+         : <Point name="Income when including Employer-paid Taxes" value={ns(taxes.incomeInclEmployerTaxes)} />}
+    </h4>
+    <Point name="Total Personal Federal Income & FICA Tax (i.e. excluding employer FICA)" value={ns(taxes.totalFederalTax)} />
+    <Point name="Total State & Local Taxes" value={ns(taxes.totalStateAndLocalIncomeTax)} />
     <Point name="Total Federal, State & Local Taxes" value={ns(taxes.totalPersonalTax)} />
     {params.excludeEmp
        ? ReasonReact.null : <Point name="Total Federal, State, Local & Employer Taxes" value={ns(taxes.totalTax)} />}
     <hr />
+    <h3> {rs("Key Facts / Numbers")} </h3>
     <Point name="Income after Taxation" value={ns(taxes.incomeAfterTax)} />
     <Point name="Monthly Income" value={ns(taxes.incomeAfterTaxMonthly)} />
     <Point name="Effective Tax Rate" value={percent(taxes.effectiveTaxRate)} />
