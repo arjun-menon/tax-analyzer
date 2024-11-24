@@ -1,4 +1,4 @@
-let rs = ReasonReact.string;
+let rs = React.string;
 
 let checkYear = (year: int): bool => {
   switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
@@ -373,4 +373,4 @@ fixUrlIfNecessary({
   excludeEmp: false,
 });
 
-ReactDOMRe.renderToElementWithId(<> <TaxAnalyzer /> </>, "root");
+//ReactDOMRe.renderToElementWithId(<> <TaxAnalyzer /> </>, "root");
