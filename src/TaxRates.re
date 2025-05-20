@@ -61,11 +61,6 @@ let nySDI: nySDI = {
   perYear: 0.60 *. 52.0,
 };
 
-module IntMap = Map.Make({
-  type t = int;
-  let compare = compare
-});
-
 let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
   Belt.Map.Int.fromArray([|
     // Year 2014 Single Tax Rates
