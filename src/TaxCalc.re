@@ -113,14 +113,14 @@ type taxParams = {
 };
 
 let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
-  let {year, income, deductions, exemptions} = taxParams;
+  let {year, income, deductions, exemptions, _} = taxParams;
   let taxRates: TaxRates.taxRates = TaxRates.getSingleRatesForYear(year);
 
   /* ------------- New York Deductions and Personal Exemptions  ------------- */
   let (stateDeductionAmt: float, stateDeduction: stateDeductionType) =
     deductions <= taxRates.nyc.standardDeduction
       ? (taxRates.nyc.standardDeduction, StateStandardDeduction) : (deductions, StateItemizedDeductions);
-  let numOfExemptions: int = Pervasives.max(exemptions - 1, 0);
+  let numOfExemptions: int = Int.max(exemptions - 1, 0);
   let statePersonalExemptions: personalExemptionType = {
     oneExemptionAmt: taxRates.nyc.dependentPersonalExemption,
     numOfExemptions,
@@ -129,7 +129,7 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
 
   /* ------------- New York State & City Taxes ------------- */
   let stateTaxableIncomeReductions = stateDeductionAmt +. statePersonalExemptions.totalExemptionsAmt;
-  let stateTaxableIncome = Pervasives.max(income -. stateTaxableIncomeReductions, 0.0);
+  let stateTaxableIncome = Float.max(income -. stateTaxableIncomeReductions, 0.0);
   let (cityIncomeTax, cityIncomeTaxSlabs) = calcSlabTax(stateTaxableIncome, taxRates.nyc.cityRateSchedule);
   let (stateIncomeTax, stateIncomeTaxSlabs) = calcSlabTax(stateTaxableIncome, taxRates.nyc.stateRateSchedule);
   let totalStateAndLocalIncomeTax = stateIncomeTax +. cityIncomeTax;
@@ -137,7 +137,7 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   /* ------------- Federal Taxes ------------- */
   let stateAndLocalTaxesDeduction =
     taxRates.federal.income.personalExemption === 0.0
-      ? Pervasives.min(totalStateAndLocalIncomeTax, 10000.0) : totalStateAndLocalIncomeTax;
+      ? Float.min(totalStateAndLocalIncomeTax, 10000.0) : totalStateAndLocalIncomeTax;
   let federalItemizedDeductions = deductions +. stateAndLocalTaxesDeduction;
   let (federalDeductionAmt: float, federalDeduction: federalDeductionType) =
     federalItemizedDeductions <= taxRates.federal.income.standardDeduction
@@ -160,12 +160,12 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
   };
   let federalPersonalExemptions = taxRates.federal.income.personalExemption > 0.0 ? Some(personalExemptions) : None;
   let federalTaxableIncomeReductions = federalDeductionAmt +. personalExemptions.totalExemptionsAmt;
-  let federalTaxableIncome: float = Pervasives.max(income -. federalTaxableIncomeReductions, 0.0);
+  let federalTaxableIncome: float = Float.max(income -. federalTaxableIncomeReductions, 0.0);
   let (federalIncomeTax, federalIncomeTaxSlabs) =
     calcSlabTax(federalTaxableIncome, taxRates.federal.income.rateSchedule);
 
   /* ------------- FICA (Social Security and Medicare) Taxes ------------- */
-  let socialSecurityTaxableIncome: float = Pervasives.min(income, taxRates.federal.fica.socialSecurityWageBase);
+  let socialSecurityTaxableIncome: float = Float.min(income, taxRates.federal.fica.socialSecurityWageBase);
   let socialSecurityTaxRate = taxRates.federal.fica.socialSecurityTaxRate;
   let socialSecurityTax: float = p(socialSecurityTaxableIncome, socialSecurityTaxRate);
   let medicareTaxRate = taxRates.federal.fica.medicareTaxRate;
@@ -174,7 +174,7 @@ let calcTaxes = (taxParams: taxParams): taxesAnalysis => {
 
   /* ------------- Employer Taxes ------------- */
   // Federal Unemployment Tax
-  let fuTaxBase: float = Pervasives.min(income, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxBase);
+  let fuTaxBase: float = Float.min(income, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxBase);
   let fuTax = p(fuTaxBase, taxRates.federal.federalUnemploymentTax.federalUnemploymentTaxRate);
   // New York State Disability Insurance (SDI) Tax
   let minWageAnnual = 14500.0;

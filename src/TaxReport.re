@@ -1,24 +1,12 @@
-type writeDetail = (string, string, string) => unit;
+let rs = React.string;
 
-let rs = ReasonReact.string;
-
-let twoPointFloatRepr: float => string = [%bs.raw
-  {|
- function twoPointFloatRepr_(n) {
-     return n.toFixed(2).toString();
- }
-|}
-];
-
+let twoPointFloatRepr: float => string = aFloat => Printf.sprintf("%.2f", aFloat);
 let percent = (n: float): string => twoPointFloatRepr(n) ++ "%";
-
-let numberWithCommas: string => string = [%bs.raw
-  {|
- function numberWithCommas_(n) { /* from: http://stackoverflow.com/a/2901298 */
+let numberWithCommas: string => string = [%mel.raw {|
+  function numberWithCommas_(n) {
      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
- }
-|}
-];
+  }
+|}];
 
 /* Stringify a number representing money: */
 let ns = (n: float): string => "$" ++ numberWithCommas(twoPointFloatRepr(n));
@@ -49,7 +37,7 @@ module Slabs = {
   [@react.component]
   let make = (~slabs: array(TaxCalc.slabItem)) =>
     <ul>
-      {ReasonReact.array(Array.mapi((index, slab) => <SlabItem slab key={string_of_int(index)} />, slabs))}
+      {React.array(Array.mapi((index, slab) => <SlabItem slab key={string_of_int(index)} />, slabs))}
     </ul>;
 };
 
@@ -63,7 +51,7 @@ module Section = {
         <em> {rs(label ++ ": ")} </em>
         {rs(ns(total))}
         {switch (pcof) {
-         | None => ReasonReact.null
+         | None => React.null
          | Some(a) => <em> {rs(" (" ++ percent(total *. 100.0 /. a) ++ ")")} </em>
          }}
       </p>
@@ -128,7 +116,7 @@ let make = (~params: TaxCalc.taxParams) => {
           amt={taxes.stateDeductionAmt}
         />
         {taxes.statePersonalExemptions.numOfExemptions <= 0
-           ? ReasonReact.null
+           ? React.null
            : <MultiplicationItem
                label="Personal exemptions for dependents"
                amt={taxes.statePersonalExemptions.totalExemptionsAmt}
@@ -168,7 +156,7 @@ let make = (~params: TaxCalc.taxParams) => {
              multiplicant={personalExemptions.numOfExemptions}
              one={personalExemptions.oneExemptionAmt}
            />
-         | None => ReasonReact.null
+         | None => React.null
          }}
       </ul>
     </Section>
@@ -195,7 +183,7 @@ let make = (~params: TaxCalc.taxParams) => {
       </ul>
     </Section>
     {params.excludeEmp
-       ? ReasonReact.null
+       ? React.null
        : <Section label="Additional taxes paid by employers" total={taxes.totalEmployerTax} pcof={taxes.income}>
            <ul>
              <CustomPoint
@@ -225,14 +213,14 @@ let make = (~params: TaxCalc.taxParams) => {
     <h3>{rs("Various Totals")}</h3>
     <h4>
       {params.excludeEmp
-         ? ReasonReact.null
+         ? React.null
          : <Point name="Income when including Employer-paid Taxes" value={ns(taxes.incomeInclEmployerTaxes)} />}
     </h4>
     <Point name="Total Personal Federal Income & FICA Tax (i.e. excluding employer FICA)" value={ns(taxes.totalFederalTax)} />
     <Point name="Total State & Local Taxes" value={ns(taxes.totalStateAndLocalIncomeTax)} />
     <Point name="Total Federal, State & Local Taxes" value={ns(taxes.totalPersonalTax)} />
     {params.excludeEmp
-       ? ReasonReact.null : <Point name="Total Federal, State, Local & Employer Taxes" value={ns(taxes.totalTax)} />}
+       ? React.null : <Point name="Total Federal, State, Local & Employer Taxes" value={ns(taxes.totalTax)} />}
     <hr />
     <h3> {rs("Key Facts / Numbers")} </h3>
     <Point name="Income after Taxation" value={ns(taxes.incomeAfterTax)} />

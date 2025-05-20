@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/nyc-taxes.iml" filepath="$PROJECT_DIR$/.idea/nyc-taxes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tax-analyzer.iml" filepath="$PROJECT_DIR$/.idea/tax-analyzer.iml" />
     </modules>
   </component>
 </project>

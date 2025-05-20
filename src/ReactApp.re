@@ -1,7 +1,13 @@
-let rs = ReasonReact.string;
+let rs = React.string;
 
+//let checkYear = (year: int): bool => {
+//  switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
+//  | Some(_) => true
+//  | None => false
+//  };
+//};
 let checkYear = (year: int): bool => {
-  switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
+  switch (TaxRates.IntMap.find_opt(year, TaxRates.singleTaxRatesByYear)) {
   | Some(_) => true
   | None => false
   };
@@ -20,7 +26,7 @@ let checkParams = (params: TaxCalc.taxParams): bool =>
   && checkDeductions(params.deductions)
   && checkExemptions(params.exemptions);
 
-let getParameterByNameRaw: (string, string) => string = [%bs.raw
+let getParameterByNameRaw: (string, string) => string = [%mel.raw
   {|
   function getParameterByName(query, name) {
     // based on: http://stackoverflow.com/a/901144/908430
@@ -32,10 +38,13 @@ let getParameterByNameRaw: (string, string) => string = [%bs.raw
 |}
 ];
 
-let getParameterByName = (query: string, name: string) =>
-  Js_global.decodeURIComponent(getParameterByNameRaw(query, name));
+let decodeURIComponent: string => string = [%mel.raw {| decodeURIComponent |}];
+let encodeURIComponent: string => string = [%mel.raw {| encodeURIComponent |}];
 
-let removeCommas: string => string = [%bs.raw
+let getParameterByName = (query: string, name: string) =>
+  getParameterByNameRaw(query, name)->decodeURIComponent;
+
+let removeCommas: string => string = [%mel.raw
   {|
   function removeCommas(text) {
     return text.replace(/,/g, '');
@@ -45,7 +54,7 @@ let removeCommas: string => string = [%bs.raw
 
 let parseFloat = (s: string): float => Js.Float.fromString(removeCommas(s));
 
-let parseInt: string => int = [%raw {| x => {
+let parseInt: string => int = [%mel.raw {| x => {
   const v = parseInt(x, 10);
   return isNaN(v) ? 0 : v;
 } |}];
@@ -80,15 +89,15 @@ let toUrlParams = (params: TaxCalc.taxParams): urlParams => {
 let makeUrlParams = (params: TaxCalc.taxParams): string => {
   let p: urlParams = toUrlParams(params);
   "?year="
-  ++ Js_global.encodeURIComponent(p.year)
+  ++ encodeURIComponent(p.year)
   ++ "&income="
-  ++ Js_global.encodeURIComponent(p.income)
+  ++ encodeURIComponent(p.income)
   ++ "&deductions="
-  ++ Js_global.encodeURIComponent(p.deductions)
+  ++ encodeURIComponent(p.deductions)
   ++ "&exemptions="
-  ++ Js_global.encodeURIComponent(p.exemptions)
+  ++ encodeURIComponent(p.exemptions)
   ++ "&excludeEmp="
-  ++ Js_global.encodeURIComponent(p.excludeEmp);
+  ++ encodeURIComponent(p.excludeEmp);
 };
 
 let getUrlParams = (url: ReasonReactRouter.url): urlParams => {
@@ -136,7 +145,7 @@ let fixUrlIfNecessary = (defaultParams: TaxCalc.taxParams) => {
 };
 
 let eventS = (setValue, event) => {
-  let value: string = ReactEvent.Form.target(event)##value;
+  let value: string = React.Event.Form.target(event)##value;
   setValue(_ => value);
 };
 
@@ -153,8 +162,8 @@ let determineDataPoints = (income: float): array(int) => {
   let uptoMaybe: int = incomeInt * 2;
   let stepMin: int = 10000;
   let uptoMin: int = 250000;
-  let step: int = Pervasives.max(stepMin, stepMaybe);
-  let upto: int = Pervasives.max(uptoMin, uptoMaybe);
+  let step: int = max(stepMin, stepMaybe);
+  let upto: int = max(uptoMin, uptoMaybe);
 
   let lowerHalf: array(int) = Belt.Array.rangeBy(0, incomeInt - 1, ~step);
   let lastElem: option(int) = Belt.Array.get(lowerHalf, Belt.Array.length(lowerHalf) - 1);
@@ -183,21 +192,33 @@ let toDataPoint = (params: TaxCalc.taxParams): dataPoint => {
   let taxes = TaxCalc.calcTaxes(params);
   let marginalTaxRate = TaxReport.calcMarginalTaxRate(params, taxes);
   let round = (n: float): float => parseFloat(TaxReport.twoPointFloatRepr(n));
-  dataPoint(
-    ~effective=round(taxes.effectiveTaxRate),
-    ~marginal=round(marginalTaxRate),
-    ~income=TaxReport.nsiof(taxes.income),
-  );
+  let d: dataPoint = {
+    effective: round(taxes.effectiveTaxRate),
+    marginal: round(marginalTaxRate),
+    income: TaxReport.nsiof(taxes.income),
+  };
+  d;
 };
 
 module TaxRateChart = {
   [@react.component]
   let make = (~params: TaxCalc.taxParams) => {
     let incomeIntS = TaxReport.nsiof(params.income);
-    let points: array(int) = determineDataPoints(params.income);
+    let points: array(int) = determineDataPoints(params.income); // [|1000, 2000, 3000, 4000, 5000|];
     let toStepParams = (income: float): TaxCalc.taxParams => {...params, income};
-    let data: array(dataPoint) =
-      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
+
+//    let data: array(dataPoint) =
+//      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
+    let data: array(dataPoint) = Array.map(
+      toDataPoint,
+      Array.map(
+        toStepParams,
+        Array.map(
+          float_of_int,
+          points
+        )
+      )
+    );
 
     let marginalRateColor = "rgb(256,0,0)";
     let effectiveRateColor = "rgb(0,0,256)";
@@ -206,13 +227,13 @@ module TaxRateChart = {
     <>
       <h1> {rs("Tax Rate Visualizer")} </h1>
       <center>
-        <BsRecharts.AreaChart width=600 height=400 data>
-          <BsRecharts.CartesianGrid strokeDasharray="3 3" />
-          <BsRecharts.XAxis dataKey="income" />
-          <BsRecharts.YAxis />
-          <BsRecharts.Tooltip />
-          <BsRecharts.Legend verticalAlign=`top height=36 />
-          <BsRecharts.Area
+        <Recharts.AreaChart width=600 height=400 data>
+          <Recharts.CartesianGrid strokeDasharray="3 3" />
+          <Recharts.XAxis dataKey="income" />
+          <Recharts.YAxis />
+          <Recharts.Tooltip />
+          <Recharts.Legend verticalAlign=`top height=36 />
+          <Recharts.Area
             _type=`monotone
             dataKey="marginal"
             unit="%"
@@ -222,7 +243,7 @@ module TaxRateChart = {
             stroke=marginalRateColor
             fill=marginalRateColor
           />
-          <BsRecharts.Area
+          <Recharts.Area
             _type=`monotone
             dataKey="effective"
             unit="%"
@@ -232,8 +253,8 @@ module TaxRateChart = {
             stroke=effectiveRateColor
             fill=effectiveRateColor
           />
-          <BsRecharts.ReferenceLine x=incomeIntS stroke=referenceLineColor />
-        </BsRecharts.AreaChart>
+          <Recharts.ReferenceLine x=incomeIntS stroke=referenceLineColor />
+        </Recharts.AreaChart>
       </center>
     </>;
   };
@@ -245,15 +266,29 @@ module TaxAnalyzer = {
     let url = ReasonReactRouter.useUrl();
     let urlParams: urlParams = getUrlParams(url);
     let params: TaxCalc.taxParams = destringUrlParams(urlParams);
+    Js.log(params);
+//    let params: TaxCalc.taxParams = {
+//      year: 2019,
+//      income: 100000.,
+//      deductions: 0.,
+//      exemptions: 1,
+//      excludeEmp: false
+//    }
 
     let (yearS, setYearS) = React.useState(() => urlParams.year);
+//    let (yearS, _) = React.useState(() => urlParams.year);
     let (incomeS, setIncomeS) = React.useState(() => urlParams.income);
+//    let (incomeS, setIncomeS) = React.useState(() => "100000");
     let (deductionsS, setDeductionsS) = React.useState(() => urlParams.deductions);
+//    let (deductionsS, setDeductionsS) = React.useState(() => "0");
     let (exemptionsS, setExemptionsS) = React.useState(() => urlParams.exemptions);
+//    let (exemptionsS, setExemptionsS) = React.useState(() => "1");
     let (excludeEmpB, setExcludeEmpB) = React.useState(() => destringBool(urlParams.excludeEmp));
+//    let (excludeEmpB, _) = React.useState(() => destringBool("false"));
 
     let formParams: TaxCalc.taxParams =
       getParamsFromStrings(yearS, incomeS, deductionsS, exemptionsS, string_of_bool(excludeEmpB));
+//    let formParams = params;
 
     React.useEffect0(() => {
       let watcherId =
@@ -274,38 +309,38 @@ module TaxAnalyzer = {
       };
 
     let onSubmit = event => {
-      ReactEvent.Mouse.preventDefault(event);
+      React.Event.Mouse.preventDefault(event);
       onCalc();
     };
 
     let onChangeYear = event => {
-      let newYearS: string = ReactEvent.Form.target(event)##value;
+      let newYearS: string = React.Event.Form.target(event)##value;
       let year = parseInt(newYearS);
       if (year != params.year) {
         ReasonReactRouter.push(makeUrlParams({...params, year}));
       };
     };
 
-    let isCalcEnabled: bool = checkParams(formParams);
+  let isCalcEnabled: bool = checkParams(formParams);
 
     let checkSign = (valid: bool) => {
       let color = valid ? "green" : "red";
-      let style = ReactDOMRe.Style.make(~marginLeft="5px", ~color, ~fontWeight="bold", ());
+      let style = ReactDOM.Style.make(~marginLeft="5px", ~color, ~fontWeight="bold", ());
       <span style> {valid ? rs({js|✓|js}) : rs({js|⚠|js})} </span>;
     };
 
-    let displayInlineBlock = ReactDOMRe.Style.make(~display="inline-block", ());
-    let verticalAlignMiddle = ReactDOMRe.Style.make(~verticalAlign="middle", ());
+    let displayInlineBlock = ReactDOM.Style.make(~display="inline-block", ());
+    let verticalAlignMiddle = ReactDOM.Style.make(~verticalAlign="middle", ());
 
     <>
       <h1> {rs("Tax Analyzer for NYC")} </h1>
       <div className="purpose">
         {rs("Calculate total U.S. taxes owed by an unmarried resident of NYC in ")}
         <select id="taxYearSelector" value=yearS onChange=onChangeYear>
-          {ReasonReact.array(
+          {React.array(
              Array.map(
                year => <option value=year key=year> {rs(year)} </option>,
-               Array.map(year => string_of_int(year), TaxRates.availableYears),
+               Array.map(year => string_of_int(year), TaxRates.availableYears->Array.of_list),
              ),
            )}
         </select>
@@ -335,7 +370,8 @@ module TaxAnalyzer = {
               type_="checkbox"
               checked={!excludeEmpB}
               onChange={event => {
-                let isChecked: bool = ReactEvent.Form.target(event)##checked;
+                  ()
+                let isChecked: bool = React.Event.Form.target(event)##checked;
                 let excludeEmp = !isChecked;
                 if (excludeEmp != params.excludeEmp) {
                   ReasonReactRouter.push(makeUrlParams({...params, excludeEmp}));
@@ -364,13 +400,43 @@ module TaxAnalyzer = {
   };
 };
 
+module App = {
+  let style =
+    ReactDOM.Style.make(~fontSize="1.5em", ~display="flex", ~gap="0.5em", ());
+
+  [@react.component]
+  let make = () =>
+    <div>
+      <h1> {React.string("tax-analyzer")} </h1>
+      {["Hello " ++ World.name ++ "!", "This is ReasonReact!"]
+       |> List.map(text =>
+            <div key=text style>
+              {React.string(text)}
+              <button
+                onClick={_ => text |> Speech.makeUtterance |> Speech.speak}>
+                {React.string("speak")}
+              </button>
+            </div>
+          )
+       |> Array.of_list
+       |> React.array}
+    </div>;
+};
+
 fixUrlIfNecessary({
   // Default parameters:
-  year: TaxRates.availableYears[Array.length(TaxRates.availableYears) - 1],
+  year: TaxRates.availableYearsA[Array.length(TaxRates.availableYearsA) - 1],
   income: 100000.0,
   deductions: 0.0,
   exemptions: 1,
   excludeEmp: false,
 });
 
-ReactDOMRe.renderToElementWithId(<> <TaxAnalyzer /> </>, "root");
+let () =
+  switch (ReactDOM.querySelector("#root")) {
+  | None =>
+    Js.Console.error("Failed to start React: couldn't find the #root element")
+  | Some(element) =>
+    let root = ReactDOM.Client.createRoot(element);
+    ReactDOM.Client.render(root, <TaxAnalyzer />);
+  };
