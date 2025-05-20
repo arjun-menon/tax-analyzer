@@ -3,7 +3,7 @@ body {
     font-family: Arial, Helvetica, "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
 }
 
@@ -42,7 +42,7 @@ label {
     border-radius: 25px;
     box-shadow: 5px 5px 15px #BBBBBB;
 
-    background-color:#F8F8F8;
+    background-color: #F8F8F8;
     /* font-family: Geneva, Tahoma; */
     font-size: small;
 }

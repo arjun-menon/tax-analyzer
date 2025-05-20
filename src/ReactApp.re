@@ -347,7 +347,7 @@ module TaxAnalyzer = {
       </div>
       <form id="input_form" method="get">
         <fieldset>
-          <legend> {rs({js|⚜|js})} </legend>
+          <legend> {rs({js|💸|js})} </legend>
           <label> {rs("Adjusted Gross Income:")} </label>
           {rs("$ ")}
           <input name="income" type_="text" size=20 value=incomeS onChange={eventS(setIncomeS)} />
@@ -391,10 +391,10 @@ module TaxAnalyzer = {
         </small>
       </form>
       <br />
-      // <h1> {rs("Point-by-point Breakdown")} </h1>
-      <TaxReport params />
-      <br />
       <TaxRateChart params />
+      <br />
+      <h1> {rs("Point-by-point Breakdown")} </h1>
+      <TaxReport params />
       <br />
     </>;
   };
