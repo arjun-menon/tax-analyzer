@@ -7,14 +7,8 @@ let checkDeductions = (deductions: float): bool => deductions >= 0.0 ? true : fa
 
 let checkExemptions = (exemptions: int): bool => exemptions >= 0;
 
-//let checkYear = (year: int): bool => {
-//  switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
-//  | Some(_) => true
-//  | None => false
-//  };
-//};
 let checkYear = (year: int): bool => {
-  switch (TaxRates.IntMap.find_opt(year, TaxRates.singleTaxRatesByYear)) {
+  switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
   | Some(_) => true
   | None => false
   };
@@ -204,21 +198,11 @@ module TaxRateChart = {
   [@react.component]
   let make = (~params: TaxCalc.taxParams) => {
     let incomeIntS = TaxReport.nsiof(params.income);
-    let points: array(int) = determineDataPoints(params.income); // [|1000, 2000, 3000, 4000, 5000|];
+    let points: array(int) = determineDataPoints(params.income);
     let toStepParams = (income: float): TaxCalc.taxParams => {...params, income};
 
-//    let data: array(dataPoint) =
-//      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
-    let data: array(dataPoint) = Array.map(
-      toDataPoint,
-      Array.map(
-        toStepParams,
-        Array.map(
-          float_of_int,
-          points
-        )
-      )
-    );
+    let data: array(dataPoint) =
+      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
 
     let marginalRateColor = "rgb(256,0,0)";
     let effectiveRateColor = "rgb(0,0,256)";
@@ -327,7 +311,7 @@ module TaxAnalyzer = {
           {React.array(
              Array.map(
                year => <option value=year key=year> {rs(year)} </option>,
-               Array.map(year => string_of_int(year), TaxRates.availableYears->Array.of_list),
+               Array.map(year => string_of_int(year), TaxRates.availableYears),
              ),
            )}
         </select>
@@ -412,7 +396,7 @@ module App = {
 
 fixUrlIfNecessary({
   // Default parameters:
-  year: TaxRates.availableYearsA[Array.length(TaxRates.availableYearsA) - 1],
+  year: TaxRates.availableYears[Array.length(TaxRates.availableYears) - 1],
   income: 100000.0,
   deductions: 0.0,
   exemptions: 1,
