@@ -344,6 +344,49 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
         },
       },
     ),
+    // Year 2020 Single Tax Rates
+    (
+      2020,
+      {
+        federal: {
+          fica: {
+            medicareTaxRate: 1.45,
+            socialSecurityTaxRate: 6.2,
+            socialSecurityWageBase: 137700.0,
+          },
+          income: {
+            rateSchedule: [
+              (9875.0, 10.0),
+              (40125.0, 12.0),
+              (85525.0, 22.0),
+              (163300.0, 24.0),
+              (207350.0, 32.0),
+              (518400.0, 35.0),
+              (Float.infinity, 37.0),
+            ],
+            personalExemption: 0.0,
+            standardDeduction: 12400.0,
+          },
+          federalUnemploymentTax,
+        },
+        nyc: {
+          stateRateSchedule: [
+            (8500.0, 4.00),
+            (11700.0, 4.50),
+            (13900.0, 5.25),
+            (21400.0, 5.90),
+            (80650.0, 6.45),
+            (215400.0, 6.65),
+            (1077550.0, 6.85),
+            (Float.infinity, 8.82),
+          ],
+          cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Float.infinity, 3.876)],
+          dependentPersonalExemption: 1000.0,
+          standardDeduction: 8000.0,
+          nySDI,
+        },
+      },
+    ),
   |]);
 
 let getSingleRatesForYear = (year: int): taxRates => Belt.Map.Int.getExn(singleTaxRatesByYear, year);
