@@ -158,30 +158,30 @@ let areParamsDifferent = (p1: TaxCalc.taxParams, p2: TaxCalc.taxParams) =>
   || p1.exemptions != p2.exemptions
   || p1.excludeEmp != p2.excludeEmp;
 
-//let determineDataPoints = (income: float): array(int) => {
-//  let incomeInt = int_of_float(income);
-//  let stepMaybe: int = int_of_float(income /. 12.5);
-//  let uptoMaybe: int = incomeInt * 2;
-//  let stepMin: int = 10000;
-//  let uptoMin: int = 250000;
-//  let step: int = Pervasives.max(stepMin, stepMaybe);
-//  let upto: int = Pervasives.max(uptoMin, uptoMaybe);
-//
-//  let lowerHalf: array(int) = Belt.Array.rangeBy(0, incomeInt - 1, ~step);
-//  let lastElem: option(int) = Belt.Array.get(lowerHalf, Belt.Array.length(lowerHalf) - 1);
-//  let nextAmt: int =
-//    (
-//      switch (lastElem) {
-//      | Some(x) => x
-//      | None => 0
-//      }
-//    )
-//    + step;
-//  let middle: array(int) = incomeInt == nextAmt ? [||] : [|incomeInt|];
-//  let upperHalf: array(int) = Belt.Array.rangeBy(nextAmt, upto, ~step);
-//
-//  Belt.Array.concatMany([|lowerHalf, middle, upperHalf|]);
-//};
+let determineDataPoints = (income: float): array(int) => {
+  let incomeInt = int_of_float(income);
+  let stepMaybe: int = int_of_float(income /. 12.5);
+  let uptoMaybe: int = incomeInt * 2;
+  let stepMin: int = 10000;
+  let uptoMin: int = 250000;
+  let step: int = max(stepMin, stepMaybe);
+  let upto: int = max(uptoMin, uptoMaybe);
+
+  let lowerHalf: array(int) = Belt.Array.rangeBy(0, incomeInt - 1, ~step);
+  let lastElem: option(int) = Belt.Array.get(lowerHalf, Belt.Array.length(lowerHalf) - 1);
+  let nextAmt: int =
+    (
+      switch (lastElem) {
+      | Some(x) => x
+      | None => 0
+      }
+    )
+    + step;
+  let middle: array(int) = incomeInt == nextAmt ? [||] : [|incomeInt|];
+  let upperHalf: array(int) = Belt.Array.rangeBy(nextAmt, upto, ~step);
+
+  Belt.Array.concatMany([|lowerHalf, middle, upperHalf|]);
+};
 
 [@bs.deriving abstract]
 type dataPoint = {
@@ -206,7 +206,7 @@ module TaxRateChart = {
   [@react.component]
   let make = (~params: TaxCalc.taxParams) => {
     let incomeIntS = TaxReport.nsiof(params.income);
-    let points: array(int) = [|1000, 2000, 3000, 4000, 5000|]; //determineDataPoints(params.income);
+    let points: array(int) = determineDataPoints(params.income); // [|1000, 2000, 3000, 4000, 5000|];
     let toStepParams = (income: float): TaxCalc.taxParams => {...params, income};
 
 //    let data: array(dataPoint) =
@@ -265,71 +265,65 @@ module TaxRateChart = {
 module TaxAnalyzer = {
   [@react.component]
   let make = () => {
-//    let url = ReasonReactRouter.useUrl();
-//    let urlParams: urlParams = getUrlParams(url);
-//    let params: TaxCalc.taxParams = destringUrlParams(urlParams);
-    let params: TaxCalc.taxParams = {
-      year: 2019,
-      income: 100000.,
-      deductions: 0.,
-      exemptions: 1,
-      excludeEmp: false
-    }
+    let url = ReasonReactRouter.useUrl();
+    let urlParams: urlParams = getUrlParams(url);
+    let params: TaxCalc.taxParams = destringUrlParams(urlParams);
+    Js.log(params);
+//    let params: TaxCalc.taxParams = {
+//      year: 2019,
+//      income: 100000.,
+//      deductions: 0.,
+//      exemptions: 1,
+//      excludeEmp: false
+//    }
 
-//    let (yearS, setYearS) = React.useState(() => urlParams.year);
-    let (yearS, _) = React.useState(() => "2019");
-//    let (incomeS, setIncomeS) = React.useState(() => urlParams.income);
-    let (incomeS, setIncomeS) = React.useState(() => "100000");
-//    let (deductionsS, setDeductionsS) = React.useState(() => urlParams.deductions);
-    let (deductionsS, setDeductionsS) = React.useState(() => "0");
-//    let (exemptionsS, setExemptionsS) = React.useState(() => urlParams.exemptions);
-    let (exemptionsS, setExemptionsS) = React.useState(() => "1");
-//    let (excludeEmpB, setExcludeEmpB) = React.useState(() => destringBool(urlParams.excludeEmp));
-    let (excludeEmpB, _) = React.useState(() => destringBool("false"));
+    let (yearS, setYearS) = React.useState(() => urlParams.year);
+//    let (yearS, _) = React.useState(() => urlParams.year);
+    let (incomeS, setIncomeS) = React.useState(() => urlParams.income);
+//    let (incomeS, setIncomeS) = React.useState(() => "100000");
+    let (deductionsS, setDeductionsS) = React.useState(() => urlParams.deductions);
+//    let (deductionsS, setDeductionsS) = React.useState(() => "0");
+    let (exemptionsS, setExemptionsS) = React.useState(() => urlParams.exemptions);
+//    let (exemptionsS, setExemptionsS) = React.useState(() => "1");
+    let (excludeEmpB, setExcludeEmpB) = React.useState(() => destringBool(urlParams.excludeEmp));
+//    let (excludeEmpB, _) = React.useState(() => destringBool("false"));
 
-//    let formParams: TaxCalc.taxParams =
-//      getParamsFromStrings(yearS, incomeS, deductionsS, exemptionsS, string_of_bool(excludeEmpB));
-    let formParams = params;
+    let formParams: TaxCalc.taxParams =
+      getParamsFromStrings(yearS, incomeS, deductionsS, exemptionsS, string_of_bool(excludeEmpB));
+//    let formParams = params;
 
-//    React.useEffect0(() => {
-//      let watcherId =
-//        ReasonReactRouter.watchUrl(url => {
-//          let p = getUrlParams(url);
-//          setYearS(_ => p.year);
-//          setIncomeS(_ => p.income);
-//          setDeductionsS(_ => p.deductions);
-//          setExemptionsS(_ => p.exemptions);
-//          setExcludeEmpB(_ => destringBool(p.excludeEmp));
-//        });
-//      Some(() => ReasonReactRouter.unwatchUrl(watcherId));
-//    });
+    React.useEffect0(() => {
+      let watcherId =
+        ReasonReactRouter.watchUrl(url => {
+          let p = getUrlParams(url);
+          setYearS(_ => p.year);
+          setIncomeS(_ => p.income);
+          setDeductionsS(_ => p.deductions);
+          setExemptionsS(_ => p.exemptions);
+          setExcludeEmpB(_ => destringBool(p.excludeEmp));
+        });
+      Some(() => ReasonReactRouter.unwatchUrl(watcherId));
+    });
 
-//    let onCalc = () =>
-//      if (areParamsDifferent(params, formParams)) {
-//        ReasonReactRouter.push(makeUrlParams(formParams));
-//      };
+    let onCalc = () =>
+      if (areParamsDifferent(params, formParams)) {
+        ReasonReactRouter.push(makeUrlParams(formParams));
+      };
 
-//    let onSubmit = event => {
-//      ReactEvent.Mouse.preventDefault(event);
-//      onCalc();
-//    };
-    let onSubmit = _ => {
-      ()
-    }
-
-//    let onChangeYear = event => {
-//      let newYearS: string = ReactEvent.Form.target(event)##value;
-//      let year = parseInt(newYearS);
-//      if (year != params.year) {
-//        ReasonReactRouter.push(makeUrlParams({...params, year}));
-//      };
-//    };
-    let onChangeYear = _ => {
-      ()
+    let onSubmit = event => {
+      React.Event.Mouse.preventDefault(event);
+      onCalc();
     };
 
-//    let isCalcEnabled: bool = checkParams(formParams);
-  let isCalcEnabled: bool = true;
+    let onChangeYear = event => {
+      let newYearS: string = React.Event.Form.target(event)##value;
+      let year = parseInt(newYearS);
+      if (year != params.year) {
+        ReasonReactRouter.push(makeUrlParams({...params, year}));
+      };
+    };
+
+  let isCalcEnabled: bool = checkParams(formParams);
 
     let checkSign = (valid: bool) => {
       let color = valid ? "green" : "red";
