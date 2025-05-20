@@ -433,7 +433,7 @@ fixUrlIfNecessary({
 });
 
 let () =
-  switch (ReactDOM.querySelector("#root")) {
+  switch (ReactDOM.querySelector("#tax-tool-app")) {
   | None =>
     Js.Console.error("Failed to start React: couldn't find the #root element")
   | Some(element) =>
