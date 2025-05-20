@@ -1,50 +1,29 @@
-# Migration-in-progress in this branch
-
-I'm working on migrating to dune/opam/melange/etc.
-
-Derived from https://github.com/melange-re/melange-opam-template
-
-To develop:
-
-```sh
-npm run init
-
-# In separate terminals:
-npm run watch
-npm run serve
-```
-
----
-
-# Old ReadMe
-
-Calculate Taxes in NYC
-======================
+Tax Analyzer
+============
 This tool gives you a detailed slab-by-slab breakdown of the taxes owed by an unmarried individual living in New York
 City. This tool is written in [ReasonML](https://reasonml.github.io/), and
 uses [ReasonReact](https://reasonml.github.io/reason-react/) and [Recharts](http://recharts.org/en-US/).
 
-![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/tax-analyzer/master/res/snapshot-web.png)
-
 How to Use
 ----------
 
-### Click here: https://arjun-menon.github.io/tax-analyzer/
+### Click here: https://arjun-menon.com/tax-analyzer/
 
 Building
 --------
+To set up and install dependencies, run:
 
-To install dependencies, run:
-``sh
-yarn install
-``
+```sh
+npm run init
+npm install
+```
 
 During development, run:
 
 ```sh
-yarn start
+npm run watch
 # in another tab:
-yarn webpack-dev-server
+npm run serve
 ```
 
 Both are long running commands, that will monitor the filesystem for changes, and automatically rebuild.
@@ -52,9 +31,15 @@ Both are long running commands, that will monitor the filesystem for changes, an
 To generate a production-optimized JS artifact, run:
 
 ```sh
-yarn run build
-yarn run webpack:production
+npm run bundle
 ```
+
+The base ReasonML template for this was [this](https://github.com/melange-re/melange-opam-template).
+
+### Old Screenshot
+
+You can see how the slabs look below:
+![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/tax-analyzer/master/res/snapshot-web.png)
 
 Caveats
 -------
