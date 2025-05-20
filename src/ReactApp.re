@@ -202,65 +202,65 @@ let toDataPoint = (params: TaxCalc.taxParams): dataPoint => {
   d;
 };
 
-//module TaxRateChart = {
-//  [@react.component]
-//  let make = (~params: TaxCalc.taxParams) => {
-//    let incomeIntS = TaxReport.nsiof(params.income);
-//    let points: array(int) = [|1000, 2000, 3000, 4000, 5000|]; //determineDataPoints(params.income);
-//    let toStepParams = (income: float): TaxCalc.taxParams => {...params, income};
-//
-////    let data: array(dataPoint) =
-////      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
-//    let data: array(dataPoint) = Array.map(
-//      toDataPoint,
-//      Array.map(
-//        toStepParams,
-//        Array.map(
-//          float_of_int,
-//          points
-//        )
-//      )
-//    );
-//
-//    let marginalRateColor = "rgb(256,0,0)";
-//    let effectiveRateColor = "rgb(0,0,256)";
-//    let referenceLineColor = "rgb(0,256,0)";
-//
-//    <>
-//      <h1> {rs("Tax Rate Visualizer")} </h1>
-//      <center>
-//        <Recharts.AreaChart width=600 height=400 data>
-//          <Recharts.CartesianGrid strokeDasharray="3 3" />
-//          <Recharts.XAxis dataKey="income" />
-//          <Recharts.YAxis />
-//          <Recharts.Tooltip />
-//          <Recharts.Legend verticalAlign=`top height=36 />
-//          <Recharts.Area
-//            _type=`monotone
-//            dataKey="marginal"
-//            unit="%"
-//            name="Marginal Tax Rate"
-//            stackId="1"
-//            legendType=`circle
-//            stroke=marginalRateColor
-//            fill=marginalRateColor
-//          />
-//          <Recharts.Area
-//            _type=`monotone
-//            dataKey="effective"
-//            unit="%"
-//            name="Effective Tax Rate"
-//            stackId="2"
-//            legendType=`circle
-//            stroke=effectiveRateColor
-//            fill=effectiveRateColor
-//          />
-//          <Recharts.ReferenceLine x=incomeIntS stroke=referenceLineColor />
-//        </Recharts.AreaChart>
-//      </center>
-//    </>;
-//  };
-//};
+module TaxRateChart = {
+  [@react.component]
+  let make = (~params: TaxCalc.taxParams) => {
+    let incomeIntS = TaxReport.nsiof(params.income);
+    let points: array(int) = [|1000, 2000, 3000, 4000, 5000|]; //determineDataPoints(params.income);
+    let toStepParams = (income: float): TaxCalc.taxParams => {...params, income};
+
+//    let data: array(dataPoint) =
+//      points->Belt.Array.map(float_of_int)->Belt.Array.map(toStepParams)->Belt.Array.map(toDataPoint);
+    let data: array(dataPoint) = Array.map(
+      toDataPoint,
+      Array.map(
+        toStepParams,
+        Array.map(
+          float_of_int,
+          points
+        )
+      )
+    );
+
+    let marginalRateColor = "rgb(256,0,0)";
+    let effectiveRateColor = "rgb(0,0,256)";
+    let referenceLineColor = "rgb(0,256,0)";
+
+    <>
+      <h1> {rs("Tax Rate Visualizer")} </h1>
+      <center>
+        <Recharts.AreaChart width=600 height=400 data>
+          <Recharts.CartesianGrid strokeDasharray="3 3" />
+          <Recharts.XAxis dataKey="income" />
+          <Recharts.YAxis />
+          <Recharts.Tooltip />
+          <Recharts.Legend verticalAlign=`top height=36 />
+          <Recharts.Area
+            _type=`monotone
+            dataKey="marginal"
+            unit="%"
+            name="Marginal Tax Rate"
+            stackId="1"
+            legendType=`circle
+            stroke=marginalRateColor
+            fill=marginalRateColor
+          />
+          <Recharts.Area
+            _type=`monotone
+            dataKey="effective"
+            unit="%"
+            name="Effective Tax Rate"
+            stackId="2"
+            legendType=`circle
+            stroke=effectiveRateColor
+            fill=effectiveRateColor
+          />
+          <Recharts.ReferenceLine x=incomeIntS stroke=referenceLineColor />
+        </Recharts.AreaChart>
+      </center>
+    </>;
+  };
+};
 
 module TaxAnalyzer = {
   [@react.component]
@@ -403,7 +403,7 @@ module TaxAnalyzer = {
       // <h1> {rs("Point-by-point Breakdown")} </h1>
       <TaxReport params />
       <br />
-//      <TaxRateChart params />
+      <TaxRateChart params />
       <br />
     </>;
   };
