@@ -645,5 +645,7 @@ let get_first_item_in_pair_tuple = pair => {
   let (a, _) = pair;
   a;
 }
+
 //let availableYears: array(int) = Belt.Map.Int.keysToArray(singleTaxRatesByYear);
 let availableYears: list(int) = List.map(x => get_first_item_in_pair_tuple(x), singleTaxRatesByYear->IntMap.bindings);
+let availableYearsA: array(int) = Array.of_list(availableYears);

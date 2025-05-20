@@ -144,11 +144,9 @@ let fixUrlIfNecessary = (defaultParams: TaxCalc.taxParams) => {
   };
 };
 
-//let eventS = (setValue, event) => {
-let eventS = (_, _) => {
-//  let value: string = ReactEvent.Form.target(event)##value;
-//  setValue(_ => value);
-  ()
+let eventS = (setValue, event) => {
+  let value: string = React.Event.Form.target(event)##value;
+  setValue(_ => value);
 };
 
 let areParamsDifferent = (p1: TaxCalc.taxParams, p2: TaxCalc.taxParams) =>
@@ -371,14 +369,13 @@ module TaxAnalyzer = {
               name="excludeEmp"
               type_="checkbox"
               checked={!excludeEmpB}
-//              onChange={event => {
-              onChange={_ => {
+              onChange={event => {
                   ()
-//                let isChecked: bool = false; // ReactEvent.Form.target(event)##checked;
-//                let excludeEmp = !isChecked;
-//                if (excludeEmp != params.excludeEmp) {
-//                  ReasonReactRouter.push(makeUrlParams({...params, excludeEmp}));
-//                };
+                let isChecked: bool = React.Event.Form.target(event)##checked;
+                let excludeEmp = !isChecked;
+                if (excludeEmp != params.excludeEmp) {
+                  ReasonReactRouter.push(makeUrlParams({...params, excludeEmp}));
+                };
               }}
             />
             <span style=verticalAlignMiddle> {rs("Include taxes paid by employer")} <sup> {rs("2")} </sup> </span>
@@ -425,6 +422,15 @@ module App = {
        |> React.array}
     </div>;
 };
+
+fixUrlIfNecessary({
+  // Default parameters:
+  year: TaxRates.availableYearsA[Array.length(TaxRates.availableYearsA) - 1],
+  income: 100000.0,
+  deductions: 0.0,
+  exemptions: 1,
+  excludeEmp: false,
+});
 
 let () =
   switch (ReactDOM.querySelector("#root")) {
