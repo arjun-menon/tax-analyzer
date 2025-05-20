@@ -1,5 +1,12 @@
 let rs = React.string;
 
+// Note 1: any comaprison against NaN yields a false-like value. Negating this false-like value with `!` does not work.
+// Note 2: the seemingly unnecessary `? true : false` turns a potential false-like value into an actual ReML false bool.
+let checkIncome = (income: float): bool => income >= 0.0 ? true : false;
+let checkDeductions = (deductions: float): bool => deductions >= 0.0 ? true : false;
+
+let checkExemptions = (exemptions: int): bool => exemptions >= 0;
+
 //let checkYear = (year: int): bool => {
 //  switch (Belt.Array.getBy(TaxRates.availableYears, aYear => aYear == year)) {
 //  | Some(_) => true
@@ -12,13 +19,6 @@ let checkYear = (year: int): bool => {
   | None => false
   };
 };
-
-// Note 1: any comaprison against NaN yields a false-like value. Negating this false-like value with `!` does not work.
-// Note 2: the seemingly unnecessary `? true : false` turns a potential false-like value into an actual ReML false bool.
-let checkIncome = (income: float): bool => income >= 0.0 ? true : false;
-let checkDeductions = (deductions: float): bool => deductions >= 0.0 ? true : false;
-
-let checkExemptions = (exemptions: int): bool => exemptions >= 0;
 
 let checkParams = (params: TaxCalc.taxParams): bool =>
   checkYear(params.year)
@@ -267,28 +267,15 @@ module TaxAnalyzer = {
     let urlParams: urlParams = getUrlParams(url);
     let params: TaxCalc.taxParams = destringUrlParams(urlParams);
     Js.log(params);
-//    let params: TaxCalc.taxParams = {
-//      year: 2019,
-//      income: 100000.,
-//      deductions: 0.,
-//      exemptions: 1,
-//      excludeEmp: false
-//    }
 
     let (yearS, setYearS) = React.useState(() => urlParams.year);
-//    let (yearS, _) = React.useState(() => urlParams.year);
     let (incomeS, setIncomeS) = React.useState(() => urlParams.income);
-//    let (incomeS, setIncomeS) = React.useState(() => "100000");
     let (deductionsS, setDeductionsS) = React.useState(() => urlParams.deductions);
-//    let (deductionsS, setDeductionsS) = React.useState(() => "0");
     let (exemptionsS, setExemptionsS) = React.useState(() => urlParams.exemptions);
-//    let (exemptionsS, setExemptionsS) = React.useState(() => "1");
     let (excludeEmpB, setExcludeEmpB) = React.useState(() => destringBool(urlParams.excludeEmp));
-//    let (excludeEmpB, _) = React.useState(() => destringBool("false"));
 
     let formParams: TaxCalc.taxParams =
       getParamsFromStrings(yearS, incomeS, deductionsS, exemptionsS, string_of_bool(excludeEmpB));
-//    let formParams = params;
 
     React.useEffect0(() => {
       let watcherId =

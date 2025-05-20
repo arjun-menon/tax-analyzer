@@ -92,9 +92,6 @@ let calcMarginalTaxRate = (params: TaxCalc.taxParams, taxes: TaxCalc.taxesAnalys
   totalTaxDiff *. 100.0;
 };
 
-// let make = (~year: int, ~income: float, ~deductions: float, ~exemptions: int) => {
-//   let params: TaxCalc.taxParams = {year, income, deductions, exemptions};
-
 [@react.component]
 let make = (~params: TaxCalc.taxParams) => {
   let taxes = TaxCalc.calcTaxes(params);

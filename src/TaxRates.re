@@ -358,8 +358,8 @@ let singleTaxRatesByYear = IntMap.add(
   singleTaxRatesByYear
 )
 
-let singleTaxRatesByYear_: list((int, taxRates)) =
-  [
+let singleTaxRatesByYear_: Belt.Map.Int.t(taxRates) =
+  Belt.Map.Int.fromArray([|
     // Year 2014 Single Tax Rates
     (
       2014,
@@ -636,7 +636,7 @@ let singleTaxRatesByYear_: list((int, taxRates)) =
         },
       },
     ),
-  ];
+  |]);
 
 //let getSingleRatesForYear = (year: int): taxRates => Belt.Map.Int.getExn(singleTaxRatesByYear, year);
 let getSingleRatesForYear = (year: int): taxRates => IntMap.find(year, singleTaxRatesByYear);
