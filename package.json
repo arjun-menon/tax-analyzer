@@ -34,7 +34,8 @@
   },
   "dependencies": {
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "recharts": "^2.1.12"
   },
   "devDependencies": {
     "webpack": "^5.73.0",
