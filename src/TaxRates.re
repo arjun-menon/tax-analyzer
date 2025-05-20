@@ -387,6 +387,95 @@ let singleTaxRatesByYear: Belt.Map.Int.t(taxRates) =
         },
       },
     ),
+    // Year 2021 Single Tax Rates
+    (
+      2021,
+      {
+        federal: {
+          fica: {
+            medicareTaxRate: 1.45,
+            socialSecurityTaxRate: 6.2,
+            socialSecurityWageBase: 142800.0,
+          },
+          income: {
+            rateSchedule: [
+              (9950.0, 10.0),
+              (40525.0, 12.0),
+              (86375.0, 22.0),
+              (164925.0, 24.0),
+              (209425.0, 32.0),
+              (523600.0, 35.0),
+              (Float.infinity, 37.0),
+            ],
+            personalExemption: 0.0,
+            standardDeduction: 12550.0,
+          },
+          federalUnemploymentTax,
+        },
+        nyc: {
+          stateRateSchedule: [
+            (8500.0, 4.00),
+            (11700.0, 4.50),
+            (13900.0, 5.25),
+            (21400.0, 5.90),
+            (80650.0, 6.45),
+            (215400.0, 6.65),
+            (1077550.0, 6.85),
+            (Float.infinity, 8.82),
+          ],
+          cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Float.infinity, 3.876)],
+          dependentPersonalExemption: 1000.0,
+          standardDeduction: 8000.0,
+          nySDI,
+        },
+      },
+    ),
+    // Year 2022 Single Tax Rates
+    (
+      2022,
+      {
+        federal: {
+          fica: {
+            medicareTaxRate: 1.45,
+            socialSecurityTaxRate: 6.2,
+            socialSecurityWageBase: 147000.0,
+          },
+          income: {
+            rateSchedule: [
+              (10275.0, 10.0),
+              (41775.0, 12.0),
+              (89075.0, 22.0),
+              (170050.0, 24.0),
+              (215950.0, 32.0),
+              (539900.0, 35.0),
+              (Float.infinity, 37.0),
+            ],
+            personalExemption: 0.0,
+            standardDeduction: 12950.0,
+          },
+          federalUnemploymentTax,
+        },
+        nyc: {
+          stateRateSchedule: [
+            (8500.0, 4.00),
+            (11700.0, 4.50),
+            (13900.0, 5.25),
+            (21400.0, 5.90),
+            (80650.0, 6.33),
+            (215400.0, 6.57),
+            (1077550.0, 6.85),
+            (Float.infinity, 10.90),
+          ],
+          cityRateSchedule: [(12000.0, 3.078), (25000.0, 3.762), (50000.0, 3.819), (Float.infinity, 3.876)],
+          dependentPersonalExemption: 1000.0,
+          standardDeduction: 8000.0,
+          nySDI,
+        },
+      },
+    ),
+    // Year 2023 Single Tax Rates
+    // Year 2024 Single Tax Rates
+    // Year 2025 Single Tax Rates
   |]);
 
 let getSingleRatesForYear = (year: int): taxRates => Belt.Map.Int.getExn(singleTaxRatesByYear, year);
