@@ -36,9 +36,10 @@ npm run bundle
 
 The base ReasonML template for this was [this](https://github.com/melange-re/melange-opam-template).
 
-### Old Screenshot
+### A bit of history
+This project was started on **May 31, 2014**. Back then, this was just a Python script ([an early commit](https://github.com/arjun-menon/tax-analyzer/commit/eaf562bff67040256795ba8fef556d13a9b3ea2a)). It was later rewritten in JavaScript ([some early commits](https://github.com/arjun-menon/tax-analyzer/commits/master/?after=9909162fac087448071a6637994fa587caf5ac05+174)), and a web UI was added that was written in pure vanilla JS ([a commit](https://github.com/arjun-menon/tax-analyzer/commit/cb0c6e5466d9710441c01382b8f42c1f44d68bbe), and the [index.html](https://github.com/arjun-menon/tax-analyzer/blob/cb0c6e5466d9710441c01382b8f42c1f44d68bbe/index.html) at the time). It was later rewritten entirely in **ReasonML** in 2019 ([e.g. a commit](https://github.com/arjun-menon/tax-analyzer/commit/870c4c920f9841493705a4e5bad068b458c86fc6)). Lastly, since ReasonML went through some changes after the BuckleScript / ReScript split, I migrated it over to new tooling over 2024 and 2025 as well ([PR](https://github.com/arjun-menon/tax-analyzer/pull/25)).
 
-You can see how the slabs look below:
+You can see how things looked like in the UI back then (pretty similar to today):
 ![Snapshot of web-based interface](https://raw.githubusercontent.com/arjun-menon/tax-analyzer/master/res/snapshot-web.png)
 
 Caveats
